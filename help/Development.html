@@ -1,0 +1,58 @@
+<html>
+	<head>
+		<title>Development</title>
+	</head>
+	<body>
+		<h1>Development</h1>
+		<h2>Python</h2>
+		<p>AllMyServos is a collection of Python scripts. Python is an open source programming language.</p>
+		<h2>File Structure</h2>
+		<p>The structure of this application has been designed to allow modules to be added without manually maintaining the python working directories.</p>
+		<p>Classes which extend TkBlock or TkPage are automatically imported. The theme determines where they appear in the interface.</p>
+		<p>The contrib directory allows modules to be added using the following directory structure:</p>
+		<p>/contrib/[username]/[modulename]/[module].py</p>
+		<p>When the application starts it will parse all directories in the 'contrib' folder and automatically add subdirectories to the system paths.</p>
+		<p>If an update is available for the framework, overwriting the existing version will leave contributed modules intact.</p>
+		<p>Modules which generate files should use /files as the base directory. This should be assumed to be empty in the first instance.</p>
+		<h2>Separation of Concerns</h2>
+		<p>This application implements a few concepts which allow code for different purposes to be kept separate.</p>
+		<p>- Themes - The profiles, colour scheme, font definitions and references to graphics are stored in XML files. A graphical interface is also provided.</p>
+		<p>- TkBlock / Tk Page - Base classes for GUI elements</p>
+		<p>- Normal Modules - Classes containing functional code which can be instanced from TkInter or the command line</p>
+		<p>- Scheduled Tasks - Methods within a module class which will be run in an isolated thread </p>
+		<h2>Themes</h2>
+		<p>The file structure of themes is rooted in the 'themes' directory of the current working directory.</p>
+		<p>Each theme is contained within a sub directory of 'themes'.</p>
+		<p>An XML file in this directory contains the definition for the theme.</p>
+		<p>Sub directories such as 'images' can be added to keep assets organised.</p>
+		<p>The theme manager (accessible through 'Settings' -> 'Themes') allows existing themes to be cloned.</p>
+		<p>It also allows existing themes to be edited. Colours can be chosen with a colour picker. Fonts are managed using standard form elements.</p>
+		<p>Images can be selected with a file dialogue. If the file is outside of the theme directory, the image is copied to the 'images' folder within the theme.</p>
+		<p>Themes also contain profiles which can be selected by the application based on the available screen size.</p>
+		<p>The profile determines the layout of the window and the arrangement of the contents.</p>
+		<h2>TkBlock and TkPage</h2>
+		<p>The TkBlock class can be used to define a region of the Tkinter window and its contents. These objects are permanently displayed.</p>
+		<p>The TkPage class removes other UI elements in the same frame before opening. This allows it to replace content in that frame.</p>
+		<p>If the class requires menu items then the 'setup' method should be overridden.</p>
+		<p>Only add the menu if it doesn't already exist in 'self.gui.menus'. This way modules can share a top level menu item.</p>
+		<p>Methods within these classes use a naming convention:</p>
+		<p>self.listThings() - Methods beginning with a lower case letter are similar to views in a 'Model View Controller'</p>
+		<p>self.updateThings() - Methods beginning with 'update' are scheduled tasks which update TkInter widgets</p>
+		<p>self.OnListThingsClick() - These are similar to actions in Microsoft MVC.NET</p>
+		<p>Menu items and button commands should use actions such as OnListThingsClick</p>
+		<p>OnListThingsClick can setup attributes and call self.listThings()</p>
+		<p>Check the existing 'Tk[Module]Manager.py' files for examples.</p>
+		<h2>Scheduled Tasks</h2>
+		<p>If a module requires long running or repetitive tasks, using the 'Main Thread', which TkInter uses, will cause the user interface to freeze during processing.</p>
+		<p>It can also be useful to be able to run these functions without a user interface, from the command line. AllMyServos provides the scheduler to help with this.</p>
+		<p>A module class should be designed to allow it to be instantiated from the command line. Methods which need to be repeatedly executed can be delegated to the scheduler.</p>
+		<p>Within the '__init__' method of the module class: self.scheduler.addTask('name', self.method, 1)</p>
+		<p>The arguments for the scheduler are:</p>
+		<p>- Name: This can be used to refer back to the task</p>
+		<p>- Method: This method will be executed regularly using a dedicated thread</p>
+		<p>- Interval: Time (float value in seconds) to elapse between executions of the method</p>
+		<p>- Stopped: Additionally the initial state of the task can be specified. Using 'True' here means this task will not be executed until self.scheduler.startTask('name') is called.</p>
+		<p>Using the scheduler for repetitive tasks frees up the 'Main Thread' to keep the interface responsive.</p>
+		<p>The scheduled task also gets an entry under: 'Schedule' -> 'Scheduled Tasks' which allows it to be started and stopped through the user interface.</p>
+	</body>
+</html>

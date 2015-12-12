@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<title>Blender Integration</title>
+	</head>
+	<body>
+		<h1>Blender Integration</h1>
+		<h2>What is Blender?</h2>
+		<p>Blender is an open source project for working with 3D models and digital media files. See blender.org for more information.</p>
+		<img src="images/blender.gif" />
+		<h2>What can I do with it?</h2>
+		<p>The AllMyServos Blender addon provides two functions:</p>
+		<p>1. Send live commands via RPC - Associate armature bones with servos and changes to the armature will be translated to servo movement</p>
+		<p>2. Upload key-framed animations to AllMyServos - Armature movements are uploaded to AllMyServos via RPC and added to the current specification.</p>
+		<img src="images/blender-addon.gif" />
+		<h2>Enabling Live Commands</h2>
+		<p>Step 1: Download and install Blender on a computer which meets the minimum requirement (not the Raspberry Pi but on the same LAN)</p>
+		<p>Step 2: Open the '.blend' file containing the armature.</p>
+		<p>Step 3: Install and enable the AllMyServos addon for Blender</p>
+		<p>Step 4: Supply the credentials for the RPC service</p>
+		<p>Step 5: Click 'Download Config' and confirm the correct number of servos were loaded.</p>
+		<p>Step 6: Under 'Live commands' click the button displaying the current status (disabled).</p>
+		<p>Step 7: Move the armature and observe the changes. The servo angle graphs should be updated in AllMyServos and any powered servos should move.</p>
+		<h2>Uploading Motions</h2>
+		<p>Follow steps 1 - 5 for enabling live commands.</p>
+		<p>Simply specify the start frame, end frame, FPS and motion name then click Upload. Refresh the motion list after uploading.</p>
+	</body>
+</html>

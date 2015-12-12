@@ -1,0 +1,141 @@
+<?xml version="1.0" ?>
+	<theme name="DarkBlue">
+		<profiles>
+			<profile name="full" minwidth="1824" maxwidth="0" scrollable="0">
+				<frame name="header" row="0" column="0" rowspan="1" columnspan="3" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0">
+					<widget name="Logo.Logo" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="1"></widget>
+					<widget name="TkNotifier.TkNotifier" row="0" column="1" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="1" columnweight="2" rowweight="0" width="810" height="130"></widget>
+					<widget name="TkConsole.TkConsole" row="0" column="2" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="1" columnweight="2" rowweight="0" width="810" height="130"></widget>
+				</frame>
+				<frame name="left" row="1" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="1" columnweight="1" rowweight="1">
+					<widget name="TkServoGrid.TkServoGrid" row="0" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="1" rowweight="0"></widget>
+				</frame>
+				<frame name="main" row="1" column="1" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="1" columnweight="120" rowweight="1">
+					<widget name="TkSpecificationManager.TkSpecificationManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="1"></widget>
+					<widget name="TkSystemManager.TkSystemManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="1"></widget>
+					<widget name="TkServoManager.TkServoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="2"></widget>
+					<widget name="TkMotionManager.TkMotionManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="3"></widget>
+					<widget name="TkKeyboardManager.TkKeyboardManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="4"></widget>
+					<widget name="TkMetricManager.TkMetricManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="5"></widget>
+					<widget name="TkRPCManager.TkRPCManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="6"></widget>
+					<widget name="TkNetworkManager.TkNetworkManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
+					<widget name="TkIMUManager.TkIMUManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
+					<widget name="TkGravityManager.TkGravityManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="1" rowweight="0" menuindex="8"></widget>
+					<widget name="TkOrthoManager.TkOrthoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
+					<widget name="TkScheduleManager.TkScheduleManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
+					<widget name="TkThemeManager.TkThemeManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="12"></widget>
+					<widget name="TkSettingManager.TkSettingManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="12"></widget>
+					<widget name="TkHelpManager.TkHelpManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="13"></widget>
+				</frame>
+				<frame name="right" row="1" column="2" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="1">
+					<widget name="TkResourceManager.TkResourceManager" row="0" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0"></widget>
+				</frame>
+				<frame name="footer" row="2" column="0" rowspan="1" columnspan="3" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="10" rowweight="0">
+					<widget name="Footer.Footer" row="0" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0"></widget>
+				</frame>
+			</profile>
+			<profile name="slim" minwidth="0" maxwidth="1823" scrollable="1">
+				<frame name="header" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0">
+					<widget name="Logo.Logo" row="0" column="0" rowspan="2" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="1"></widget>
+					<widget name="TkNotifier.TkNotifier" row="0" column="1" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="1" columnweight="2" rowweight="0" width="410" height="130"></widget>
+					<widget name="TkConsole.TkConsole" row="1" column="1" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="1" columnweight="2" rowweight="0" width="410" height="130"></widget>
+				</frame>
+				<frame name="left" row="1" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0"></frame>
+				<frame name="main" row="2" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0">
+					<widget name="TkSystemManager.TkSystemManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="0"></widget>
+					<widget name="TkSpecificationManager.TkSpecificationManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="0"></widget>
+					<widget name="TkServoManager.TkServoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="1"></widget>
+					<widget name="TkMotionManager.TkMotionManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="2"></widget>
+					<widget name="TkKeyboardManager.TkKeyboardManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="3"></widget>
+					<widget name="TkMetricManager.TkMetricManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="4"></widget>
+					<widget name="TkRPCManager.TkRPCManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="5"></widget>
+					<widget name="TkNetworkManager.TkNetworkManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="6"></widget>
+					<widget name="TkIMUManager.TkIMUManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
+					<widget name="TkGravityManager.TkGravityManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
+					<widget name="TkOrthoManager.TkOrthoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
+					<widget name="TkScheduleManager.TkScheduleManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="10"></widget>
+					<widget name="TkThemeManager.TkThemeManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
+					<widget name="TkSettingManager.TkSettingManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
+					<widget name="TkHelpManager.TkHelpManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="12"></widget>
+				</frame>
+				<frame name="right" row="3" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0">
+					<widget name="TkServoGrid.TkServoGrid" row="0" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0"></widget>
+					<widget name="TkResourceManager.TkResourceManager" row="1" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0"></widget>
+				</frame>
+				<frame name="footer" row="4" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0">
+					<widget name="Footer.Footer" row="0" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0"></widget>
+				</frame>
+			</profile>
+		</profiles>
+		<images>
+			<image name="play">images/play.gif</image>
+			<image name="process">images/process.gif</image>
+			<image name="image">images/image.gif</image>
+			<image name="ram">images/ram.gif</image>
+			<image name="stop">images/stop.gif</image>
+			<image name="back">images/back.gif</image>
+			<image name="accept">images/accept.gif</image>
+			<image name="robot">images/robot.gif</image>
+			<image name="warning">images/warning.gif</image>
+			<image name="export">images/export.gif</image>
+			<image name="key">images/key.gif</image>
+			<image name="font">images/font.gif</image>
+			<image name="find">images/find.gif</image>
+			<image name="unit">images/unit-40.gif</image>
+			<image name="reset">images/reset.gif</image>
+			<image name="slow">images/slow.gif</image>
+			<image name="notice">images/notice.gif</image>
+			<image name="colour">images/brush.gif</image>
+			<image name="profile">images/profile.gif</image>
+			<image name="servo-end-r">images/servo-end-r.gif</image>
+			<image name="add">images/add.gif</image>
+			<image name="servo-end-l">images/servo-end-l.gif</image>
+			<image name="error">images/error.gif</image>
+			<image name="test">images/test.gif</image>
+			<image name="save">images/save.gif</image>
+			<image name="bone">images/bone.gif</image>
+			<image name="delete">images/delete.gif</image>
+			<image name="blender">images/blender.gif</image>
+		</images>
+		<colours>
+			<colour name="rowbg">131d21</colour>
+			<colour name="rowaltbg">22363c</colour>
+			<colour name="bg">0a0a0a</colour>
+			<colour name="handle">005d7f</colour>
+			<colour name="lightfg">c9d17d</colour>
+			<colour name="activebg">053445</colour>
+			<colour name="buttonfg">c9d17d</colour>
+			<colour name="buttonhighlightbg">2a434c</colour>
+			<colour name="consolefg">c9d17d</colour>
+			<colour name="graphbar">005d7f</colour>
+			<colour name="trough">053445</colour>
+			<colour name="inputfg">c9d17d</colour>
+			<colour name="fg">5c767b</colour>
+			<colour name="activefg">ffffff</colour>
+			<colour name="border">788388</colour>
+			<colour name="buttonbg">203238</colour>
+			<colour name="greyborder">333333</colour>
+			<colour name="inputbg">2a434c</colour>
+			<colour name="noticebg">29d100</colour>
+			<colour name="buttonborder">2d3c47</colour>
+			<colour name="warningbg">ffd900</colour>
+			<colour name="headingfg">c3e5e6</colour>
+			<colour name="errorbg">e10800</colour>
+			<colour name="unitblue2">053445</colour>
+			<colour name="unitblue1">005d7f</colour>
+			<colour name="valuefg">c9d17d</colour>
+			<colour name="menubg">0a0a0a</colour>
+			<colour name="menuactivebg">0a0a0a</colour>
+			<colour name="menufg">c3e5e6</colour>
+			<colour name="menuactivefg">00aceb</colour>
+			<colour name="imux">e8070a</colour>
+			<colour name="imuy">13d30c</colour>
+			<colour name="imuz">0c3eff</colour>
+		</colours>
+		<fonts>
+			<font name="text" size="12">Droid Sans</font>
+			<font name="heading2" size="12">Helvetica</font>
+			<font name="heading" size="16">Helvetica</font>
+			<font name="console" size="10">Free Sans</font>
+		</fonts>
+	</theme>
