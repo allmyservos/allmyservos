@@ -17,8 +17,6 @@ import select
 import os
 import struct
 import logging
-from RPIO import PWM
-import RPIO
 import subprocess
 from datetime import datetime
 
@@ -44,6 +42,8 @@ class I2C:
 			with open('/proc/cpuinfo','r') as f:
 				for line in f:
 					if line.startswith('Revision'):
+						if any(x in line for x in ['a01041', 'a21041', '900092', 'a02082', 'a22082']):
+							return 2
 						return 1 if line.rstrip()[-1] in ['1','2'] else 2
 		except:
 			return 0

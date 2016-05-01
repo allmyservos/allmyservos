@@ -127,6 +127,9 @@ class TkOrthoManager(TkPage):
 		self.widgets['orientLabel'] = Tkinter.Label(self.widgets['orientframe'],text=self.specification.imu['offset'], bg=self.colours['bg'], fg=self.colours['valuefg'], height=3)
 		self.widgets['orientLabel'].grid(column=4,row=0, padx=10,sticky='EW')
 	def showOrthographic(self):
+		if (not IMU.isAvailable()):
+			return self.unavailable()
+		
 		self.open()
 		
 		self.serviceManager()
@@ -181,7 +184,17 @@ class TkOrthoManager(TkPage):
 				self.widgets['yawCanvas'].itemconfigure(self.shapes['yawImage'], image=self.getImage('yaw',int(metric['y'])))
 		except:
 			pass
-			
+	def unavailable(self):
+		self.open()
+		
+		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='IMU / Unavailable', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
+		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,sticky='EW')
+		
+		self.gridrow += 1
+		
+		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='The MPU6050 has not been detected.', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'])
+		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,sticky='EW')
+	
 	#=== ACTIONS ===#
 	def OnStartClick(self):
 		self.widgets['start'].configure(state='disabled')

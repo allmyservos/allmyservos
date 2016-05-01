@@ -22,9 +22,21 @@ from lowpassfilter import lowpassfilter
 from Metric import *
 from Setting import *
 from Scheduler import *
-from MPU6050 import MPU6050
+from MPU6050 import MPU6050, I2C
+from subprocess import Popen, PIPE
 
 class IMU(object):
+	available = None
+	@staticmethod
+	def isAvailable():
+		if (IMU.available == None):
+			p = Popen(['i2cdetect', '-y', str(I2C.getPiI2CBusNumber())], stdout=PIPE)
+			o = p.communicate()[0]
+			available = False
+			for line in o.split('\n'):
+				if line.startswith('60:') and '68' in line:
+					available = True
+		return available
 	def __init__(self, specification = None, scheduler = None, stopped = False):
 		if (specification != None):
 			self.specification = specification
@@ -42,19 +54,20 @@ class IMU(object):
 		self.callbacks = {}
 		self.mpi = 3.14159265359
 		self.radian = 180 / self.mpi
-		self.device = MPU6050()
-		self.__initOrientations()
-		self.device.readOffsets(self.filebase)
-		self.config = self.device.getConfig()
-		self.initRaw()
-		self.initNorm()
-		self.initAngles()
-		self.initLowpass()
-		self.initHighpass()
-		self.initComplement()
-		self.inittime=time.time()
-		self.tottime=0
-		self.scheduler.addTask('imu_watcher', self.calculate, 0.02, stopped)
+		if (IMU.isAvailable()):
+			self.device = MPU6050()
+			self.__initOrientations()
+			self.device.readOffsets(self.filebase)
+			self.config = self.device.getConfig()
+			self.initRaw()
+			self.initNorm()
+			self.initAngles()
+			self.initLowpass()
+			self.initHighpass()
+			self.initComplement()
+			self.inittime=time.time()
+			self.tottime=0
+			self.scheduler.addTask('imu_watcher', self.calculate, 0.02, stopped)
 	def calibrate(self):
 		self.device.updateOffsets(self.filebase)
 	def initRaw(self):

@@ -30,7 +30,7 @@ class Specification(JsonBlob.JsonBlob):
 	@staticmethod
 	def currentIdent(new = False):
 		specs = JsonBlob.JsonBlob.all('Specification','Specification')
-		currentident = specs[specs.keys()[0]] if not new and any(specs) else Specification.newIdent() #first in index or new
+		currentident = specs.keys()[0] if not new and any(specs) else Specification.newIdent() #first in index or new
 		savedident = Setting.get('spec_active_ident', currentident) #get the active ident setting or default to first or new
 		if not new and os.path.exists(os.path.join(Specification.installpath, savedident)):
 			currentident = savedident #the saved ident refers to an existing specification so use it 

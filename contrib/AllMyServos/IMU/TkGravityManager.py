@@ -105,6 +105,9 @@ class TkGravityManager(TkPage):
 			self.variables['status'].set('Stopped')
 			self.widgets['stop'].configure(state='disabled')
 	def showGravity(self):
+		if (not IMU.isAvailable()):
+			return self.unavailable()
+		
 		self.open()
 		
 		self.serviceManager()
@@ -161,7 +164,17 @@ class TkGravityManager(TkPage):
 					newpoly.append(int(new.real))
 					newpoly.append(int(new.imag))
 				self.widgets['hCanvas'].coords(self.shapes['groundplane'], *newpoly)
-			
+	def unavailable(self):
+		self.open()
+		
+		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='IMU / Unavailable', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
+		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,sticky='EW')
+		
+		self.gridrow += 1
+		
+		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='The MPU6050 has not been detected.', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'])
+		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,sticky='EW')
+		
 	#=== ACTIONS ===#
 	def OnStartClick(self):
 		self.widgets['start'].configure(state='disabled')
