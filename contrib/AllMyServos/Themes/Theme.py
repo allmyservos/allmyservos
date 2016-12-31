@@ -17,20 +17,26 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import sys, os, distutils.core, traceback
+from __bootstrap import AmsEnvironment
 from xml.dom import minidom
 from xml.dom.minidom import Document
 
+## Manage XML theme data
 class Theme(object):
 	def __init__(self, name = 'NewTheme', screen = None):
+		""" Initializes the Theme object
+		"""
 		self.name = name
 		if(screen != None):
 			self.screen = screen
 		else:
 			self.screen = { 'width': 0, 'height': 0 }
-		self.basepath = os.path.join(os.getcwd(), 'themes', self.safeName())
+		self.basepath = os.path.join(AmsEnvironment.AppPath(), 'themes', self.safeName())
 		self.filepath = '{0}/{1}.theme.xml'.format(self.basepath, self.name)
 		self.profiles, self.images, self.colours, self.fonts = {}, {}, {}, {}
 	def save(self):
+		""" save theme XMl
+		"""
 		doc = Document()
 		base = doc.createElement('theme')
 		base.setAttribute('name', self.name)
@@ -111,6 +117,8 @@ class Theme(object):
 		doc.writexml(f, indent='\t', addindent='\t', newl='\r\n')
 		f.close()
 	def load(self):
+		""" load theme XML
+		"""
 		try:
 			if(len(self.filepath) > 0):
 				xmldoc = minidom.parse(self.filepath)
@@ -123,6 +131,10 @@ class Theme(object):
 		except Exception,e:
 			print('There was a problem parsing the theme xml: '+str(e)+ '\n' + str(traceback.format_exc()))
 	def clone(self, newName):
+		""" clone theme
+		
+		@param newName str
+		"""
 		newTheme = Theme(newName)
 		newTheme.images = self.images
 		newTheme.colours = self.colours
@@ -138,7 +150,9 @@ class Theme(object):
 						os.makedirs(destpath)
 					distutils.dir_util.copy_tree(srcpath, destpath)
 	def query(self):
-		basepath = os.path.join(os.getcwd(), 'themes')
+		""" gets a list of available themes
+		"""
+		basepath = os.path.join(AmsEnvironment.AppPath(), 'themes')
 		dirs = os.listdir(basepath)
 		themes = {}
 		if(len(dirs) > 0):
@@ -148,6 +162,10 @@ class Theme(object):
 					themes[d].load()
 		return themes
 	def parseProfiles(self, profiles):
+		""" loades profile data and selects the best profile for detected display size
+		
+		@param profiles 
+		"""
 		result = {}
 		self.modules = {}
 		for n in profiles.childNodes:
@@ -201,6 +219,8 @@ class Theme(object):
 		else:
 			self.profile = None
 	def parseImages(self, images):
+		""" parse image XML
+		"""
 		result = {}
 		for n in images.childNodes:
 			if(n.nodeType == n.ELEMENT_NODE):
@@ -208,6 +228,8 @@ class Theme(object):
 					result.update({str(n.attributes['name'].value): str(n.firstChild.nodeValue)})
 		self.images = result
 	def parseColours(self, colours):
+		""" parse colour XML
+		"""
 		result = {}
 		for n in colours.childNodes:
 			if(n.nodeType == n.ELEMENT_NODE):
@@ -215,6 +237,8 @@ class Theme(object):
 					result.update({str(n.attributes['name'].value): '#{0}'.format(str(n.firstChild.nodeValue))})
 		self.colours = result
 	def parseFonts(self, fonts):
+		""" parse font XML
+		"""
 		result = {}
 		for n in fonts.childNodes:
 			if(n.nodeType == n.ELEMENT_NODE):
@@ -222,6 +246,8 @@ class Theme(object):
 					result.update({str(n.attributes['name'].value) : { 'family' : str(n.firstChild.nodeValue), 'size': int(n.attributes['size'].value) }})
 		self.fonts = result
 	def safeName(self):
+		""" remove spaces from theme name
+		"""
 		return self.name.replace('\s', '')
 if __name__ == "__main__":
 	theme = Theme('DarkBlue')

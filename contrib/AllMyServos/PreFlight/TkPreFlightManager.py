@@ -17,13 +17,24 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import os, Tkinter, PreFlight
+from __bootstrap import AmsEnvironment
 from Tkinter import *
 from TkBlock import TkBlock, TkPage
+
+## UI for pre flight checks
 class TkPreFlightManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkPreFlightManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkPreFlightManager,self).__init__(parent, gui, **options)
 		self.report = PreFlight.PreFlight.report()
 	def setup(self):
+		""" setup gui menu
+		"""
 		try:
 			self.gui.menus['file']
 		except:
@@ -33,6 +44,8 @@ class TkPreFlightManager(TkPage):
 	
 	#=== VIEWS ===#
 	def checks(self):
+		""" view - list checks
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Pre Flight Checks', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -225,30 +238,52 @@ class TkPreFlightManager(TkPage):
 	
 	#=== ACTIONS ===#
 	def OnChecksClick(self):
+		""" action - display checks
+		"""
 		self.checks()
-	def OnEnableInterfacesClick(self):
-		PreFlight.PreFlight.enableInterfaces()
 	def OnCorrectClick(self):
+		""" action - perform corrections
+		"""
 		PreFlight.PreFlight.configure()
 	def OnExitClick(self):
+		""" action - exit the gui
+		"""
 		self.gui.quit()
+## UI for pre flight logo
 class TkPreFlightLogo(TkBlock):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkPreFlightLogo object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkPreFlightLogo,self).__init__(parent, gui, **options)
 		self.view()
 	def view(self):
+		""" view - display logo
+		"""
 		self.open()
-		self.logo = Tkinter.PhotoImage(file = os.path.join(os.getcwd(), 'images', 'pre-flight','vwave.gif'))
+		self.logo = Tkinter.PhotoImage(file = os.path.join(AmsEnvironment.AppPath(), 'images', 'pre-flight','vwave.gif'))
 		self.widgets['frameLabel'] = Tkinter.Label(self.widget, text="logo", image = self.logo, anchor=S, bg=self.colours['bg'], fg=self.colours['headingfg'], highlightthickness=0)
 		self.widgets['frameLabel'].grid(column=0,row=0,sticky='S')
 		self.widgets['frameLabel'].logo = self.logo
+## UI for pre flight screens
 class TkPreFlightScreens(TkBlock):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkPreFlightScreens object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkPreFlightScreens,self).__init__(parent, gui, **options)
 		self.view()
 	def view(self):
+		""" view - display flight screens
+		"""
 		self.open()
-		self.logo = Tkinter.PhotoImage(file = os.path.join(os.getcwd(), 'images', 'pre-flight','ui-screens.gif'))
+		self.logo = Tkinter.PhotoImage(file = os.path.join(AmsEnvironment.AppPath(), 'images', 'pre-flight','ui-screens.gif'))
 		self.widgets['frameLabel'] = Tkinter.Label(self.widget, text="logo", image = self.logo, anchor=S, bg=self.colours['bg'], fg=self.colours['headingfg'], highlightthickness=0)
 		self.widgets['frameLabel'].grid(column=0,row=0,sticky='S')
 		self.widgets['frameLabel'].logo = self.logo

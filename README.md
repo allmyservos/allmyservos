@@ -4,10 +4,11 @@
 
 AllMyServos is a robotics app for Raspberry Pi, written in Python, to help it interface with:
 
-	- Adafruit 16 Channel Servo Driver
+	- Pi Camera
+	- Adafruit PCA9685 16 Channel Servo Driver
 	- Invensense MPU6050 Accelerometer and Gyro
 
-All three of these pieces of hardware are low cost and widely available. Using AllMyServos makes them a great platform for experimenting with robots.
+The app provides a user friendly interface for configuration, a command line version for running over SSH and now supports headless operation.
 
 To get started, make sure the directory which contains this file is copied to the SD card of your Raspberry Pi, open a terminal, change to this directory and run 'sudo python GUI.py'
 
@@ -16,14 +17,24 @@ For more information visit:
 http://allmyservos.co.uk
 https://www.youtube.com/user/allmyservos
 
-## Supported Operating Systems
+## Supported Models and Operating Systems
 
 AllMyServos has been tested with:
+
+- Raspberry Pi Model B+
+- Raspberry Pi 2
+- Raspberry Pi 3
+- Raspberry Pi Zero
+
+OS Versions:
 
 - Raspbian Wheezy
 	- 2015-05-05
 - Raspbian Jessie
 	- 2015-11-21
+	- 2016-05-10
+	- 2016-09-23
+	- 2016-11-25
 
 ## Functionality
 
@@ -46,7 +57,14 @@ Specification packages contain JSON serialized data, a preview image and a blend
 
 #### System
 
-This section of the app lists system information and provides shortcuts for reboot / poweroff.
+Menu: File -> System -> Information
+Use this section to check various platform specific information.
+
+Menu: File -> System -> Startup
+Use this section to start AllMyServos with the Pi automatically.
+This is useful for a Pi which is dedicated to a particular robot and should make the services available as soon as it boots.
+Auto starting All My Servos is also useful for headless operation (without a monitor).
+One example is making the Pi automatically start capturing timelapse footage when powered on.
 
 #### Servos
 
@@ -77,6 +95,43 @@ Remote Procedure Calls allow a remote computer, with the correct settings, to co
 This section of the app deals with the Gyro and Accelerometer provided by the MPU6050. The app allows you to specify how the IMU is mounted inside of your robot and illustrates how the output will be interpreted.
 The IMU -> Sensor Data section demonstrates how IMU data is collected and processed.
 The effect of gravity on the accelerometer is demonstrated with an artificial horizon. The complementary filter is demonstrated with orthographic images for Roll, Pitch and Yaw.
+
+#### Camera
+
+This section makes working with the Pi Camera super easy.
+
+##### Manage
+This section allows the camera service to be started and stopped.
+The camera service, starts and stops the camera hardware and triggers capture and streaming events.
+The viewfinder section shows the area of the screen which will be marshalled for previewing.
+Below the viewfinder there are capture and stream buttons which. 
+The capture button will either take a photo or begin shooting video.
+The stream button enabled streaming.
+Camera profiles are a collection of settings related to the camera.
+These can be used to initialize the camera. The current camera profile is shown on the right.
+Settings can be changed while the camera is previewing and they will be applied instantly.
+
+##### Shortcuts
+
+As long as the keyboard service is running the following keyboard shortcuts are available:
+C (Shift + c) - Start / stop the camera service
+S (Shift + s) - Toggle streaming
+Space - Start / stop video capture or capture image (depending on the record mode of the active profile)
+
+##### Timelapse
+
+This section allows one or more timelapse tasks to be setup.
+The camera can either record a still image every N seconds or N seconds of video every N seconds.
+If a timelapse task is active and the camera service is running then the camera will be recording.
+As the task runs, it takes a note of all the media it creates.
+Use the 'media' button to view a list of media recorded by the task.
+
+##### Media
+
+This section provides basic file manager functionality to make finding the files the camera has created easier.
+The camera saves files in '/files/camera/still' and '/files/camera/video'
+Files are named using this format:
+[Image|Clip]-[timestamp].[extension]
 
 #### Settings
 
@@ -126,7 +181,7 @@ The files which comprise AllMyServos are organised to conform with a few basic c
 
 ## Development
 
-Python system paths are managed automatically by __bootstrap.py. Modules using the 'contrib' directory are added at startup.
+Python system paths are managed automatically by __bootstrap.py. Modules under the 'contrib' directory are added at startup.
 
 File -> System -> Information lists the current system paths.
 

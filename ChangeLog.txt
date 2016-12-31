@@ -61,3 +61,10 @@ v0.21
 2016-04-30	Added Pi 2/3/zero support and IMU 
 			detection and fixed currentident 
 			fallback
+v0.30
+2016-11-26	Added Camera module, TrayIcon,
+			AmsEnvironment information
+			Support for running from rc.local
+2016-12-26	Documentation enhanced for doxygen,
+			Added LXDE startup support and ui for
+			startup settings management

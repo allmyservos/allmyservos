@@ -19,11 +19,20 @@
 import Tkinter
 from Tkinter import *
 
+## UI for line graphs
 class TkLineGraph():
 	def __init__(self, parent, data, colours={}, width=100, height=100, xrange = {'min':None, 'max':None}, yrange = { 'min':None, 'max':None}, pointlimit = 50):
-		'''
-		initializes the attributes for a line graph
-		'''
+		""" initializes the attributes for a line graph
+		
+		@param parent
+		@param data
+		@param colours
+		@param width
+		@param height
+		@param xrange
+		@param yrange
+		@param pointlimit
+		"""
 		self.widget = Frame(parent)
 		self.data = data
 		self.width = float(width)
@@ -38,9 +47,10 @@ class TkLineGraph():
 		self.shapes = {}
 		self.setup()
 	def initColours(self, colours):
-		'''
-		setup the colours
-		'''
+		""" setup the colours
+		
+		@param colours
+		"""
 		try:
 			TkLineGraph.colours
 		except:
@@ -50,33 +60,34 @@ class TkLineGraph():
 		except:
 			self.widget.configure(borderwidth=5)
 	def setup(self):
-		'''
-		creates a canvas for the graph
-		'''
+		""" creates a canvas for the graph
+		"""
 		self.widgets = {}
 		gridrow = 0
 		self.widgets['canvas'] = Tkinter.Canvas(self.widget, width=self.width, height=self.height, bg=TkLineGraph.colours['bg'], highlightthickness=0)
 		self.widgets['canvas'].grid(column=0,row=gridrow, sticky='EW')
 		self.update()
 	def addData(self, key=None, value=None):
-		'''
-		appends data to the graph
-		'''
+		""" appends data to the graph
+		
+		@param key
+		@param value
+		"""
 		if(key != None and value != None):
 			self.data[key] = value
 	def delData(self, index):
-		'''
-		removes data from the graph
-		'''
+		""" removes data from the graph
+		
+		@param index
+		"""
 		try:
 			self.widgets['canvas'].delete(self.shapes[index])
 			del(self.shapes[index])
 		except:
 			pass
 	def update(self):
-		'''
-		creates or arranges lines on the canvas
-		'''
+		""" creates or arranges lines on the canvas
+		"""
 		fields = self.data.keys()
 		fields.sort()
 		if(self.pointlimit != None):
@@ -133,11 +144,18 @@ class TkLineGraph():
 				self.shapes['default']
 			except:
 				self.shapes['default'] = self.widgets['canvas'].create_line(0,(yrange*0.5)*yunit,(xrange)*xunit,(yrange*0.5)*yunit, fill=TkLineGraph.colours['line'], activefill="white")
+## UI for bar graphs
 class TkBarGraph():
 	def __init__(self, parent, colours={}, width=100, height=30, grange={'min': 0, 'max': 100}, horizontal=True):
-		'''
-		initializes the attributes for a bar graph
-		'''
+		""" initializes the attributes for a bar graph
+		
+		@param parent
+		@param colours
+		@param width
+		@param height
+		@param grange
+		@param horizontal
+		"""
 		self.colours = colours
 		self.widget = Frame(parent, bg=self.colours['bg'])
 		self.value = grange['min']
@@ -147,9 +165,8 @@ class TkBarGraph():
 		self.horizontal = horizontal
 		self.setup()
 	def setup(self):
-		'''
-		creates a canvas for the graph
-		'''
+		""" creates a canvas for the graph
+		"""
 		self.widgets = {}
 		self.shapes = {}
 		self.widgets['canvas'] = Tkinter.Canvas(self.widget, width=self.width, height=self.height-2, bg=self.colours['bg'], highlightthickness=2, highlightbackground=self.colours['greyborder'])
@@ -161,18 +178,28 @@ class TkBarGraph():
 			self.barunit = float(self.height)/(float(self.grange['max'])-float(self.grange['min']))
 			self.shapes['bar'] = self.widgets['canvas'].create_rectangle((0,0, self.width, self.height), fill=self.colours['graphbar'])
 	def update(self, value):
-		'''
-		updates the width or height of the bar in the graph
-		'''
+		""" updates the width or height of the bar in the graph
+		
+		@param value
+		"""
 		if(self.horizontal):
 			self.widgets['canvas'].coords(self.shapes['bar'], 0,0,int(self.barunit*value), self.height)
 		else:
 			self.widgets['canvas'].coords(self.shapes['bar'], 0,self.barunit*value,self.width,self.height)
+## UI for ii charts
 class TkPiChart():
 	def __init__(self, parent, data, colours={}, width=100, height=100, total = 100, label=None, rcolour=None):
-		'''
-		initializes the attributes for a pi chart
-		'''
+		""" initializes the attributes for a pi chart
+		
+		@param parent
+		@param data
+		@param colours
+		@param width
+		@param height
+		@param total
+		@param label
+		@param rcolour
+		"""
 		self.widget = Frame(parent)
 		self.data = data
 		self.colours = colours
@@ -185,9 +212,8 @@ class TkPiChart():
 		self.outercoords = 0,0,self.width,self.height
 		self.setup()
 	def setup(self):
-		'''
-		creates a canvas for the pi chart
-		'''
+		""" creates a canvas for the pi chart
+		"""
 		self.widgets = {}
 		self.shapes = {}
 		self.widgets['canvas'] = Tkinter.Canvas(self.widget, width=self.width, height=self.height, bg=self.colours['bg'], highlightthickness=0)
@@ -197,9 +223,10 @@ class TkPiChart():
 		self.shapes['label'] = self.widgets['canvas'].create_text(self.width*0.5, self.height*0.5, text=self.label, fill=self.colours['consolefg'], tags='label')
 		self.update()
 	def update(self, data = None):
-		'''
-		converts the data into section of the pi chart
-		'''
+		""" converts the data into section of the pi chart
+		
+		@param data
+		"""
 		if(data != None):
 			self.data = data
 		initialangle = 0

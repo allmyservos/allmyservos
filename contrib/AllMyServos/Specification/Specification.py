@@ -17,18 +17,25 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import sys, os, shutil, distutils.core, traceback, uuid, tarfile, time, copy, errno, JsonBlob, Motion, Keyboard
+from __bootstrap import AmsEnvironment
 from xml.dom import minidom
 from xml.dom.minidom import Document
 from Setting import *
 
+## Robot specification
 class Specification(JsonBlob.JsonBlob):
-	cwd = os.getcwd()
+	cwd = AmsEnvironment.AppPath()
 	basepath = os.path.join(cwd, 'specifications')
 	installpath = os.path.join(basepath, 'installed')
 	packagepath = os.path.join(basepath, 'packages')
-	filebase = os.path.join(cwd, 'files')
+	filebase = AmsEnvironment.FilePath()
 	@staticmethod
 	def currentIdent(new = False):
+		""" gets the current specification id
+		if a valid id is not found, a new one is created
+		
+		@param new bool
+		"""
 		specs = JsonBlob.JsonBlob.all('Specification','Specification')
 		currentident = specs.keys()[0] if not new and any(specs) else Specification.newIdent() #first in index or new
 		savedident = Setting.get('spec_active_ident', currentident) #get the active ident setting or default to first or new
@@ -39,9 +46,13 @@ class Specification(JsonBlob.JsonBlob):
 		return currentident
 	@staticmethod
 	def newIdent():
+		""" generates a new id
+		"""
 		return str(uuid.uuid4())
 	@staticmethod
 	def listPackages():
+		""" gets a list of specification packages
+		"""
 		res = {}
 		if (not os.path.exists(Specification.packagepath)):
 			os.makedirs(Specification.packagepath)
@@ -52,9 +63,10 @@ class Specification(JsonBlob.JsonBlob):
 		return res
 	@staticmethod
 	def getPackageInfo(filename):
-		'''
-		collects the spec data inside a package
-		'''
+		""" collects the spec data inside a package
+		
+		@param filename
+		"""
 		extras = { 'file': filename, 'ident': filename.replace('.tar.gz', '') }
 		extras['installed'] = os.path.exists(os.path.join(Specification.installpath, extras['ident']))
 		tar = tarfile.open(os.path.join(Specification.packagepath, filename), "r:gz")
@@ -68,6 +80,11 @@ class Specification(JsonBlob.JsonBlob):
 		return extras
 	@staticmethod
 	def clone(ident, codename = None):
+		""" clone a specification
+		
+		@param ident
+		@param codename
+		"""
 		oldspec = Specification(ident)
 		newspec = Specification(Specification.newIdent())
 		newspec.jsonData = copy.deepcopy(oldspec.jsonData)
@@ -95,6 +112,10 @@ class Specification(JsonBlob.JsonBlob):
 		return newspec
 	@staticmethod
 	def deployPackage(tarfilename):
+		""" unpack a specification package
+		
+		@param tarfilename
+		"""
 		fullpath = os.path.join(Specification.packagepath, tarfilename)
 		if (not os.path.exists(fullpath)):
 			return 'missing'
@@ -137,6 +158,10 @@ class Specification(JsonBlob.JsonBlob):
 		tar.close()
 		return 'unpacked'
 	def __init__(self, index = None):
+		""" Initializes the Specification object
+		
+		@param index
+		"""
 		super(Specification,self).__init__(index if index != None else Specification.currentIdent())
 		if (not super(Specification,self).blobExists()):
 			self.jsonData = {
@@ -158,18 +183,25 @@ class Specification(JsonBlob.JsonBlob):
 		else:
 			self.init()
 	def init(self):
+		""" setup object attributes
+		"""
 		self.servos = JsonBlob.JsonBlob.hydrate('Motion', 'Servo', self.jsonData['servos'].keys())
 		self.motions = JsonBlob.JsonBlob.hydrate('Motion', 'Motion', self.jsonData['motions'].keys())
 		self.chains = self.jsonData['chains']
 		self.keyboard = self.jsonData['keyboard']
 		self.imu = self.jsonData['imu']
 	def save(self):
+		""" override of JsonBlob.save
+		serializes servos and motion before saving
+		"""
 		self.jsonData['servos'] = { k : v.jsonData for k, v in self.servos.items() }
 		self.jsonData['motions'] = { k : v.jsonData for k, v in self.motions.items() }
 		super(Specification,self).save()
 		if (not self.isInstalled()):
 			os.makedirs(self.getInstallPath())
 	def delete(self):
+		""" delete specification
+		"""
 		if (self.isInstalled()):
 			shutil.rmtree(self.getInstallPath())
 		for s in self.servos.values():
@@ -178,47 +210,77 @@ class Specification(JsonBlob.JsonBlob):
 			m.delete()
 		super(Specification,self).delete()
 	def change(self, newident):
+		""" activates a specification
+		
+		@param newident
+		"""
 		if (self.isInstalled(newident)):
 			self.jbIndex = newident
 			self.reload()
 			self.init()
 			Setting.set('spec_active_ident', newident)
 	def getInstallPath(self):
+		""" gets the path for installed specifications
+		"""
 		return os.path.join(Specification.installpath, self.jbIndex)
 	def isInstalled(self, ident = None):
+		""" determine whether a spec exists
+		
+		@param ident
+		"""
 		if (ident != None):
 			return os.path.exists(os.path.join(Specification.installpath, ident))
 		return os.path.exists(self.getInstallPath())
 	def getPackagePath(self):
+		""" gets the path for spec packages
+		"""
 		return os.path.join(Specification.packagepath, '{}.tar.gz'.format(self.jbIndex))
 	def isPackaged(self):
+		""" checks for spec package
+		"""
 		return os.path.exists(self.getPackagePath())
 	def getPackageTimestamp(self):
+		""" gets the modified time for a package file
+		"""
 		return os.path.getmtime(self.getPackagePath())
 	def refreshServos(self):
+		""" refresh servos
+		"""
 		if (any(self.servos)):
 			for k, v in self.servos.items():
 				v.reload()
 	def getMotionId(self, name):
+		""" gets a motion id from name
+		
+		@param name
+		"""
 		for k, v in self.motions.items():
 			if (v.jsonData['name'] == name):
 				return k
 		return None
 	def getActiveKeyMap(self):
+		""" gets the active keymap
+		"""
 		try:
 			self.activemap
 		except:
 			amap = [x for x in self.keyboard.values() if x['active']]
 			if (any(amap)):
 				self.activemap = amap[0]
-		return self.activemap
+		return self.activemap if (hasattr(self,'activemap')) else None
 	def getKeyMapping(self, hex):
+		""" gets key mappings for given hex
+		
+		@param hex
+		"""
 		map = self.getActiveKeyMap()
-		if ('mappings' in map.keys()):
+		if (map != None and 'mappings' in map.keys()):
 			if (any(map['mappings'])):
 				return [ x for x in map['mappings'].values() if x['hex'] == hex ]
 		return []
 	def generatePackage(self):
+		""" generate a package from a specification
+		"""
 		tar = tarfile.open(self.getPackagePath(), "w:gz")
 		if (self.jsonData['blendfile'] != '' and os.path.exists(os.path.join(self.getInstallPath(), self.jsonData['blendfile']))):
 			tar.add(os.path.join(self.getInstallPath(), self.jsonData['blendfile']), self.jsonData['blendfile']) #add blend file

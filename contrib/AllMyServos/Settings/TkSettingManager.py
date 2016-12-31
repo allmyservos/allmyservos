@@ -21,11 +21,20 @@ from Tkinter import *
 from TkBlock import *
 from Setting import *
 
+## UI for settings
 class TkSettingManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkSettingManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkSettingManager,self).__init__(parent, gui, **options)
 		self.s = Setting()
 	def setup(self):
+		""" setup gui menu
+		"""
 		try:
 			self.gui.menus['settings']
 		except:
@@ -36,6 +45,8 @@ class TkSettingManager(TkPage):
 	
 	#=== VIEWS ===#
 	def listSettings(self):
+		""" view - list settings
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Setting Manager / Settings', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -85,6 +96,8 @@ class TkSettingManager(TkPage):
 			self.widgets['emptylabel'].grid(column=0,row=self.gridrow,sticky='EW')
 			self.gridrow += 1
 	def editSetting(self):
+		""" view - edit setting
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Edit Setting', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -152,6 +165,8 @@ class TkSettingManager(TkPage):
 		self.widgets['typeLabel'] = Tkinter.Label(self.widgets['tframe'],image=self.e['yolk'], bg=self.colours['bg'], fg=self.colours['fg'])
 		self.widgets['typeLabel'].grid(column=0,row=self.gridrow,sticky='EW')
 	def deleteSetting(self):
+		""" view - delete setting
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Delete Setting', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -204,6 +219,10 @@ class TkSettingManager(TkPage):
 	
 	#=== ACTIONS ===#
 	def OnChangeType(self, value = None):
+		""" action - change setting type
+		
+		@param value
+		"""
 		try:
 			self.widgets['valueframe'].grid_forget()
 		except:
@@ -223,14 +242,22 @@ class TkSettingManager(TkPage):
 			if hasattr(self.setting, 'rowid'):
 				self.variables['value'].set(self.setting.value)
 	def OnListSettingsClick(self):
+		""" action - display settings list page
+		"""
 		self.listSettings()
 	def OnEditSettingClick(self, name):
+		""" action - display edit setting page
+		"""
 		self.setting = self.s.loadBy({'name': name})
 		self.editSetting()
 	def OnAddSettingClick(self):
+		""" action - display add setting page
+		"""
 		self.setting = Setting()
 		self.editSetting()
 	def OnSaveSettingClick(self):
+		""" action - save setting
+		"""
 		if(len(self.variables['name'].get()) == 0):
 			self.editSetting()
 			return False
@@ -254,15 +281,23 @@ class TkSettingManager(TkPage):
 		self.notifier.addNotice('Setting saved')
 		self.listSettings()
 	def OnDeleteSettingClick(self, name = None):
+		""" action - display delete setting page
+		
+		@param name
+		"""
 		if(name != None):
 			self.setting = self.s.loadBy({'name': name})
 		self.deleteSetting()
 	def OnDeleteSettingConfirmClick(self):
+		""" action - delete setting
+		"""
 		self.setting.delete()
 		self.setting = None
 		self.notifier.addNotice('Setting deleted')
 		self.listSettings()
 	def OnCancelDeleteClick(self):
+		""" action - cancel delete setting
+		"""
 		self.listSettings()
 	def OnEggClick(self):
 		self.egg()

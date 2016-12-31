@@ -25,8 +25,13 @@ from Scheduler import *
 from Metric import *
 from JsonBlob import *
 
+## Motions are animations for a set of servos
 class Motion(JsonBlob):
 	def __init__(self, index = None):
+		""" Initializes the Motion object
+		
+		@param index
+		"""
 		super(Motion,self).__init__(index)
 		if (not self.blobExists()):
 			self.jsonData = {
@@ -34,8 +39,13 @@ class Motion(JsonBlob):
 				'fps': 10,
 				'keyframes': []
 			}
+## Servo abstraction
 class Servo(JsonBlob):
 	def __init__(self, index = None):
+		""" Initializes the Servo object
+		
+		@param index
+		"""
 		super(Servo,self).__init__(index)
 		if (not self.blobExists()):
 			self.jsonData = {
@@ -66,6 +76,8 @@ class Servo(JsonBlob):
 			Servo.pwm = PWM(0x40, debug=debug)
 			Servo.pwm.setPWMFreq(60)
 	def resetData(self):
+		""" sync servo with saved data
+		"""
 		self.modifier = 0
 		self.channel = self.jsonData['channel']
 		self.angle = self.jsonData['angle']
@@ -74,14 +86,25 @@ class Servo(JsonBlob):
 		self.inverted = self.jsonData['inverted']
 		self.buildPulseTable()
 	def buildPulseTable(self):
+		""" pre-calculate pwm values and index by angle 
+		"""
 		self.pulsetable = {}
 		pulseunit = (float(self.jsonData['servoMax']) - float(self.jsonData['servoMin']))/180
 		base = self.jsonData['servoMin'] + (pulseunit * self.jsonData['trim'])
 		for i in range(181):
 				self.pulsetable[i] = int((pulseunit*float(i))+base)
 	def setCallback(self, func):
+		""" sets the function to use for callbacks
+		
+		@param func
+		"""
 		self._callback = func
 	def setServoAngle(self, time=None, modifier = 0):
+		""" sync the physical servo angle with in-memoty value
+		
+		@param time int
+		@param modifier int
+		"""
 		if(time != None):
 			self.time = time
 		else:
@@ -102,21 +125,34 @@ class Servo(JsonBlob):
 		Servo.pwm.setPWM(int(self.channel), 0, self.pulsetable[int(newAngle)])
 		self.doCallback()
 	def doCallback(self):
+		""" perform callback
+		"""
 		try:
 			self._callback()
 		except:
 			pass
 	def relax(self):
+		""" relax servo
+		"""
 		Servo.pwm.setPWM(int(self.channel),0,4096)
 	def reload(self):
+		""" sync object with saved data
+		"""
 		super(Servo,self).reload()
 		self.resetData()
 	def save(self):
+		""" override JsonBlob.save() to allow specification ID to be inserted
+		"""
 		self.jsonData['ident'] = Specification.Specification.currentIdent()
 		super(Servo,self).save()
-
+## Motion scheduler maintains a list of motions and chains and runs them when triggered
 class MotionScheduler(object):
 	def __init__(self, specification = None, scheduler = None):
+		""" Initializes the MotionScheduler object
+		
+		@param specification
+		@param scheduler
+		"""
 		self.now = lambda: int(round(time.time() * 1000))
 		self.queuedmotions = 0
 		self.currentpos = 0
@@ -139,6 +175,11 @@ class MotionScheduler(object):
 		self.chaincount = 0
 		self.scheduler.addTask('motion_scheduler', self.checkQueue, interval = 0.005, stopped=(not Setting.get('motion_scheduler_autostart', True)))
 	def triggerMotion(self, id, slow = False):
+		""" queue up a motion
+		
+		@param id str
+		@param slow bool
+		"""
 		if(any(self.queuemeta)):
 			if(self.queue[:1][0].jbIndex == id):
 				return
@@ -147,16 +188,29 @@ class MotionScheduler(object):
 		self.queuemeta.append({ 'queuepos' : self.queuedmotions, 'frameindex' : 0, 'slow' : slow })
 		self.queuecount += 1
 	def triggerChain(self, id):
+		""" queue up a chain
+		
+		@param id str
+		"""
 		if(any(self.chainmeta)):
 			self.chainmeta[0]['continue'] = True
 			return
 		self.chainmeta.append({ 'cid': id, 'type' : 'start', 'triggered' : [], 'looptriggered' : [], 'continue' : False})
 		self.chaincount += 1
 	def stopChain(self, id):
+		""" advance a chain to stop motion
+		
+		@param id str
+		"""
 		if(len(self.chainmeta) == 0):
 			return
 		self.chainmeta[0]['type'] = 'stop'
 	def checkQueue(self):
+		""" process motion and chain queues
+		applies a 'frame' of instructions from a motion.
+		the 'frame' is chosen from the queued motion or motion related to the current chain position
+		this function can be run multiple times per frame and will advance based on the motion FPS
+		"""
 		if(self.queuecount > 0):
 			stamp = self.now()
 			qmlen = len(self.queuemeta)
@@ -208,6 +262,13 @@ class MotionScheduler(object):
 					self.chainmeta = []
 				self.chaincount -= 1
 	def findMotion(self, chain, meta):
+		""" given a chain (dict) and queue meta data (dict), locate and trigger the motion
+		
+		@param chain dict
+		@param meta dict
+		
+		@return bool
+		"""
 		found = False
 		for k, v in chain['motions'].items():
 			if(not k in meta['triggered'] and meta['type'] == v['type'] and v['type'] != 'loop'):
@@ -224,10 +285,14 @@ class MotionScheduler(object):
 			found = True
 		return found
 	def relax(self):
+		""" stock motion to relax all servos
+		"""
 		for s in self.channelindex.values():
 			s.disabled = True
 			s.setServoAngle()
 	def default(self):
+		""" stock motion to default all servos
+		"""
 		for s in self.channelindex.values():
 			s.reload()
 			s.setServoAngle()

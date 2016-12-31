@@ -17,6 +17,7 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import Tkinter, tkColorChooser, os, shutil, datetime
+from __bootstrap import AmsEnvironment
 from Tkinter import *
 from tkFileDialog import askopenfilename
 from TkBlock import TkPage
@@ -24,14 +25,23 @@ from Specification import Specification
 from subprocess import Popen, PIPE
 from Motion import Servo, Motion
 
+## UI for specifications
 class TkSpecificationManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkSpecificationManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkSpecificationManager,self).__init__(parent, gui, **options)
 		if(hasattr(self.gui, 'specification')):
 			self.current = self.gui.specification
 		else:
 			self.current = Specification()
 	def setup(self):
+		""" setup gui menu
+		"""
 		try:
 			self.gui.menus['file']
 		except:
@@ -48,6 +58,8 @@ class TkSpecificationManager(TkPage):
 	
 	#=== VIEWS ===#
 	def listSpecifications(self):
+		""" view - list specifications
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Specifications', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -98,6 +110,8 @@ class TkSpecificationManager(TkPage):
 			self.widgets['noSpecsLabel'] = Tkinter.Label(self.widgets['tframe'],text='There are currently no specifications.', anchor=NW, bg=self.colours['bg'], fg=self.colours['fg'])
 			self.widgets['noSpecsLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
 	def viewSpecification(self):
+		""" view - view specification
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Specifications / View Specification', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -342,7 +356,7 @@ class TkSpecificationManager(TkPage):
 			self.widgets['mapframe'] = Tkinter.Frame(self.widgets['tframe'], bg=self.colours['bg'])
 			self.widgets['mapframe'].grid(column=0,row=self.gridrow, sticky='W')
 			
-			self.oimage = Tkinter.PhotoImage(file = os.path.join(os.getcwd(), 'images', 'orientation','{}{}.gif'.format(self.spec.jsonData['imu']['facing'],self.spec.jsonData['imu']['offset'])))
+			self.oimage = Tkinter.PhotoImage(file = os.path.join(AmsEnvironment.AppPath(), 'images', 'orientation','{}{}.gif'.format(self.spec.jsonData['imu']['facing'],self.spec.jsonData['imu']['offset'])))
 			self.widgets['oimage'] = Tkinter.Label(self.widgets['mapframe'],text='Preview', image=self.oimage, bg=self.colours['bg'], fg=self.colours['headingfg'])
 			self.widgets['oimage'].grid(column=0,row=0, padx=10, columnspan=4,sticky='EW')
 			
@@ -358,9 +372,7 @@ class TkSpecificationManager(TkPage):
 			self.widgets['offsetLabel'].grid(column=2,row=2, padx=10,sticky='EW')
 			self.widgets['offsetData'] = Tkinter.Label(self.widgets['mapframe'],text=self.spec.jsonData['imu']['offset'], bg=self.colours['bg'], fg=self.colours['valuefg'], height=2)
 			self.widgets['offsetData'].grid(column=3,row=2, padx=10,sticky='EW')
-			
-			
-			
+
 			self.gridrow += 1
 			
 			if('adjustments' in self.spec.jsonData['imu'].keys()):
@@ -432,6 +444,8 @@ class TkSpecificationManager(TkPage):
 			self.widgets['lock'].configure(state='normal')
 			self.widgets['unlock'].configure(state='disabled')
 	def editCodename(self):
+		""" view - edit codename
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Specifications / Edit Codename', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -471,6 +485,8 @@ class TkSpecificationManager(TkPage):
 		self.widgets['save'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['save'], command=self.OnSaveCodenameClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['save'].grid(column=1,row=self.gridrow)
 	def newSpec(self):
+		""" view - new specification
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Specifications / New Specification', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -509,6 +525,8 @@ class TkSpecificationManager(TkPage):
 		self.widgets['save'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['save'], command=self.OnSaveNewClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['save'].grid(column=1,row=self.gridrow)
 	def changeThumb(self):
+		""" view - change thumb
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Specifications / Change Thumbnail', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -565,6 +583,8 @@ class TkSpecificationManager(TkPage):
 		self.widgets['saveimage'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['save'], command=self.OnSaveThumbnailClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['saveimage'].grid(column=1,row=self.gridrow)
 	def changeBlend(self):
+		""" view - change blend file
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Specifications / Change Blend File', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -611,6 +631,8 @@ class TkSpecificationManager(TkPage):
 		self.widgets['saveimage'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['save'], command=self.OnSaveBlendClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['saveimage'].grid(column=1,row=self.gridrow)
 	def generatePackage(self):
+		""" view - generate package
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Specifications / Generate Package', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -653,6 +675,8 @@ class TkSpecificationManager(TkPage):
 		self.widgets['accept'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Accept", image=self.images['accept'], command=self.OnPackageConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['accept'].grid(column=1,row=self.gridrow)
 	def listPackages(self):
+		""" view - list packages
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Specifications / Packages', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -703,6 +727,8 @@ class TkSpecificationManager(TkPage):
 		self.widgets['import'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Import", image=self.images['process'], command=self.OnImportSpecificationClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['import'].grid(column=0,row=self.gridrow)
 	def activateSpecification(self):
+		""" view - activate specification
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Specifications / Activate', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -743,6 +769,8 @@ class TkSpecificationManager(TkPage):
 			self.widgets['noLabel'] = Tkinter.Label(self.widgets['tframe'],text='No new specification selected.', bg=self.colours['bg'], fg=self.colours['headingfg'], height=2)
 			self.widgets['noLabel'].grid(column=1,row=self.gridrow,ipadx=10, sticky='EW')
 	def deleteSpecification(self):
+		""" view - delete specification
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Specifications / Uninstall', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -789,6 +817,8 @@ class TkSpecificationManager(TkPage):
 			self.widgets['noLabel'] = Tkinter.Label(self.widgets['tframe'],text='No specification selected.', bg=self.colours['bg'], fg=self.colours['headingfg'], height=2)
 			self.widgets['noLabel'].grid(column=1,row=self.gridrow,ipadx=10, sticky='EW')
 	def cloneSpecification(self):
+		""" view - clone specification
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Specifications / Clone', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -841,18 +871,32 @@ class TkSpecificationManager(TkPage):
 	
 	#=== ACTIONS ===#
 	def OnListSpecificationsClick(self):
+		""" action - display spec list page
+		"""
 		self.specs = Specification.all('Specification', 'Specification')
 		self.listSpecifications()
 	def OnCurrentSpecificationClick(self):
+		""" action - display current spec page
+		"""
 		self.spec = self.current
 		self.viewSpecification()
 	def OnViewSpecificationClick(self, ident):
+		""" action - display spec page
+		
+		@param ident
+		"""
 		self.spec = Specification(ident)
 		self.viewSpecification()
 	def OnCloneSpecificationClick(self, ident):
+		""" action - display clone spec page
+		
+		@param ident
+		"""
 		self.spec = Specification(ident)
 		self.cloneSpecification()
 	def OnCloneConfirmClick(self):
+		""" action - clone spec
+		"""
 		newcodename = self.variables['codename'].get()
 		if(len(newcodename) >= 2): #use the new codename
 			Specification.clone(self.spec.jbIndex, newcodename)
@@ -861,27 +905,45 @@ class TkSpecificationManager(TkPage):
 		self.OnListSpecificationsClick()
 		self.notifier.addNotice('Specification cloned.')
 	def OnDeleteSpecificationClick(self, ident):
+		""" action - display delete spec page
+		
+		@param ident
+		"""
 		self.spec = Specification(ident)
 		self.deleteSpecification()
 	def OnDeleteConfirmClick(self):
+		""" action - delete spec
+		"""
 		self.spec.delete()
 		del(self.spec)
 		self.OnListSpecificationsClick()
 		self.notifier.addNotice('Specification deleted.')
 	def OnNewClick(self):
+		""" action - display new spec page
+		"""
 		self.newSpec()
 	def OnActivateClick(self, ident):
+		""" action - display activate page
+		
+		@param ident
+		"""
 		self.newspec = Specification(ident)
 		self.activateSpecification()
 	def OnActivateConfirmClick(self):
+		""" action - activate specification
+		"""
 		self.gui.specification.change(self.newspec.jbIndex)
 		self.gui.widgets['left']['TkServoGrid'].OnShowGridClick()
 		self.OnListSpecificationsClick()
 		self.notifier.addNotice('Specification "{}" activated'.format(self.gui.specification.jsonData['codename']))
 	def OnSaveSpecificationClick(self):
+		""" action - save specification
+		"""
 		self.spec.save()
 		self.notifier.addNotice('Specification saved')
 	def OnSaveNewClick(self):
+		""" action - save new specification
+		"""
 		name = self.variables['codename'].get()
 		if(len(name) >= 4):
 			self.spec = Specification(Specification.newIdent())
@@ -892,6 +954,8 @@ class TkSpecificationManager(TkPage):
 		else:
 			self.notifier.addNotice('Codenames should be 4 characters or more.', 'warning')
 	def OnLockSpecificationClick(self):
+		""" action - lock specification
+		"""
 		self.widgets['lock'].configure(state='disabled')
 		self.widgets['unlock'].configure(state='normal')
 		self.spec.jsonData['locked'] = True
@@ -899,6 +963,8 @@ class TkSpecificationManager(TkPage):
 		self.notifier.addNotice('Specification locked.')
 		self.viewSpecification()
 	def OnUnlockSpecificationClick(self):
+		""" action - unlock specification
+		"""
 		self.widgets['lock'].configure(state='normal')
 		self.widgets['unlock'].configure(state='disabled')
 		self.spec.jsonData['locked'] = False
@@ -906,12 +972,20 @@ class TkSpecificationManager(TkPage):
 		self.notifier.addNotice('Specification unlocked.')
 		self.viewSpecification()
 	def OnAddServoClick(self):
+		""" action - display add servo page
+		"""
 		self.gui.widgets['main']['TkServoManager'].OnAddServoClick()
 	def OnAddMotionClick(self):
+		""" action - display add motion page
+		"""
 		self.gui.widgets['main']['TkMotionManager'].OnAddMotionClick()
 	def OnAddChainClick(self):
+		""" action - display add chain page
+		"""
 		self.gui.widgets['main']['TkMotionManager'].OnAddChainClick()
 	def OnAddMapClick(self):
+		""" action - display add key map page
+		"""
 		self.gui.widgets['main']['TkKeyboardManager'].OnAddKeyMapClick()
 		self.keymaps = KeyMap()
 		self.keymaps = self.keymaps.query(keyindex=True)
@@ -922,8 +996,12 @@ class TkSpecificationManager(TkPage):
 		self.addKeyMaps()
 	
 	def OnChangeBlendClick(self):
+		""" action - display change blend page
+		"""
 		self.changeBlend()
 	def OnPickBlendClick(self):
+		""" action - change blend file
+		"""
 		filename = askopenfilename()
 		if(len(filename) > 0):
 			parts = os.path.splitext(filename)
@@ -940,10 +1018,14 @@ class TkSpecificationManager(TkPage):
 		else:
 			self.notifier.addNotice('Change cancelled', 'warning')
 	def OnSaveBlendClick(self):
+		""" action - save blend file
+		"""
 		self.spec.save()
 		self.notifier.addNotice('Blend file saved')
 		self.viewSpecification()
 	def OnViewBlendClick(self):
+		""" action - open file manager on blend directory
+		"""
 		result = False
 		if(len(self.spec.jsonData['blendfile']) > 0):
 			extras = os.path.dirname(self.spec.jsonData['blendfile'])
@@ -955,8 +1037,12 @@ class TkSpecificationManager(TkPage):
 			self.notifier.addNotice('There was a problem opening the blend file location.', 'warning')
 	
 	def OnChangeThumbClick(self):
+		""" action - display change thumb page
+		"""
 		self.changeThumb()
 	def OnPickThumbnailClick(self):
+		""" action - choose thumbnail
+		"""
 		filename = askopenfilename()
 		if(len(filename) > 0):
 			parts = os.path.splitext(filename)
@@ -975,13 +1061,19 @@ class TkSpecificationManager(TkPage):
 		else:
 			self.notifier.addNotice('Change cancelled', 'warning')
 	def OnSaveThumbnailClick(self):
+		""" action - save thumbnail
+		"""
 		self.spec.save()
 		self.notifier.addNotice('Thumbnail saved')
 		self.viewSpecification()
 	
 	def OnChangeCodenameClick(self):
+		""" action - display change codename page
+		"""
 		self.editCodename()
 	def OnSaveCodenameClick(self):
+		""" action - save codename
+		"""
 		newname = self.variables['codename'].get()
 		if(newname != ''):
 			self.spec.jsonData['codename'] = newname
@@ -992,12 +1084,18 @@ class TkSpecificationManager(TkPage):
 			self.notifier.addNotice('Please provide a codename', 'error')
 	
 	def OnPackageClick(self):
+		""" action - display package generate page
+		"""
 		self.generatePackage()
 	def OnPackageConfirmClick(self):
+		""" action - generate package
+		"""
 		self.spec.generatePackage()
 		self.notifier.addNotice('Package created')
 		self.viewSpecification()
 	def OnViewPackageClick(self):
+		""" action - display package page
+		"""
 		result = False
 		if(self.spec.packaged > 0):
 			result = self.__openFileManager(self.spec.packagepath)
@@ -1006,9 +1104,13 @@ class TkSpecificationManager(TkPage):
 		else:
 			self.notifier.addNotice('There was a problem opening the package location.', 'warning')
 	def OnInstallSpecificationClick(self):
+		""" action - display package list page
+		"""
 		self.packages = Specification.listPackages()
 		self.listPackages()
 	def OnImportSpecificationClick(self):
+		""" action - import package
+		"""
 		filename = askopenfilename()
 		if(len(filename) > 0):
 			parts = os.path.splitext(filename)
@@ -1025,6 +1127,10 @@ class TkSpecificationManager(TkPage):
 		else:
 			self.notifier.addNotice('Import cancelled', 'warning')
 	def OnInstallPackageClick(self, filename):
+		""" action - install package
+		
+		@param filename
+		"""
 		res = Specification.deployPackage(filename)
 		if(res == 'unpacked'):
 			self.widgets['install'+filename.replace('.tar.gz', '')].configure(state='disabled')
@@ -1036,6 +1142,12 @@ class TkSpecificationManager(TkPage):
 	
 	#=== UTILS ===#
 	def __copyThumb(self, filepath):
+		""" util - copy thumbnail into install path
+		
+		@param filepath
+		
+		@return str
+		"""
 		installpath = self.spec.getInstallPath()
 		parts = filepath.split('/')
 		filename = parts[-1]
@@ -1044,6 +1156,12 @@ class TkSpecificationManager(TkPage):
 		shutil.copyfile(filepath, os.path.join(installpath, filename))
 		return filename
 	def __copyBlend(self, filepath):
+		""" util - copy blend file into install path
+		
+		@param filepath
+		
+		@return str
+		"""
 		installpath = self.spec.getInstallPath()
 		parts = filepath.split('/')
 		filename = parts[-1]
@@ -1052,6 +1170,12 @@ class TkSpecificationManager(TkPage):
 		shutil.copyfile(filepath, os.path.join(installpath, filename))
 		return filename
 	def __copyPackage(self, filename):
+		""" util - copy package into package path
+		
+		@param filename
+		
+		@return str
+		"""
 		parts = filename.split('/')
 		file = parts[-1]
 		newfile = os.path.join(Specification.packagepath, file)
@@ -1060,6 +1184,12 @@ class TkSpecificationManager(TkPage):
 		shutil.copyfile(filename, newfile)
 		return newfile
 	def __openFileManager(self, dir=''):
+		""" util - open file manager to given directory
+		
+		@param dir
+		
+		@return bool
+		"""
 		try:
 			if(len(dir) > 0):
 				command = ['pcmanfm', dir]

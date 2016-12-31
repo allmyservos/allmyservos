@@ -17,13 +17,22 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import Tkinter, os, Specification, cmath, math, copy
+from __bootstrap import AmsEnvironment
 from Tkinter import *
 from TkBlock import *
 from TkDependencyManager import *
 from Setting import *
 from IMU import IMU
+
+## UI for gravity demo
 class TkGravityManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkGravityManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkGravityManager,self).__init__(parent, gui, **options)
 		self.initDependencyManager()
 		if(hasattr(self.gui, 'scheduler')):
@@ -39,25 +48,34 @@ class TkGravityManager(TkPage):
 			self.centre = complex(237,237)
 			self.shapes = {}
 			self.cache = {}
-			self.basepath = os.getcwd()
+			self.basepath = AmsEnvironment.AppPath()
 			self.pimg = self.gui.getModule('PIL.Image')
 			self.tkimg = self.gui.getModule('PIL.ImageTk')
 			self.initImages()
 			self.scheduler.addTask('gravity_display', self.updateGravity, 0.2, True)
 	def initDependencyManager(self):
+		""" setup dependency checks
+		"""
 		dependencies = [
 			{'package':'python-imaging', 'installer': 'apt-get'},
 			{'package':'python-imaging-tk', 'installer': 'apt-get'},
-			{'package':'tk8.5-dev', 'installer': 'apt-get'},
-			{'package':'tcl8.5-dev', 'installer': 'apt-get'},
+			{'package':'tk8.5', 'installer': 'apt-get'},
+			{'package':'tcl8.5', 'installer': 'apt-get'},
 			{'package':'pillow', 'installer': 'pip', 'version': '2.6.1'}
 		]
 		self.pm = TkDependencyManager(self.widget, dependencies, 'Gravity Manager', self.gui)
 	def initImages(self):
+		""" setup required images
+		"""
 		self.oimages = {}
 		self.oimages['reticle'] = self.pimg.Image.open(os.path.join(self.basepath, 'images/horizon/reticle.png')).convert('RGBA')
 		self.oimages['mask'] = self.pimg.Image.open(os.path.join(self.basepath, 'images/horizon/mask.png')).convert('RGBA')
 	def getImage(self, name, angle):
+		""" gets an image from cache or caches it
+		
+		@param name
+		@param angle
+		"""
 		try:
 			self.cache[name]
 		except:
@@ -68,6 +86,8 @@ class TkGravityManager(TkPage):
 			self.cache[name][angle] = self.tkimg.ImageTk.PhotoImage(self.oimages[name].rotate(angle))
 		return self.cache[name][angle]
 	def setup(self):
+		""" setup gui menu
+		"""
 		try:
 			self.gui.menus['imu']
 		except:
@@ -77,6 +97,8 @@ class TkGravityManager(TkPage):
 	
 	#=== VIEWS ===#
 	def serviceManager(self):
+		""" view - imu service manager
+		"""
 		self.widgets['servicelabel'] = Tkinter.Label(self.widgets['tframe'],text='IMU / IMU Service', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['servicelabel'].grid(column=0,row=self.gridrow,sticky='EW')
 		
@@ -105,6 +127,8 @@ class TkGravityManager(TkPage):
 			self.variables['status'].set('Stopped')
 			self.widgets['stop'].configure(state='disabled')
 	def showGravity(self):
+		""" view - displays graviry ui
+		"""
 		if (not IMU.isAvailable()):
 			return self.unavailable()
 		
@@ -139,6 +163,8 @@ class TkGravityManager(TkPage):
 		self.widgets['pitchLabel'] = Tkinter.Label(self.widgets['gframe'],text='TBD', anchor=W, bg=self.colours['bg'], fg=self.colours['fg'], font=self.fonts['heading2'])
 		self.widgets['pitchLabel'].grid(column=1,row=self.gridrow,sticky='NS')
 	def updateGravity(self):
+		""" util - updates gravity ui
+		"""
 		try:
 			self.last
 		except:
@@ -165,6 +191,8 @@ class TkGravityManager(TkPage):
 					newpoly.append(int(new.imag))
 				self.widgets['hCanvas'].coords(self.shapes['groundplane'], *newpoly)
 	def unavailable(self):
+		""" view - fallback for missing imu
+		"""
 		self.open()
 		
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='IMU / Unavailable', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -177,6 +205,8 @@ class TkGravityManager(TkPage):
 		
 	#=== ACTIONS ===#
 	def OnStartClick(self):
+		""" action - starts the imu service
+		"""
 		self.widgets['start'].configure(state='disabled')
 		self.widgets['stop'].configure(state='normal')
 		self.variables['status'].set('Running')
@@ -186,14 +216,20 @@ class TkGravityManager(TkPage):
 		self.imu.start()
 		self.scheduler.startTask('gravity_display')
 	def OnStopClick(self):
+		""" action - stops the imu service
+		"""
 		self.widgets['start'].configure(state='normal')
 		self.widgets['stop'].configure(state='disabled')
 		self.variables['status'].set('Stopped')
 		self.scheduler.stopTask('gravity_display')
 		self.imu.stop()
 	def OnToggleAutostartClick(self):
+		""" action - toggles imu service autostart
+		"""
 		self.autostart = Setting.set('imu_autostart', self.variables['autostart'].get())
 	def OnGravityClick(self):
+		""" action - displays the gravity page
+		"""
 		if(not self.pm.installRequired()):
 			self.showGravity()
 		else:

@@ -20,17 +20,28 @@ import Tkinter, ttk, sys
 from Tkinter import *
 from TkBlock import *
 
+## UI for scheduled tasks
 class TkScheduleManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkScheduleManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkScheduleManager,self).__init__(parent, gui, **options)
 		self.scheduler = self.gui.scheduler
 	def setup(self):
+		""" setup gui menu
+		"""
 		self.gui.menus['schedule'] = Tkinter.Menu(self.gui.menubar, tearoff=0, bg=self.colours['menubg'], fg=self.colours['menufg'], activeforeground=self.colours['menuactivefg'], activebackground=self.colours['menuactivebg'])
 		self.gui.menus['schedule'].add_command(label="Scheduled Tasks", command=self.OnListTasksClick)
 		self.addMenu(label="Schedule", menu=self.gui.menus['schedule'])
 	
 	#=== VIEWS ===#
 	def listTasks(self):
+		""" view - list tasks
+		"""
 		self.open()
 		self.widgets['slabel'] = Tkinter.Label(self.widgets['tframe'],text='Schedule / Scheduled Tasks', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['slabel'].grid(column=0,row=self.gridrow, columnspan=3, sticky='EW')
@@ -88,27 +99,43 @@ class TkScheduleManager(TkPage):
 	
 	#=== ACTIONS ===#
 	def OnListTasksClick(self):
+		""" action - display list tasks page
+		"""
 		self.initialState = {}
 		for t in self.scheduler.listTasks():
 			self.initialState[t] = self.scheduler.isRunning(t)
 		self.listTasks()
 	def OnStartTaskClick(self, name):
+		""" action - start a task
+		
+		@param name
+		"""
 		self.widgets['status'+name].configure(text='Running')
 		self.widgets['start'+name].configure(state='disabled')
 		self.widgets['stop'+name].configure(state='normal')
 		self.scheduler.startTask(name)
 	def OnStopTaskClick(self, name):
+		""" action - stop a task
+		
+		@param name
+		"""
 		self.widgets['status'+name].configure(text='Stopped')
 		self.widgets['start'+name].configure(state='normal')
 		self.widgets['stop'+name].configure(state='disabled')
 		self.scheduler.stopTask(name)
 	def OnStartAllClick(self):
+		""" action - start all tasks
+		"""
 		for t in self.scheduler.listTasks():
 			self.OnStartTaskClick(t)
 	def OnStopAllClick(self):
+		""" action - stop all tasks
+		"""
 		for t in self.scheduler.listTasks():
 			self.OnStopTaskClick(t)
 	def OnResetAllClick(self):
+		""" action - reset all tasks
+		"""
 		for k, v in self.initialState.iteritems():
 			if(v):
 				self.scheduler.startTask(k)

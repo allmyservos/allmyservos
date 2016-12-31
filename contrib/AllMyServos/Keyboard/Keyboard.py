@@ -19,6 +19,7 @@
 import sys, termios, contextlib, Specification, Motion
 from Scheduler import *
 from Setting import *
+from __bootstrap import AmsEnvironment
 
 @contextlib.contextmanager
 def raw_mode(file):
@@ -27,14 +28,20 @@ def raw_mode(file):
 	new_attrs[3] = new_attrs[3] & ~(termios.ECHO | termios.ICANON)
 	try:
 		termios.tcsetattr(file.fileno(), termios.TCSADRAIN, new_attrs)
-		yield
+		yield file
 	finally:
 		termios.tcsetattr(file.fileno(), termios.TCSADRAIN, old_attrs)
+		
+## Keyboard service
 class KeyboardThread(object):
-	def __init__(self, specification=None, map=None, motionScheduler=None, scheduler=None):
-		'''
-		used exclusively on the command line. Tkinter events drive the GUI.
-		'''
+	def __init__(self, specification=None, motionScheduler=None, scheduler=None, useTask = True):
+		""" Initializes KeyboardThread object
+		
+		@param specification
+		@param motionScheduler
+		@param scheduler
+		@param useTask
+		"""
 		if(scheduler != None):
 			self.scheduler = scheduler
 		else:
@@ -47,26 +54,44 @@ class KeyboardThread(object):
 			self.motionScheduler = Motion.MotionScheduler()
 		else:
 			self.motionScheduler = motionScheduler
+		self.useTask = useTask
+		self.terminalStatus = True
+		try:
+			termios.tcgetattr(sys.stdin.fileno())
+		except:
+			self.terminalStatus = False #not running in terminal
 		self.callbacks = {}
 		self.asciimap = AsciiMap()
 		self.addCallback('motion', self.standardCallback)
 		self.scheduler.addTask('kb_watcher', self.check, interval = 0.05, stopped=(not Setting.get('kb_autostart', False)))
 	def check(self):
-		with raw_mode(sys.stdin):
-			ch = sys.stdin.read(1)
-			if not ch or ch == chr(4):
-				pass
-			else:
-				hex = '0x{0}'.format('%02x' % ord(ch))
+		""" checks for keyboard input
+		"""
+		if (self.useTask == True and self.terminalStatus):
+			with raw_mode(sys.stdin):
 				try:
-					self.doCallback(hex=hex, ascii=self.asciimap.keyindex[hex])
+					ch = sys.stdin.read(1)
 				except:
-					self.doCallback(hex=hex)
+					ch = False
+				if not ch or ch == chr(4):
+					pass
+				else:
+					hex = '0x{0}'.format('%02x' % ord(ch))
+					try:
+						self.doCallback(hex=hex, ascii=self.asciimap.keyindex[hex])
+					except:
+						self.doCallback(hex=hex)
 	def start(self):
+		""" starts the keyboard service
+		"""
 		self.scheduler.startTask('kb_watcher')
 	def stop(self):
+		""" stops the keyboard service
+		"""
 		self.scheduler.stopTask('kb_watcher')
 	def standardCallback(self, hex, ascii):
+		""" provides standard motion / chain functionality
+		"""
 		mappings = []
 		for h, a in self.asciimap.keyindex.items():
 			if(h == hex):
@@ -89,18 +114,28 @@ class KeyboardThread(object):
 				elif(m['action'] == 'default'):
 					self.motionScheduler.default()
 	def printCallback(self, hex, ascii):
+		""" prints hex and ascii to console
+		"""
 		if(ascii != None):
 			print({hex : ascii})
 	def addCallback(self, index, func):
+		""" adds a callback
+		"""
 		self.callbacks.update({index:func})
 	def removeCallback(self, index):
+		""" removes a callback
+		"""
 		del(self.callbacks[index])
 	def doCallback(self, hex = None, ascii = None):
-		for f in self.callbacks:
-			self.callbacks[f](hex, ascii)
-
+		""" perform callbacks
+		"""
+		for v in self.callbacks.values():
+			v(hex, ascii)
+## An object containing all of the ascii values which can be captured from keyboard input
 class AsciiMap(object):
 	def __init__(self):
+		""" Initializes the AsciiMap object
+		"""
 		AsciiMap.keyindex = {
 		'0x20': '(sp)', 
 		'0x21': '!', 

@@ -22,11 +22,20 @@ from TkBlock import *
 from Motion import *
 from TkGraphs import *
 
+## UI for servos
 class TkServoGrid(TkBlock):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkServoGrid object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkServoGrid,self).__init__(parent, gui, **options)
 		self.OnShowGridClick()
 	def showGrid(self):
+		""" view - display servo grid
+		"""
 		self.open()
 		if(any(self.servos)):
 			self.gridrow = 0
@@ -38,12 +47,21 @@ class TkServoGrid(TkBlock):
 			self.widgets['emptylabel'] = Tkinter.Label(self.widget,text='No Servos', bg=self.colours['bg'], fg=self.colours['headingfg'], height=3)
 			self.widgets['emptylabel'].grid(column=0,row=self.gridrow,sticky='EW')
 	def OnShowGridClick(self):
+		""" action - show grid
+		"""
 		self.servos = self.gui.specification.servos
 		self.channelindex = sorted(self.servos.values(), key=lambda x: x.jsonData['channel'])
 		self.showGrid()
-		
+## UI for servo information and bar graph representing the current angle
 class TkServo():
 	def __init__(self, parent, servo, colours={}, images={}):
+		""" Initializes the TkServo object
+		
+		@param parent
+		@param servo
+		@param colours
+		@param images
+		"""
 		self.widget = Frame(parent)
 		self.servo = servo
 		self.servo.setCallback(self.update)
@@ -57,20 +75,34 @@ class TkServo():
 		self.setup()
 	@property
 	def angle(self):
+		""" angle getter
+		"""
 		return self._angle.get()
 	@angle.setter
 	def angle(self,value):
+		""" angle setter
+		
+		@param value
+		"""
 		value = int(value)
 		self.servo.angle = value
 		self._angle.set(int(self.servo.angle))
 		self.update()
 	@property
 	def disabled(self):
+		""" disabled getter
+		"""
 		return self.servo.disabled
 	@disabled.setter
 	def disabled(self,value):
+		""" disabled setter
+		
+		@param value
+		"""
 		self.servo.disabled = value
 	def update(self):
+		""" update servo ui
+		"""
 		if(self.last['angle'] != self.servo.angle):
 			self.last['angle'] = self.servo.angle
 			self._angle.set(int(self.servo.angle))
@@ -78,11 +110,13 @@ class TkServo():
 		if(self.last['modifier'] != self.servo.modifier):
 			self.last['modifier'] = self.servo.modifier
 			self._modifier.set(int(self.servo.modifier))
-	def sync(self):
-		self.servo.setServoAngle()
 	def save(self):
+		""" save servo data
+		"""
 		self.servo.save()
 	def initColours(self, colours):
+		""" setup colours
+		"""
 		try:
 			TkServo.colours
 		except:
@@ -92,17 +126,20 @@ class TkServo():
 		except:
 			self.widget.configure(borderwidth=3)
 	def initImages(self, images):
+		""" setup images
+		"""
 		try:
 			TkServo.images
 		except:
 			TkServo.images = images
 	def setup(self):
+		""" setup servo grid ui
+		"""
 		self.widgets = {}
 		gridrow = 0
 		self.widgets['nameData'] = Tkinter.Label(self.widget,text=self.servo.jsonData['name'], anchor=NW, bg=TkServo.colours['bg'], fg=TkServo.colours['headingfg'], width=15)
 		self.widgets['nameData'].grid(column=1,row=gridrow, sticky='EW')
 
-		#self.widgets['graph'] = TkLineGraph(self.widget, { }, {'bg': TkServo.colours['bg'], 'fg': TkServo.colours['fg'], 'line': TkServo.colours['lightfg']}, height = 50, width = 150, yrange = { 'min': 0, 'max': 180})
 		self.widgets['graph'] = TkBarGraph(self.widget, TkServo.colours, height = 14, width = 120, grange = { 'min': 0, 'max': 180})
 		self.widgets['graph'].widget.grid(column=2,row=gridrow, sticky='EW')
 		self.widgets['graph'].update(int(self.servo.angle))

@@ -17,6 +17,7 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import Tkinter, os, Specification
+from __bootstrap import AmsEnvironment
 from Tkinter import *
 from TkGraphs import *
 from TkBlock import *
@@ -26,8 +27,15 @@ from Metric import *
 from IMU import IMU
 from math import pi
 
+## UI for IMU manager
 class TkIMUManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkIMUManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkIMUManager,self).__init__(parent, gui, **options)
 		self.specification = gui.specification
 		if(hasattr(self.gui, 'scheduler')):
@@ -41,6 +49,8 @@ class TkIMUManager(TkPage):
 		self.poll = 0
 		self.metrics = {}
 	def initImages(self):
+		""" initializes images
+		"""
 		self.facing = [ 'up', 'down', 'left','right', 'front', 'back' ]
 		self.offset = [ 0, 90, 180, 270 ]
 		if(not hasattr(self, 'oimages')):
@@ -49,8 +59,10 @@ class TkIMUManager(TkPage):
 				for o in self.offset:
 					if(not f in self.oimages.keys()):
 						self.oimages[f] = {}
-					self.oimages[f][o] = Tkinter.PhotoImage(file = os.path.join(os.getcwd(), 'images', 'orientation','{}{}.gif'.format(f,o)))
+					self.oimages[f][o] = Tkinter.PhotoImage(file = os.path.join(AmsEnvironment.AppPath(), 'images', 'orientation','{}{}.gif'.format(f,o)))
 	def setup(self):
+		""" setup gui menu
+		"""
 		try:
 			self.gui.menus['imu']
 		except:
@@ -61,6 +73,8 @@ class TkIMUManager(TkPage):
 	
 	#=== VIEWS ===#
 	def serviceManager(self):
+		""" view - displays the service manager
+		"""
 		self.widgets['servicelabel'] = Tkinter.Label(self.widgets['tframe'],text='IMU / IMU Service', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['servicelabel'].grid(column=0,row=self.gridrow, columnspan=2, sticky='EW')
 		
@@ -255,6 +269,8 @@ class TkIMUManager(TkPage):
 		self.widgets['orientLabel'] = Tkinter.Label(self.widgets['orientframe'],text=self.specification.imu['offset'], bg=self.colours['bg'], fg=self.colours['valuefg'])
 		self.widgets['orientLabel'].grid(column=4,row=0, padx=10,sticky='EW')
 	def showData(self):
+		""" view - shows imu data (and service manager)
+		"""
 		if (not IMU.isAvailable()):
 			return self.unavailable()
 		
@@ -523,6 +539,8 @@ class TkIMUManager(TkPage):
 		
 		self.updateDataOptions()
 	def showOrientation(self):
+		""" view - displays orientation page
+		"""
 		if (not IMU.isAvailable()):
 			return self.unavailable()
 		
@@ -565,6 +583,8 @@ class TkIMUManager(TkPage):
 			btn.grid(column=col, row=row, padx=10)
 			col += 1
 	def updateData(self):
+		""" util - updates imu data ui
+		"""
 		try:
 			self.upoll
 		except:
@@ -617,6 +637,8 @@ class TkIMUManager(TkPage):
 		if(self.upoll == 10):
 			self.upoll = 0
 	def updateDataOptions(self):
+		""" util - updates imu data option states
+		"""
 		if(self.variables['watchraw'].get()):
 			self.widgets['watchnormentry'].configure(state='normal')
 			if(self.variables['watchnorm'].get()):
@@ -644,16 +666,26 @@ class TkIMUManager(TkPage):
 			self.disableDataOption('watchangentry', 'watchang', 'imu_watch_ang')
 			self.disableDataOption('watchcomentry', 'watchcom', 'imu_watch_com')
 	def disableDataOption(self, wname, vname, sname):
+		""" util - disables the given data option
+		
+		@param wname widget name
+		@param vname variable name
+		@param sname setting name
+		"""
 		self.widgets[wname].configure(state='disabled')
 		if(self.variables[vname].get()):
 			self.variables[vname].set(False)
 			Setting.set(sname, False)
 	def updatePreview(self):
+		""" util - updates orientation preview
+		"""
 		self.specification.imu['facing'] = self.variables['facing'].get()
 		self.specification.imu['offset'] = self.variables['offset'].get()
 		self.specification.save()
 		self.widgets['previewLabel'].configure(image=self.oimages[self.specification.imu['facing']][self.specification.imu['offset']])
 	def unavailable(self):
+		""" view - fallback for missing imu
+		"""
 		self.open()
 		
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='IMU / Unavailable', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -666,72 +698,128 @@ class TkIMUManager(TkPage):
 	
 	#=== ACTIONS ===#
 	def OnStartClick(self):
+		""" action - starts the imu service
+		"""
 		self.variables['status'].set('Started')
 		self.widgets['start'].configure(state='disabled')
 		self.widgets['stop'].configure(state='normal')
 		self.imu.start()
 	def OnStopClick(self):
+		"""  action - stops the imu service
+		"""
 		self.variables['status'].set('Stopped')
 		self.widgets['start'].configure(state='normal')
 		self.widgets['stop'].configure(state='disabled')
 		self.imu.stop()
 	def OnToggleAutostartClick(self):
+		"""  action - toggle service autostart
+		"""
 		self.autostart = Setting.set('imu_autostart', self.variables['autostart'].get())
 	def OnCalibrateClick(self):
+		""" action - triggers calibration
+		"""
 		self.imu.calibrate()
 	def OnToggleArchiveGyroRaw(self):
+		""" action - enable / disable gyro raw archive
+		"""
 		Setting.set('imu_archive_gyro_raw', self.variables['archivegyroraw'].get())
 	def OnToggleArchiveAccRaw(self):
+		""" action - enable / disable acc raw archive
+		"""
 		Setting.set('imu_archive_acc_raw', self.variables['archiveaccraw'].get())
 	def OnToggleArchiveGyroNorm(self):
+		""" action - enable / disable gyro normal archive
+		"""
 		Setting.set('imu_archive_gyro_norm', self.variables['archivegyronorm'].get())
 	def OnToggleArchiveAccNorm(self):
+		""" action - enable / disable acc normal archive
+		"""
 		Setting.set('imu_archive_acc_norm', self.variables['archiveaccnorm'].get())
 	def OnToggleArchiveGyroAng(self):
+		""" action - enable / disable gyro angle archive
+		"""
 		Setting.set('imu_archive_gyro_ang', self.variables['archivegyroang'].get())
 	def OnToggleArchiveGyroAngInc(self):
+		""" action - enable / disable gyro angle increment archive
+		"""
 		Setting.set('imu_archive_gyro_ang_inc', self.variables['archivegyroanginc'].get())
 	def OnToggleArchiveAccAng(self):
+		""" action - enable / disable acc angle archive
+		"""
 		Setting.set('imu_archive_acc_ang', self.variables['archiveaccang'].get())
 	def OnToggleArchiveLow(self):
+		""" action - enable / disable lowpass archive
+		"""
 		Setting.set('imu_archive_low', self.variables['archivelow'].get())
 	def OnToggleArchiveHigh(self):
+		""" action - enable / disable highpass archive
+		"""
 		Setting.set('imu_archive_high', self.variables['archivehigh'].get())
 	def OnToggleArchiveCom(self):
+		""" action - enable / disable complementary archive
+		"""
 		Setting.set('imu_archive_com', self.variables['archivecom'].get())
 	def OnToggleWatchRawClick(self):
+		""" action - enable / disable raw data
+		"""
 		Setting.set('imu_watch_raw', self.variables['watchraw'].get())
 		self.updateDataOptions()
 	def OnToggleDisplayRawClick(self):
+		""" action - enable / disable raw display
+		"""
 		Setting.set('imu_display_raw', self.variables['displayraw'].get())
 	def OnToggleWatchNormClick(self):
+		""" action - enable / disable norm data
+		"""
 		Setting.set('imu_watch_norm', self.variables['watchnorm'].get())
 		self.updateDataOptions()
 	def OnToggleDisplayNormClick(self):
+		""" action - enable / disable norm display
+		"""
 		Setting.set('imu_display_norm', self.variables['displaynorm'].get())
 	def OnToggleWatchAngClick(self):
+		""" action - enable / disable ang data
+		"""
 		Setting.set('imu_watch_ang', self.variables['watchang'].get())
 		self.updateDataOptions()
 	def OnToggleDisplayAngClick(self):
+		""" action - enable / disable angle display
+		"""
 		Setting.set('imu_display_ang', self.variables['displayang'].get())
 	def OnToggleWatchComClick(self):
+		""" action - enable / disable com data
+		"""
 		Setting.set('imu_watch_com', self.variables['watchcom'].get())
 		self.updateDataOptions()
 	def OnToggleDisplayComClick(self):
+		""" action - enable / disable com display
+		"""
 		Setting.set('imu_display_com', self.variables['displaycom'].get())
 	def OnToggleWatchLowClick(self):
+		""" action - enable / disable low data
+		"""
 		Setting.set('imu_watch_low', self.variables['watchlow'].get())
 		self.updateDataOptions()
 	def OnToggleDisplayLowClick(self):
+		""" action - enable / disable low display
+		"""
 		Setting.set('imu_display_low', self.variables['displaylow'].get())
 	def OnToggleWatchHighClick(self):
+		""" action - enable / disable high data
+		"""
 		Setting.set('imu_watch_high', self.variables['watchhigh'].get())
 		self.updateDataOptions()
 	def OnToggleDisplayHighClick(self):
+		""" action - enable / disable high display
+		"""
 		Setting.set('imu_display_high', self.variables['displayhigh'].get())
 	def OnShowIMUDataClick(self):
+		""" action - displays the imu data page
+		"""
 		self.showData()
 		self.imu.addCallback('display', self.updateData)
 	def OnOrientationClick(self):
+		""" action - displays the orientation page
+		"""
 		self.initImages()
 		self.showOrientation()

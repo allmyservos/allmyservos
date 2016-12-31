@@ -17,8 +17,10 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import os, re, json
+from __bootstrap import AmsEnvironment
 from subprocess import Popen, PIPE
 
+## Pre flight checks - ensures the pi will work with servo features
 class PreFlight:
 	interfaces = { 'i2c': { 'interface': 'i2c_arm', 'enabled': False } }
 	i2cModules = { 'i2c-bcm2708': False, 'i2c-dev': False}
@@ -31,21 +33,22 @@ class PreFlight:
 		{'package': 'python-dev', 'installer': 'apt-get', 'installed': False },
 		{'package': 'python-pip', 'installer': 'apt-get', 'installed': False },
 		{'package': 'python-smbus', 'installer': 'apt-get', 'installed': False },
-		{'package': 'i2c-tools', 'installer': 'apt-get', 'installed': False},
-		{'package': 'RPIO', 'installer': 'pip', 'installed': False, 'version': 'latest' }
+		{'package': 'i2c-tools', 'installer': 'apt-get', 'installed': False}
 		]
 	cache = {}
-	cachepath = os.path.join(os.getcwd(), 'files', 'PreFlight')
+	cachepath = os.path.join(AmsEnvironment.FilePath(), 'PreFlight')
 	cachefile = os.path.join(cachepath, 'cache.json')
 	@staticmethod
 	def status():
-		'''
-		returns False in the event of any problems
-		'''
+		""" gets the status of pre flight checks
+		
+		@return bool
+		"""
 		PreFlight.loadCache()
 		try:
 			if ('result' in PreFlight.cache.keys()):
 				if(PreFlight.cache['result'] == True):
+					#only use cache if all checks have passed
 					PreFlight.interfaces = PreFlight.cache['interfaces']
 					PreFlight.i2cModules = PreFlight.cache['modules']
 					PreFlight.blacklist = PreFlight.cache['blacklist']
@@ -57,7 +60,8 @@ class PreFlight:
 		return PreFlight.updateCache()
 	@staticmethod
 	def loadCache():
-		res = False
+		""" load cached data if available
+		"""
 		if os.path.isfile(PreFlight.cachefile):
 			try:
 				f = open(PreFlight.cachefile, 'r')
@@ -68,6 +72,10 @@ class PreFlight:
 				pass
 	@staticmethod
 	def updateCache():
+		""" update cache data
+		
+		@return bool
+		"""
 		res = False
 		if not os.path.exists(PreFlight.cachepath):
 			os.makedirs(PreFlight.cachepath)
@@ -84,15 +92,15 @@ class PreFlight:
 		return res
 	@staticmethod
 	def report():
-		'''
-		returns a full report of pre flight checks
-		'''
+		""" gets a full report of pre flight checks
+		
+		@return dict
+		"""
 		return { 'interfaces': PreFlight.interfaces, 'modules': PreFlight.i2cModules, 'blacklist': PreFlight.blacklist, 'prep': PreFlight.prep, 'dependencies': PreFlight.dependencies }
 	@staticmethod
 	def configure():
-		'''
-		performs configuration changes
-		'''
+		""" performs configuration changes
+		"""
 		PreFlight.__configureInterfaces()
 		PreFlight.__configureModules()
 		PreFlight.__configureBlacklist()
@@ -101,13 +109,19 @@ class PreFlight:
 		PreFlight.__reboot()
 	@staticmethod
 	def getPiI2CBusNumber():
-		# Gets the I2C bus number /dev/i2c#
+		""" Gets the I2C bus number /dev/i2c#
+		
+		@return int
+		"""
 		return 1 if PreFlight.getPiRevision() > 1 else 0
 	@staticmethod
 	def getPiRevision():
-		"Gets the version number of the Raspberry Pi board"
-		# Courtesy quick2wire-python-api
-		# https://github.com/quick2wire/quick2wire-python-api
+		"""Gets the version number of the Raspberry Pi board
+		Courtesy quick2wire-python-api
+		https://github.com/quick2wire/quick2wire-python-api
+		
+		@return int
+		"""
 		try:
 			with open('/proc/cpuinfo','r') as f:
 				for line in f:
@@ -117,6 +131,10 @@ class PreFlight:
 			return 0
 	@staticmethod
 	def __checkInterfaces():
+		""" check for interface line in config.txt
+		
+		@return bool
+		"""
 		f = open('/boot/config.txt', 'r')
 		config = f.read()
 		f.close()
@@ -130,6 +148,10 @@ class PreFlight:
 		return False
 	@staticmethod
 	def __checkModules():
+		""" check modules for i2c lines
+		
+		@return bool
+		"""
 		names = PreFlight.i2cModules.keys()
 		f = open('/etc/modules', 'r')
 		for l in f:
@@ -143,6 +165,10 @@ class PreFlight:
 		return False
 	@staticmethod
 	def __checkBlacklist():
+		""" check blacklist contents
+		
+		@return bool
+		"""
 		lines = []
 		f = open('/etc/modprobe.d/raspi-blacklist.conf', 'r')
 		for l in f:
@@ -159,6 +185,10 @@ class PreFlight:
 		return False
 	@staticmethod
 	def __checkDependencies():
+		""" check package dependencies
+		
+		@return bool
+		"""
 		for k, v in enumerate(PreFlight.dependencies):
 			PreFlight.dependencies[k]['installed'] = True if PreFlight.__isInstalled(v) == 2 else False
 		missing = [ d for d in PreFlight.dependencies if d['installed'] == False ]
@@ -168,6 +198,8 @@ class PreFlight:
 	
 	@staticmethod
 	def __configureInterfaces():
+		""" append required lines to config.txt
+		"""
 		f = open('/boot/config.txt', 'r')
 		config = f.read()
 		f.close()
@@ -194,6 +226,8 @@ class PreFlight:
 			f.close()
 	@staticmethod
 	def __configureModules():
+		""" append required line to modules
+		"""
 		names = PreFlight.i2cModules.keys()
 		lines = []
 		f = open('/etc/modules', 'r')
@@ -212,6 +246,8 @@ class PreFlight:
 			f.close()
 	@staticmethod
 	def __configureBlacklist():
+		""" comment required lines from blacklist
+		"""
 		blnames = {'blacklist {}'.format(k): k for k in PreFlight.blacklist.keys()}
 		lines = []
 		saveneeded = False
@@ -230,6 +266,8 @@ class PreFlight:
 			f.close()
 	@staticmethod
 	def __configureDependencies():
+		""" install required dependencies
+		"""
 		for k, v in enumerate(PreFlight.dependencies):
 			if(not v['installed']):
 				if(v['installer'] == 'apt-get'):
@@ -238,6 +276,8 @@ class PreFlight:
 					PreFlight.dependencies[k]['installed'] = PreFlight.__installPipDependency(v)
 	@staticmethod
 	def __performPrep():
+		""" run preparation commands
+		"""
 		for k, v in enumerate(PreFlight.prep):
 			p = Popen(v['command'], stdout=PIPE)
 			o = p.communicate()[0]
@@ -245,6 +285,15 @@ class PreFlight:
 				PreFlight.prep[k]['done'] = True
 	@staticmethod
 	def __isInstalled(dependency):
+		""" check if a dependency is installed or not
+		status 0 = not installed
+		status 1 = update required
+		status 2 = installed
+		
+		@param dependency dict
+		
+		@return int
+		"""
 		status = 0
 		if(dependency['installer'] == 'apt-get'):
 			p = Popen(['dpkg','-s',dependency['package']], stdout=PIPE, stderr=PIPE)
@@ -290,6 +339,12 @@ class PreFlight:
 		return status
 	@staticmethod
 	def __installAptGetDependency(dependency):
+		""" install apt-get dependency
+		
+		@param dependency dict
+		
+		@return bool
+		"""
 		installed = False
 		try:
 			if(len(dependency['package']) > 0):
@@ -303,6 +358,10 @@ class PreFlight:
 		return installed
 	@staticmethod
 	def __installPipDependency(dependency):
+		""" install pip dependency
+		
+		@return bool
+		"""
 		installed = False
 		try:
 			if(len(dependency['package']) > 0):
@@ -316,5 +375,7 @@ class PreFlight:
 		return installed
 	@staticmethod
 	def __reboot():
+		""" start rebooting
+		"""
 		p = Popen(['sudo','reboot'], stdout=PIPE)
 		o = p.communicate()[0]

@@ -18,14 +18,15 @@
 #######################################################################
 import sqlite3 as lite, sys, inspect, itertools, traceback, os, json
 
+## SQLite Abstraction
 class DB:
 	operands = [ '<', '<=', '=', '=>', '>', 'LIKE' ]
 	def __init__(self, dbpath = 'app.db'):
-		'''
-		instances the DB object
-		
+		""" Instances the DB object
 		used for interfacing with SQLite
-		'''
+		
+		@param dbpath
+		"""
 		self.dbpath = dbpath
 		basepath = os.path.dirname(dbpath)
 		if(len(basepath) > 1 and not os.path.exists(basepath)):
@@ -46,14 +47,18 @@ class DB:
 		finally:
 			con.close()
 	def open(self):
-		'''
-		prepares the connection
-		'''
+		""" Prepares the connection
+		
+		@return sqlite connection
+		"""
 		return lite.connect(self.dbpath)
 	def createTable(self, name, primary = 'rowid', cols = {}):
-		'''
-		creates an SQLite table based on the arguments
-		'''
+		""" creates an SQLite table based on the arguments
+		
+		@param name
+		@param primary
+		@param cols
+		"""
 		con = self.open()
 		cur = con.cursor()
 		colstrings = {}
@@ -63,9 +68,13 @@ class DB:
 		con.commit()
 		con.close()
 	def addRow(self, table, vals):
-		'''
-		adds a row to the SQLite database
-		'''
+		""" adds a row to the SQLite database
+		
+		@param table
+		@param vals
+		
+		@return int
+		"""
 		con = self.open()
 		cur = con.cursor()
 		fields = vals.keys()
@@ -75,9 +84,11 @@ class DB:
 		con.close()
 		return cur.lastrowid
 	def addRows(self, table, vals):
-		'''
-		adds multiple rows in a single query
-		'''
+		""" adds multiple rows in a single query
+		
+		@param table
+		@param vals
+		"""
 		fields = vals.keys()
 		results = vals.values()
 		con = self.open()
@@ -86,9 +97,12 @@ class DB:
 		con.commit()
 		con.close()
 	def updateRow(self,table, vals, expr = ''):
-		'''
-		updates a row to the SQLite database
-		'''
+		""" updates a row to the SQLite database
+		
+		@param table
+		@param vals
+		@param expr
+		"""
 		fields = vals.keys()
 		results = vals.values()
 		con = self.open()
@@ -97,18 +111,25 @@ class DB:
 		con.commit()
 		con.close()
 	def deleteRow(self, table, expr):
-		'''
-		deletes a row to the SQLite database
-		'''
+		""" deletes a row to the SQLite database
+		
+		@param table
+		@param expr
+		"""
 		con = self.open()
 		cur = con.cursor()
 		cur.execute("DELETE FROM {0} WHERE {1}".format(table,expr))
 		con.commit()
 		con.close()
 	def getRow(self,table,expr = '', collist = {}):
-		'''
-		retrieves a row to the SQLite database
-		'''
+		""" retrieves a row to the SQLite database
+		
+		@param table
+		@param expr
+		@param collist
+		
+		@return dict
+		"""
 		con = self.open()
 		cur = con.cursor()
 		if(len(collist) > 0):
@@ -120,9 +141,14 @@ class DB:
 		con.close()
 		return res
 	def getRows(self,table,expr = '', order = ''):
-		'''
-		retrieves multiple rows from the SQLite database
-		'''
+		""" retrieves multiple rows from the SQLite database
+		
+		@param table
+		@param expr
+		@param order
+		
+		@return dict
+		"""
 		rows = {}
 		con = self.open()
 		cur = con.cursor()
@@ -156,11 +182,17 @@ class DB:
 		res = cur.fetchall()
 		con.close()
 		return res
+## SQLite Table abstraction
 class Table(object):
 	def __init__(self, dbpath = 'app.db', tname = None, primary = 'rowid', cols = {}):
-		'''
+		""" Initializes the Table object
 		a generic object used to map object attributes directly to SQLite columns
-		'''
+		
+		@param dbpath
+		@param tname
+		@param primary
+		@param cols
+		"""
 		try:
 			Table.checks
 		except:
@@ -186,9 +218,10 @@ class Table(object):
 				self.parseAttributes()
 		self.check()
 	def parseAttributes(self, omit = []):
-		'''
-		nominates attributes based on their data type
-		'''
+		""" nominates attributes based on their data type
+		
+		@param omit
+		"""
 		try:
 			Table.colLists[self.__sql_name]
 		except:
@@ -204,18 +237,22 @@ class Table(object):
 		else:
 			self.__sql_cols = Table.colLists[self.__sql_name]
 	def check(self):
-		'''
-		confirms the table corresponding to this object is present. if not, create it.
-		'''
+		""" confirms the table corresponding to this object is present. if not, create it.
+		"""
 		if(not self.__sql_name in Table.checks):
 			self.db.createTable(self.__sql_name, self.__sql_primary, self.__sql_cols)
 			Table.checks.append(self.__sql_name)
 			Table.modules[self.__sql_name] = __import__(type(self).__module__)
 			Table.constructors[self.__sql_name] = getattr(Table.modules[self.__sql_name],self.__sql_name)
 	def query(self, expr = '', order = '', keyindex = False):
-		'''
-		run a select query on this table and return the results in the form of instances of this object
-		'''
+		""" run a select query on this table and return the results in the form of instances of this object
+		
+		@param expr
+		@param order
+		@param keyindex
+		
+		@return dict
+		"""
 		rows = self.db.getRows(self.__sql_name, expr, order)
 		instances = {}
 		if(len(rows) > 0):
@@ -232,9 +269,14 @@ class Table(object):
 			return instances
 		return {}
 	def __unpack(self, collist, row, newinstance = True):
-		'''
-		convenience function which mirrors row values onto an object
-		'''
+		""" convenience function which mirrors row values onto an object
+		
+		@param collist
+		@param row
+		@param newinstance
+		
+		@return object
+		"""
 		args = {}
 		primary = {}
 		for k, v in enumerate(row):
@@ -247,21 +289,31 @@ class Table(object):
 			setattr(instance,primary.keys()[0],primary.values()[0])
 		return instance
 	def getSqlName(self):
+		""" Gets the SQLite table name
+		
+		@return str
+		"""
 		return self.__sql_name
 	def getPrimaryKey(self):
+		""" Gets the primary key column name
+		
+		@return str
+		"""
 		return self.__sql_primary
 	def getColList(self, addprimary = True):
-		'''
-		returns a list containing the current columns
-		'''
+		""" Gets a list of column names
+		
+		@param addprimary
+		
+		@return list containing the current columns
+		"""
 		if(addprimary):
 			return [ self.__sql_primary ] + self.__sql_cols.keys()
 		else:
 			return self.__sql_cols.keys()
 	def save(self):
-		'''
-		commits the values of the current attributes to the SQLite database
-		'''
+		""" commits the values of the current attributes to the SQLite database
+		"""
 		fields = self.__sql_cols.keys()
 		valset = {}
 		for f in fields:
@@ -272,9 +324,10 @@ class Table(object):
 			id = self.db.addRow(self.__sql_name,valset)
 			setattr(self,self.__sql_primary, id)
 	def load(self, index):
-		'''
-		loads the values from the SQLite database into corresponding attributes
-		'''
+		""" loads the values from the SQLite database into corresponding attributes
+		
+		@param index
+		"""
 		if(isinstance(index, (int, long, float, complex))):
 			collist = self.getColList()
 			row = self.db.getRow(self.__sql_name,self.__sql_primary+'={0}'.format(int(index)), collist)
@@ -286,9 +339,12 @@ class Table(object):
 	def reload(self):
 		self.load(getattr(self,self.__sql_primary));
 	def loadBy(self,wheres = {}):
-		'''
-		like load but an expression can be provided
-		'''
+		""" like load but an expression can be provided
+		
+		@param wheres
+		
+		@return dict or None
+		"""
 		wset = {}
 		fields = wheres.keys()
 		values = wheres.values()
@@ -312,7 +368,6 @@ class Table(object):
 			return self.__unpack(collist, row)
 		return None
 	def delete(self):
-		'''
-		removes a row from the SQLite database
-		'''
+		""" removes a row from the SQLite database
+		"""
 		self.db.deleteRow(self.__sql_name, self.__sql_primary+'={0}'.format(getattr(self,self.__sql_primary)))

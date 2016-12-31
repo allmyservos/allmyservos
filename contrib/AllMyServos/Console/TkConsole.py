@@ -22,8 +22,15 @@ from TkBlock import *
 from Tkinter import *
 from Setting import *
 
+## UI for console output
 class TkConsole(TkBlock):
 	def __init__(self, parent, gui, **options):
+		""" Initializes the TkConsole object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkConsole,self).__init__(parent, gui, **options)
 		if(Setting.get('console_enabled',True)): 
 			self._old_stdout = sys.stdout #retain a reference to the original stdout callback
@@ -33,9 +40,8 @@ class TkConsole(TkBlock):
 			sys.stderr = self.logger #update stderr
 			self.addConsole()
 	def addConsole(self):
-		'''
-		view - console output
-		'''
+		""" view - console output
+		"""
 		self.gridrow = 0
 		
 		self.widgets['infoFrame'] = Tkinter.Frame(self.widget, bg=self.colours['bg'], borderwidth=0, highlightthickness=0)
@@ -56,26 +62,32 @@ class TkConsole(TkBlock):
 		
 		self.widgets['infoData'] = Tkinter.Label(self.widgets['infoFrame'], textvariable = self.logger.output, anchor=W, justify="left", bg=self.colours['bg'], fg=self.colours['consolefg'])
 		self.widgets['infoData'].grid(column=0,row=1,columnspan=3,sticky='WE')
-	def infoScroll(self, event):
-		self.widgets['infoCanvas'].configure(scrollregion=self.widgets['infoCanvas'].bbox(ALL), height=130)
 	def OnToggleConsoleClick(self):
-		'''
-		action - enable / disable console
-		'''
+		""" action - enable / disable console
+		"""
 		Setting.set('console_enabled', self.variables['enabled'].get())
 	def OnToggleTerminalClick(self):
-		'''
-		action - enable / disable copying to the terminal
-		'''
+		""" action - enable / disable copying to the terminal
+		"""
 		Setting.set('console_use_old', self.variables['terminal'].get())
+## Custom stdout handler
 class Logger(StringIO):
 	def __init__(self, old_stdout, old_stderr, useold):
+		""" Initializes the Logger object
+		Extends StringIO in order to capture stdout and stderr
+		
+		@param old_stdout
+		@param old_stderr
+		@param useold
+		"""
 		StringIO.__init__(self) #overriding object must implement StringIO
 		self.output = Tkinter.StringVar()
 		self.useold = useold
 		self.old_stdout = old_stdout
 		self.old_stderr = old_stderr
 	def write(self, value):
+		''' capture and reverse console output
+		'''
 		try:
 			StringIO.write(self,value)
 			self.output.set(value+self.output.get()) #reverse console output order (newest on top)

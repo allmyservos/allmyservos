@@ -18,7 +18,7 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 
-import __bootstrap, Tkinter, tkFont, webbrowser, datetime, sys, os
+import __bootstrap, TrayIcon, Tkinter, tkFont, webbrowser, datetime, sys, os
 from Tkinter import *
 from TkBlock import TkBlock, TkPage
 from PreFlight import PreFlight
@@ -26,8 +26,14 @@ from Theme import *
 from Setting import *
 from Scheduler import *
 
+
+## The GUI object handles the entire sequence of setting up the TkInter window
 class GUI(Tkinter.Tk):
-	def __init__(self,parent):
+	def __init__(self,parent=None):
+		""" Initializes the GUI Object
+		
+		@param parent
+		"""
 		Tkinter.Tk.__init__(self,parent)
 		self.screen = { 'width': self.winfo_screenwidth(), 'height': self.winfo_screenheight() }
 		self.widgets, self.menus = {}, {}
@@ -40,15 +46,15 @@ class GUI(Tkinter.Tk):
 			self.motionScheduler = self.getClass('Motion.MotionScheduler')(self.specification, self.scheduler)
 			self.initTheme()
 			self.initFrames()
+			self.trayIcon = TrayIcon.TrayIcon(self.scheduler)
 			self.setup()
 		else:
 			self.initTheme()
 			self.initFrames()
 			self.setupPreFlight()
 	def setupPreFlight(self):
-		'''
-		initializes the interface for pre flight checks
-		'''
+		"""	Initializes the interface for pre flight checks
+		"""
 		self.menubar = Tkinter.Menu(self, bg=self.colours['menubg'], fg=self.colours['menufg'], activeforeground=self.colours['menuactivefg'], activebackground=self.colours['menuactivebg'])
 		#logo
 		c = self.getClass('TkPreFlightManager.TkPreFlightLogo')
@@ -110,9 +116,8 @@ class GUI(Tkinter.Tk):
 		}
 		self.widgets['main'] = { c.__name__ : c(parent=self.frames['right'], gui=self, **w) }
 	def setup(self):
-		'''
-		initializes the menubar and adds frames and widgets from the theme profile
-		'''
+		""" Initializes the menubar and adds frames and widgets from the theme profile
+		"""
 		self.menubar = Tkinter.Menu(self, bg=self.colours['menubg'], fg=self.colours['menufg'], activeforeground=self.colours['menuactivefg'], activebackground=self.colours['menuactivebg'])
 
 		for f in self.theme.profile['frames']: # each frame in the profile
@@ -126,9 +131,8 @@ class GUI(Tkinter.Tk):
 		else:
 			self.widgets['main']['TkServoManager'].OnListServosClick() # otherwise open the servo manager
 	def initTheme(self):
-		'''
-		loads the current theme
-		'''
+		""" Loads the current theme
+		"""
 		self.theme = Theme(self.setting.get('gui_theme_name','DarkBlue'), self.screen)
 		self.theme.load()
 		self.images, self.colours, self.fonts = {}, {}, {}
@@ -138,9 +142,8 @@ class GUI(Tkinter.Tk):
 		for k, v in self.theme.fonts.iteritems():
 			self.fonts[k] = tkFont.Font(family=v['family'], size=v['size'])
 	def initFrames(self):
-		'''
-		creates frames according to the profile
-		'''
+		""" Creates frames according to the profile
+		"""
 		self.frames = {}
 		if(self.theme.profile != None):
 			profile = self.theme.profile
@@ -160,6 +163,9 @@ class GUI(Tkinter.Tk):
 				self.frames['appCanvas'].configure(yscrollcommand=self.frames['appyScroller'].set, xscrollcommand=self.frames['appxScroller'].set, bg=self.colours['bg'])
 				self.frames['appCanvas'].create_window((0,0),window=self.frames['app'], anchor=NW)
 				self.frames['app'].bind("<Configure>", self.scroll)
+				self.frames['appCanvas'].bind("<Button-4>", self.mouseScroll)
+				self.frames['appCanvas'].bind("<Button-5>", self.mouseScroll)
+				
 			for f in profile['frames']:
 				self.frames['{0}{1}'.format(f['name'], 'Wrap')] = Tkinter.Frame(self.frames['app'], bg=self.colours['bg'], borderwidth=0, highlightthickness=0)
 				self.frames['{0}{1}'.format(f['name'], 'Wrap')].grid(column=f['column'],row=f['row'],columnspan=f['columnspan'],rowspan=f['rowspan'],sticky=f['sticky'])
@@ -185,6 +191,8 @@ class GUI(Tkinter.Tk):
 					self.frames['{0}{1}'.format(f['name'], 'Canvas')].configure(yscrollcommand=self.frames['{0}{1}'.format(f['name'], 'yScroller')].set, xscrollcommand=self.frames['{0}{1}'.format(f['name'], 'xScroller')].set)
 					self.frames['{0}{1}'.format(f['name'], 'Canvas')].create_window((0,0),window=self.frames[f['name']], anchor=NW)
 					self.frames[f['name']].bind("<Configure>", self.scroll)
+					self.frames['{0}{1}'.format(f['name'], 'Canvas')].bind("<Button-4>", self.mouseScroll)
+					self.frames['{0}{1}'.format(f['name'], 'Canvas')].bind("<Button-5>", self.mouseScroll)
 		else:
 			# fallback layout
 			self.frames['header'] = Tkinter.Frame(self, borderwidth=0, bg = self.colours['bg'])
@@ -210,6 +218,8 @@ class GUI(Tkinter.Tk):
 			self.frames['mainCanvas'].create_window((0,0),window=self.frames['main'], anchor=NW)
 			self.frames['main'].bind("<Configure>", self.scroll)
 			
+			self.frames['mainCanvas'].bind("<Button-4>", self.mouseScroll)
+			self.frames['mainCanvas'].bind("<Button-5>", self.mouseScroll)
 
 			self.frames['right'] = Tkinter.Frame(self, borderwidth=0, bg = self.colours['bg'])
 			self.frames['right'].grid(row = 1, column = 2, sticky = "WENS")
@@ -223,27 +233,31 @@ class GUI(Tkinter.Tk):
 		self.configure(bg=self.colours['bg'], borderwidth=0)
 		self.geometry('{}x{}'.format(self.screen['width'], self.screen['height']))
 	def scroll(self, event):
-		'''
-		generic function to handle scrolling
-		'''
+		""" Generic function to handle resizing
+		
+		@param event TkInter event object
+		"""
 		event.widget.master.configure(scrollregion=event.widget.master.bbox(ALL))
+	def mouseScroll(self, event):
+		""" Generic function to handle scroll wheel events
+		"""
+		event.widget.yview('scroll', -1 if event.num == 4 else 1,'units')
 	def reset(self):
-		'''
-		resets the scrollbar to the top when changing widget in the main frame
-		'''
+		""" Resets the scrollbar to the top when changing widget in the main frame
+		"""
 		self.frames['mainCanvas'].yview('moveto', 0)
 	def clearMain(self):
-		'''
-		convenience function which closes all widgets in the 'main' frame
-		'''
+		""" Convenience function which closes all widgets in the 'main' frame
+		"""
 		if('main' in self.widgets.keys()):
 			for k, v in self.widgets['main'].iteritems():
 				v.close()
 		self.reset()
 	def getClass(self, name):
-		'''
-		returns in uninstantiated class object from a string ([MODULE].[CLASS]). e.g. 'Logo.Logo'
-		'''
+		""" Returns an uninstantiated class object from a string. 
+		
+		@param name String containing [MODULE].[CLASS] e.g. 'Logo.Logo'
+		"""
 		ns = name.split(".")
 		modname = ns[0]
 		classname = ns[1]
@@ -253,7 +267,13 @@ class GUI(Tkinter.Tk):
 		mod = __import__(modname)
 		return getattr(mod, classname)
 	def getModule(self, name):
+		""" Returns a reference to the specified module
+		
+		@param name Module name e.g. Logo
+		
+		@return Module
+		"""
 		return __import__(name)
 if __name__ == "__main__":
-	app = GUI(None)
+	app = GUI()
 	app.mainloop() # fire this puppy up!

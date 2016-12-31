@@ -24,8 +24,15 @@ from TkGraphs import *
 from Setting import *
 from Scheduler import *
 
+## UI for resources
 class TkResourceManager(TkBlock):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkNetworkManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkResourceManager,self).__init__(parent, gui, **options)
 		self.dm = TkDependencyManager(self.widget, {'package':'psutil', 'installer': 'pip', 'version': '3.3.0'}, 'Resource Manager', self.gui)
 		if(not self.dm.installRequired()):
@@ -54,6 +61,8 @@ class TkResourceManager(TkBlock):
 	
 	#=== VIEWS ===#
 	def addCpuManager(self):
+		""" view - cpu ui
+		"""
 		row = 0
 		self.cpuwidgets = {}
 		self.gridrows['cpu'] = 0
@@ -73,6 +82,8 @@ class TkResourceManager(TkBlock):
 		self.scheduler.addTask('resman_cpu_pc', self.updateCpuPc, interval = 1)
 		self.scheduler.addTask('resman_cpu_graph', self.updateCpuGraph, interval = 1)
 	def updateCpuPc(self):
+		""" util - update cpu percentage
+		"""
 		try:
 			history = self.resources.metrics['cpu_percent'].hotValues()
 			if(len(history) > 1):
@@ -83,12 +94,16 @@ class TkResourceManager(TkBlock):
 		except:
 			pass
 	def updateCpuGraph(self):
+		""" util - update cpu graph
+		"""
 		try:
 			self.cpuwidgets['graph'].data = { x.timestamp : x.datavalue for x in self.resources.metrics['cpu_percent'].hotValues() }
 			self.cpuwidgets['graph'].update()
 		except:
 			pass
 	def addMemoryManager(self):
+		""" view - memory ui
+		"""
 		row = 0
 		self.gridrows['mem'] = 0
 		self.widgets['memoryframe'] = Frame(self.widget,bg=self.colours['bg'])
@@ -111,6 +126,8 @@ class TkResourceManager(TkBlock):
 		self.widgets['swapgraph'].widget.grid(column=2,row=self.gridrows['mem'],sticky='EW')
 		self.scheduler.addTask('resman_memory', self.updateMemory, interval = 10)
 	def updateMemory(self):
+		""" util - update memory
+		"""
 		try:
 			history = self.resources.metrics['memory'].hotValues()
 			mem = self.resources.metrics['memory'].value
@@ -129,6 +146,8 @@ class TkResourceManager(TkBlock):
 		except:
 			pass
 	def addTemperatureManager(self):
+		""" view - temperature ui
+		"""
 		row = 1
 		self.gridrows['temp'] = 0
 		self.widgets['tempframe'] = Frame(self.widget,bg=self.colours['bg'])
@@ -145,6 +164,8 @@ class TkResourceManager(TkBlock):
 		
 		self.scheduler.addTask('resman_temp', self.updateTemps, interval = 30)
 	def updateTemps(self):
+		""" util - update temperature
+		"""
 		temps = self.resources.metrics['temperature'].value
 		if(temps != None):
 			try:
@@ -153,6 +174,8 @@ class TkResourceManager(TkBlock):
 			except:
 				pass
 	def addDiskManager(self):
+		""" view - disk ui
+		"""
 		row = 2	
 		self.gridrows['disk'] = 0
 		self.widgets['diskframe'] = Frame(self.widget,bg=self.colours['bg'])
@@ -174,8 +197,14 @@ class TkResourceManager(TkBlock):
 		
 		self.scheduler.addTask('resman_disks', self.updateDisks, interval = 30)
 	def diskInfoScroll(self, event):
+		""" scroll event callback
+		
+		@param event
+		"""
 		self.widgets['diskCanvas'].configure(scrollregion=self.widgets['diskCanvas'].bbox(ALL), width=420, height=220)
 	def updateDisks(self):
+		""" util - update disks
+		"""
 		history = self.resources.metrics['disks'].hotValues()
 		if(len(history) > 1):
 				if(history[-1].timestamp != self.last['disks']):
@@ -188,6 +217,10 @@ class TkResourceManager(TkBlock):
 				except:
 					pass
 	def __applyDiskData(self, disks):
+		""" util - apply disk data
+		
+		@param disks
+		"""
 		col = 0
 		for k, v in disks.iteritems():
 			try:
@@ -248,6 +281,8 @@ class TkResourceManager(TkBlock):
 				col = 0
 				self.gridrows['disk'] += 1
 	def addTaskManager(self):
+		""" view - tasks ui
+		"""
 		row = 4
 		self.widgets['taskframe'] = Frame(self.widget,bg=self.colours['bg'])
 		self.widgets['taskframe'].grid(column=0,row=row,columnspan=2, sticky='EW')
@@ -270,6 +305,8 @@ class TkResourceManager(TkBlock):
 		self.taskwidgets['tasksnotebook'].add(self.netwidgets['trafficwrap'], text="Traffic")
 		self.taskwidgets['tasksnotebook'].add(self.netwidgets['connectionwrap'], text="Connections")
 	def addThreadManager(self):
+		""" view - thread ui
+		"""
 		row = 0
 		self.threadwidgets = {}
 		self.gridrows['thread'] = 0
@@ -309,8 +346,14 @@ class TkResourceManager(TkBlock):
 
 		self.scheduler.addTask('resman_threads', self.updateThreads, interval = 20)
 	def threadInfoScroll(self, event):
+		""" handle thread scroll event
+		
+		@param event
+		"""
 		self.threadwidgets['infoCanvas'].configure(scrollregion=self.threadwidgets['infoCanvas'].bbox(ALL), width=420, height=self.tasksheight)
 	def updateThreads(self):
+		""" util - update threads ui
+		"""
 		history = self.resources.metrics['threads'].hotValues()
 		if(len(history) > 0):
 			if(history[-1].timestamp != self.last['threads']):
@@ -325,6 +368,8 @@ class TkResourceManager(TkBlock):
 			except:
 				pass
 	def __applyThreadData(self, threads):
+		""" apply thread data
+		"""
 		if(threads != None):
 			self.gridrows['thread'] = 2
 			for k, v in threads.iteritems():
@@ -346,6 +391,8 @@ class TkResourceManager(TkBlock):
 				self.gridrows['thread'] += 1
 			self.threadwidgets['activedata'].configure(text = str(self.resources.metrics['threadcount'].value))
 	def addProcessManager(self):
+		""" view - process ui
+		"""
 		row = 1
 		self.processwidgets = {}
 		self.gridrows['process'] = 0
@@ -375,8 +422,12 @@ class TkResourceManager(TkBlock):
 		
 		self.scheduler.addTask('resman_processes', self.updateProcesses, interval = 30)
 	def processInfoScroll(self, event):
+		""" util - handle process scroll event
+		"""
 		self.processwidgets['infoCanvas'].configure(scrollregion=self.processwidgets['infoCanvas'].bbox(ALL), width=420, height=self.tasksheight)
 	def updateProcesses(self):
+		""" util - update threads ui
+		"""
 		history = self.resources.metrics['processes'].hotValues()
 		if(history):
 				if(history[-1].timestamp != self.last['processes']):
@@ -388,6 +439,8 @@ class TkResourceManager(TkBlock):
 			except:
 				pass
 	def __applyProcessData(self, processes):
+		""" util - apply process data
+		"""
 		if(processes != None):
 			self.gridrows['process'] = 2
 			for k, v in processes.iteritems():
@@ -404,6 +457,8 @@ class TkResourceManager(TkBlock):
 					self.processwidgets[k]['user'].grid(column=1,row=self.gridrows['process'],sticky='EW')
 				self.gridrows['process'] += 1
 	def addTrafficManager(self):
+		""" view - traffic ui
+		"""
 		self.netwidgets = {}
 		self.gridrows['traffic'] = 0
 		
@@ -436,6 +491,8 @@ class TkResourceManager(TkBlock):
 		
 		self.netwidgets['trafficdata'].grid_columnconfigure(0, weight=1)
 	def addConnectionManager(self):
+		""" view - connection ui
+		"""
 		self.connwidgets = {}
 		self.gridrows['connections'] = 0
 		
@@ -473,6 +530,8 @@ class TkResourceManager(TkBlock):
 		
 		self.scheduler.addTask('resman_network', self.updateNetwork, interval = 30)
 	def addOptionManager(self):
+		""" view - options ui
+		"""
 		self.gridrows['option'] = 0
 		self.widgets['oframe'] = Frame(self.widget,bg=self.colours['bg'])
 		self.widgets['oframe'].grid(column=0,row=5,columnspan=2, padx=10, pady=5, sticky='EW')
@@ -516,10 +575,22 @@ class TkResourceManager(TkBlock):
 		self.netwidgets['aNetEntry'].grid(column=2,row=self.gridrows['option'],padx=0, pady=0, ipadx=10, sticky='EW')
 	
 	def trafficInfoScroll(self, event):
+		""" util - handle traffic scroll event
+		
+		@param event
+		"""
 		self.netwidgets['trafficCanvas'].configure(scrollregion=self.netwidgets['trafficCanvas'].bbox(ALL), width=420, height=self.tasksheight)
 	def connectionInfoScroll(self, event):
+		""" util - handle connection scroll event
+		
+		@param event
+		"""
 		self.netwidgets['connectionCanvas'].configure(scrollregion=self.netwidgets['connectionCanvas'].bbox(ALL), width=420, height=self.tasksheight)
 	def updateNetwork(self):
+		""" util - update network ui
+		
+		@param event
+		"""
 		history = self.resources.metrics['network'].hotValues()
 		if(len(history) > 1):
 				if(history[-1].timestamp != self.last['network']):
@@ -531,6 +602,10 @@ class TkResourceManager(TkBlock):
 			except:
 				pass
 	def __applyNetworkData(self, network):
+		""" util - apply network data
+		
+		@param network
+		"""
 		self.gridrows['traffic'] = 2
 		rowcount = 0
 		for k,v in network['nics'].iteritems():
@@ -575,24 +650,39 @@ class TkResourceManager(TkBlock):
 			self.gridrows['connections'] += 1
 	
 	#=== ACTIONS ===#
-	##== Archive ==##
 	def OnToggleCpuClick(self):
+		""" action - toggle cpu archive
+		"""
 		Setting.set('resource_archive_cpu', self.variables['archiveCpu'].get())
 	def OnToggleMemoryClick(self):
+		""" action - toggle memory archive
+		"""
 		Setting.set('resource_archive_mem', self.variables['archiveMem'].get())
 	def OnToggleTempClick(self):
+		""" action - toggle temperature archive
+		"""
 		Setting.set('resource_archive_temp', self.variables['archiveTemp'].get())
 	def OnToggleDisksClick(self):
+		""" action - toggle disks archive
+		"""
 		Setting.set('resource_archive_disks', self.variables['archiveDisks'].get())
 	def OnToggleProcessesClick(self):
+		""" action - toggle processes archive
+		"""
 		Setting.set('resource_archive_processes', self.variables['archiveProcess'].get())
 	def OnToggleThreadsClick(self):
+		""" action - toggle threads archive
+		"""
 		Setting.set('resource_archive_threads', self.variables['archiveThread'].get())
 	def OnToggleNetworkClick(self):
+		""" action - toggle network archive
+		"""
 		Setting.set('resource_archive_net', self.variables['archiveNet'].get())
 	
 	#=== UTILS ===#
 	def sizeof_fmt(self, num):
+		""" util - format file size for display
+		"""
 		for x in ['bytes','KB','MB','GB','TB']:
 			if num < 1024.0:
 				return "%3.1f %s" % (num, x)

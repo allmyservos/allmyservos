@@ -23,10 +23,19 @@ from tkFileDialog import askopenfilename
 from Theme import *
 from Setting import *
 
+## UI for themes
 class TkThemeManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkThemeManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkThemeManager,self).__init__(parent, gui, **options)
 	def setup(self):
+		""" setup gui menu
+		"""
 		try:
 			self.gui.menus['settings']
 		except:
@@ -34,8 +43,9 @@ class TkThemeManager(TkPage):
 			self.addMenu(label="Settings", menu=self.gui.menus['settings'])
 		self.gui.menus['settings'].insert_command(label="Themes", index=0, command=self.OnListThemesClick)
 	#=== VIEWS ===#
-	##== Theme ==##
 	def listThemes(self):
+		""" view - list available themes
+		"""
 		self.open()
 		self.themes = Theme()
 		self.themes = self.themes.query()
@@ -78,6 +88,8 @@ class TkThemeManager(TkPage):
 			self.widgets['nothemeslabel'] = Tkinter.Label(self.widgets['tframe'],text="There are currently no themes", bg=self.colours['bg'], fg=self.colours['fg'])
 			self.widgets['nothemeslabel'].grid(column=0,row=self.gridrow,sticky='EW')
 	def editTheme(self):
+		""" view - edit theme
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Settings / Themes / Edit / {0}'.format(self.theme.name), anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -260,6 +272,8 @@ class TkThemeManager(TkPage):
 		self.widgets['clonetheme'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Clone", image=self.images['ram'], command=self.OnCloneThemeClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['clonetheme'].grid(column=2,row=self.gridrow)
 	def cloneTheme(self):
+		""" view - clone theme
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Settings / Themes / Clone / {0}'.format(self.theme.name), anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -305,6 +319,8 @@ class TkThemeManager(TkPage):
 		self.widgets['cloneconfirm'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['accept'], command=self.OnCloneThemeConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['cloneconfirm'].grid(column=1,row=self.gridrow)
 	def deleteTheme(self):
+		""" view - delete theme
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Settings / Themes / Delete / {0}'.format(self.theme.name), anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -340,8 +356,9 @@ class TkThemeManager(TkPage):
 		self.widgets['deleteconfirm'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['accept'], command=self.OnDeleteConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['deleteconfirm'].grid(column=1,row=self.gridrow)
 		
-	##== Profile ==##
 	def editProfile(self):
+		""" view - edit profile
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Settings / Themes / Edit / {0} / Profile / {1}'.format(self.theme.name, self.profile['name']), anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -466,8 +483,9 @@ class TkThemeManager(TkPage):
 		self.widgets['saveimage'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['save'], command=self.OnSaveProfileClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['saveimage'].grid(column=1,row=self.gridrow)
 	
-	##== Frame ==##
 	def editFrame(self):
+		""" view - edit frame
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Settings / Themes / Edit / {0} / Profile / {1} / Frame / {2} / Edit'.format(self.theme.name, self.profile['name'], self.tframe['name']), anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -609,6 +627,8 @@ class TkThemeManager(TkPage):
 		self.widgets['saveimage'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['save'], command=self.OnSaveFrameClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['saveimage'].grid(column=1,row=self.gridrow)
 	def deleteFrame(self):
+		""" view - delete frame
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Settings / Themes / Edit / {0} / Profile / {1} / Frame / {2} / Delete'.format(self.theme.name, self.profile['name'], self.tframe['name']), anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -637,8 +657,9 @@ class TkThemeManager(TkPage):
 		self.widgets['deleteconfirm'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['accept'], command=self.OnDeleteFrameConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['deleteconfirm'].grid(column=1,row=self.gridrow)
 	
-	##== Widget ==##
 	def editWidget(self):
+		""" view - edit widget
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Settings / Themes / Edit / {0} / Profile / {1} / Frame / {2} / Widget / {3} / Edit'.format(self.theme.name, self.profile['name'], self.tframe['name'], self.twidget['name']), anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -812,6 +833,8 @@ class TkThemeManager(TkPage):
 		self.widgets['saveimage'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['save'], command=self.OnSaveWidgetClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['saveimage'].grid(column=1,row=self.gridrow)
 	def deleteWidget(self):
+		""" view - delete widget
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Settings / Themes / Edit / {0} / Profile / {1} / Frame / {2} / Delete'.format(self.theme.name, self.profile['name'], self.tframe['name'], self.twidget['name']), anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -839,9 +862,10 @@ class TkThemeManager(TkPage):
 		self.widgets['back'].grid(column=0,row=self.gridrow)
 		self.widgets['deleteconfirm'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['accept'], command=self.OnDeleteWidgetConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['deleteconfirm'].grid(column=1,row=self.gridrow)
-	
-	##== Font ==##
+
 	def editFont(self):
+		""" view - edit font
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Settings / Themes / Edit / {0} / Font'.format(self.theme.name), anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -891,8 +915,9 @@ class TkThemeManager(TkPage):
 		self.widgets['savefont'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['save'], command=self.OnSaveFontClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['savefont'].grid(column=1,row=self.gridrow)
 	
-	##== Image ==##
 	def editImage(self):
+		""" view - edit image
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Settings / Themes / Edit / {0} / Image'.format(self.theme.name), anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -940,10 +965,15 @@ class TkThemeManager(TkPage):
 	
 	
 	#=== ACTIONS ===#
-	##== Theme ==##
 	def OnListThemesClick(self):
+		""" action - display themes list page
+		"""
 		self.listThemes()
 	def OnEditThemeClick(self, name):
+		""" action - display edit theme page
+		
+		@param name
+		"""
 		self.theme = Theme(name)
 		self.theme.load()
 		self.images = {}
@@ -951,8 +981,12 @@ class TkThemeManager(TkPage):
 			self.images[k] = Tkinter.PhotoImage(file = os.path.join(self.theme.basepath, v))
 		self.editTheme()
 	def OnCloneThemeClick(self):
+		""" action - display clone theme page
+		"""
 		self.cloneTheme()
 	def OnCloneThemeConfirmClick(self):
+		""" action - clone theme
+		"""
 		name = self.variables['newname'].get()
 		if(name != '' and name != self.theme.name):
 			themes = self.theme.query()
@@ -963,24 +997,39 @@ class TkThemeManager(TkPage):
 			self.notifier.addNotice('Theme cloned')
 		return False
 	def OnActivateThemeClick(self, name):
+		""" action - activate theme
+		
+		@param name
+		"""
 		Setting.set('gui_theme_name', name)
 		self.listThemes()
 		self.notifier.addNotice('Theme {0} activated', name)
 	def OnSaveClick(self):
+		""" action - save theme
+		"""
 		self.theme.save()
 		self.listThemes()
 		self.notifier.addNotice('Theme saved')
 	def OnDeleteClick(self, name):
+		""" action - display delete theme page
+		
+		@param name
+		"""
 		self.theme = Theme(name)
 		self.theme.load()
 		self.deleteTheme()
 	def OnDeleteConfirmClick(self):
+		""" action - delete theme
+		"""
 		self.theme = Theme(name)
 		self.theme.load()
 		self.deleteTheme()
 	
-	##== Colour ==##
 	def OnChangeColourClick(self, name):
+		""" action - change colour value
+		
+		@param name
+		"""
 		result = tkColorChooser.askcolor(self.theme.colours[name])
 		if(result != (None, None)):
 			rgb, hex = result
@@ -989,21 +1038,31 @@ class TkThemeManager(TkPage):
 			self.widgets['colourDisplay'+str(name)].configure(bg = hex)
 			self.notifier.addNotice('Colour changed. Click Save to commit', 'warning')
 	
-	##== Font ==##
 	def OnChangeFontClick(self, name):
+		""" action - display edit font page
+		
+		@param name
+		"""
 		self.currentfont = name
 		self.editFont()
 	def OnSaveFontClick(self):
+		""" action - save font
+		"""
 		self.theme.fonts[self.currentfont]['family'] = self.variables['family'].get()
 		self.theme.fonts[self.currentfont]['size'] = self.variables['size'].get()
 		self.editTheme()
 		self.notifier.addNotice('Font changed. Click Save to commit', 'warning')
 	
-	##== Image ==##
 	def OnChangeImageClick(self, name):
+		""" action - display change image page
+		
+		@param name
+		"""
 		self.currentimage = name
 		self.editImage()
 	def OnPickImageClick(self):
+		""" action - select image
+		"""
 		filename = askopenfilename()
 		if(len(filename) > 0):
 			parts = os.path.splitext(filename)
@@ -1021,15 +1080,22 @@ class TkThemeManager(TkPage):
 		else:
 			self.notifier.addNotice('Change cancelled', 'warning')
 	def OnSaveImageClick(self):
+		""" action - save image
+		"""
 		if(hasattr(self, 'currentimage')):
 			self.theme.images[self.currentimage] = self.variables['file'].get()
 			self.notifier.addNotice('Image changed. Click Save to commit', 'warning')
 
-	##== Profile ==##
 	def OnChangeProfileClick(self, name):
+		""" action - change profile
+		
+		@param name
+		"""
 		self.profile = self.theme.profiles[name]
 		self.editProfile()
 	def OnSaveProfileClick(self):
+		""" action - save profile
+		"""
 		p = self.theme.profiles[self.profile.name]
 		p['name'] = self.variables['aname'].get()
 		p['minwidth'] = self.variables['amin'].get()
@@ -1038,11 +1104,16 @@ class TkThemeManager(TkPage):
 		self.theme.save()
 		self.notifier.addNotice('Profile Saved', 'message')
 	
-	##== Frame ==##
 	def OnChangeFrameClick(self, index):
+		""" action - display edit frame page
+		
+		@param index
+		"""
 		self.tframe = self.profile['frames'][self.__getFrameIndex(index)]
 		self.editFrame()
 	def OnSaveFrameClick(self):
+		""" action - save frame
+		"""
 		if (not self.__validateFrameName()):
 			return
 		f = self.profile['frames'][self.__getFrameIndex(self.tframe['name'])]
@@ -1061,18 +1132,29 @@ class TkThemeManager(TkPage):
 		self.notifier.addNotice('Frame Saved', 'message')
 		self.editProfile()
 	def OnDeleteFrameClick(self, index):
+		""" action - display delete frame page
+		
+		@param index
+		"""
 		self.tframe = self.profile['frames'][self.__getFrameIndex(index)]
 		self.deleteFrame()
 	def OnDeleteFrameConfirmClick(self):
+		""" action - delete frame
+		"""
 		del(self.profile['frames'][self.__getFrameIndex(self.tframe['name'])])
 		self.theme.save()
 		self.notifier.addNotice('Frame Deleted', 'message')
 		self.editProfile()
 	def OnFrameBackClick(self):
+		""" action - cancel frame edit
+		"""
 		self.editProfile()
 	
-	##== Widget ==##
 	def OnAddWidgetClick(self, index):
+		""" action - display add widget page
+		
+		@param index str
+		"""
 		self.tframe = self.profile['frames'][self.__getFrameIndex(index)]
 		self.twidget = {
 			'name': None,
@@ -1092,11 +1174,17 @@ class TkThemeManager(TkPage):
 		}
 		self.editWidget()
 	def OnChangeWidgetClick(self, index):
+		""" action - add widget
+		
+		@param index tuple
+		"""
 		findex = self.__getFrameIndex(index[0])
 		self.tframe = self.profile['frames'][findex]
 		self.twidget = self.tframe['widgets'][self.__getWidgetIndex(findex, index[1])]
 		self.editWidget()
 	def OnSaveWidgetClick(self):
+		""" action - save widget
+		"""
 		if (not self.__validateWidgetName()):
 			return
 		findex = self.__getFrameIndex(self.tframe['name'])
@@ -1142,22 +1230,31 @@ class TkThemeManager(TkPage):
 		self.notifier.addNotice('Widget Saved', 'message')
 		self.editProfile()
 	def OnDeleteWidgetClick(self, index):
+		""" action - display delete widget page
+		"""
 		findex = self.__getFrameIndex(index[0])
 		self.tframe = self.profile['frames'][findex]
 		self.twidget = self.tframe['widgets'][self.__getWidgetIndex(findex, index[1])]
 		self.deleteWidget()
 	def OnDeleteWidgetConfirmClick(self):
-		print(self.twidget['name'])
+		""" action - delete widget
+		"""
 		findex = self.__getFrameIndex(self.tframe['name'])
 		del(self.profile['frames'][findex]['widgets'][self.__getWidgetIndex(findex, self.twidget['name'])])
 		self.theme.save()
 		self.notifier.addNotice('Widget Deleted', 'message')
 		self.editProfile()
 	def OnWidgetBackClick(self):
+		""" action - back from widget
+		"""
 		self.editFrame()
 	
 	##== Utils ==##
 	def __getFrameIndex(self, name):
+		""" util - gets the index of a frame from name
+		
+		@param name
+		"""
 		ind = 0
 		for f in self.profile['frames']:
 			if (name == f['name']):
@@ -1166,6 +1263,11 @@ class TkThemeManager(TkPage):
 				ind += 1
 		return None
 	def __getWidgetIndex(self, findex, name):
+		""" util - gets the index of a widget from frame index and widget name
+		
+		@param findex
+		@param name
+		"""
 		ind = 0
 		for f in self.profile['frames'][findex]['widgets']:
 			if (name == f['name']):
@@ -1174,6 +1276,11 @@ class TkThemeManager(TkPage):
 				ind += 1
 		return None
 	def __copyAsset(self, filename):
+		""" util - copy asset
+		imports the file into the theme directory
+		
+		@param filename
+		"""
 		newbase = os.path.join(self.theme.basepath, 'images')
 		parts = filename.split('/')
 		file = parts[-1]
@@ -1182,6 +1289,8 @@ class TkThemeManager(TkPage):
 		shutil.copyfile(filename, os.path.join(newbase, file))
 		return os.path.join('images',file)
 	def __validateFrameName(self):
+		""" util - validate frame name
+		"""
 		name = self.variables['name'].get()
 		if (name == ''):
 			self.notifier.addNotice('Name must not be empty', 'error')
@@ -1191,6 +1300,8 @@ class TkThemeManager(TkPage):
 			return False
 		return True
 	def __validateWidgetName(self):
+		""" util - validate widget name
+		"""
 		name = self.variables['name'].get()
 		if (name == ''):
 			self.notifier.addNotice('Name must not be empty', 'error')

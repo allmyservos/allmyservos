@@ -19,40 +19,75 @@
 import threading, time, traceback
 from Notifier import *
 
+## Schedules threaded tasks
 class Scheduler(object):
 	def __init__(self):
+		""" Initializes the Scheduler object
+		"""
 		self.tasks = {}
 		self.notifier = Notifier()
 	def addTask(self, name, callback, interval = 0.1, stopped = False):
+		""" add a new task
+		
+		@param name
+		@param callback
+		@param interval
+		@param stopped
+		"""
 		self.tasks[name] = GenericThread(name, callback, stopped, interval)
 	def removeTask(self, name):
+		""" remove a task
+		
+		@param name
+		"""
 		try:
 			self.tasks[name].stop()
 			del(self.tasks[name])
 		except:
 			pass
 	def startTask(self, name):
+		""" start a task
+		
+		@param name
+		"""
 		try:
 			self.tasks[name].start()
 		except:
 			pass
 	def stopTask(self, name):
+		""" stop a task
+		
+		@param name
+		"""
 		try:
 			self.tasks[name].stop()
 		except:
 			pass
 	def isRunning(self, name):
+		""" checks if a task is running
+		
+		@param name
+		
+		@return bool
+		"""
 		try:
 			return not self.tasks[name].stopped
 		except:
 			return False
 	def listTasks(self):
+		""" list tasks
+		
+		@return list
+		"""
 		t = []
 		for i in self.tasks:
 			t.append(self.tasks[i].name)
 		return t
+## Generic thread objec, used for all scheduled tasks
 class GenericThread(threading.Thread):
 	def __init__(self, name, callback, stopped = False, interval = 0.1):
+		""" Initializes a GenericThread object
+		"""
 		threading.Thread.__init__(self)
 		if(name != None):
 			self.setName(name)
@@ -66,6 +101,8 @@ class GenericThread(threading.Thread):
 		self.daemon = True
 		threading.Thread.start(self)
 	def run(self):
+		""" run this task
+		"""
 		try:
 			while True:
 				try:
@@ -87,6 +124,10 @@ class GenericThread(threading.Thread):
 			cleanup_stop_thread()
 			sys.exit()
 	def stop(self):
+		""" stop tasks
+		"""
 		self.stopped = True
 	def start(self):
+		""" start task
+		"""
 		self.stopped = False

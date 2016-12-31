@@ -19,8 +19,15 @@
 import Tkinter
 from TkBlock import TkBlock
 
+## UI for the logo
 class Logo(TkBlock):
 	def __init__(self, parent, gui, **options):
+		""" Initializes Logo object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(Logo,self).__init__(parent, gui, **options)
 		self.open()
 		self.widgets['logoLabel'] = Tkinter.Label(self.widget,text='AllMyServos', image = self.gui.images['robot'], bg=self.gui.colours['bg'], fg=self.gui.colours['fg'])

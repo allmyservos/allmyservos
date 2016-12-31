@@ -17,14 +17,20 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import os
+from __bootstrap import AmsEnvironment
 from DB import *
 
+## App settings
 class Setting(Table):
 	def __init__(self, name = '', storedvalue = '', type = 'string'):
-		'''
+		""" Initializes the Setting object
 		the setting class provides a type of variable which can be fetched from the database with a default value. if the setting doesn't exist, it is created.
 		accessing settings in a loop does not cause multiple queries. setting values are cached.
-		'''
+		
+		@param name str
+		@param storedvalue
+		@param type str
+		"""
 		try:
 			Setting.cache
 		except:
@@ -32,12 +38,13 @@ class Setting(Table):
 		self.name = name
 		self.type = type
 		self.storedvalue = storedvalue
-		super(Setting,self).__init__(dbpath=os.path.join(os.getcwd(), 'files', 'settings', 'settings.db'))
+		super(Setting,self).__init__(dbpath=os.path.join(AmsEnvironment.FilePath(), 'settings', 'settings.db'))
 	@property
 	def value(self):
-		'''
-		gets the values of the setting
-		'''
+		""" gets the values of the setting
+		
+		@return bool|int|long|float|complex
+		"""
 		if(self.name != ''):
 			try:
 				return self.cachedvalue
@@ -60,9 +67,10 @@ class Setting(Table):
 				return self.cachedvalue
 	@value.setter
 	def value(self, value):
-		'''
-		saves the value of a setting
-		'''
+		""" saves the value of a setting
+		
+		@param value
+		"""
 		if(self.name != ''):
 			self.storedvalue = str(value)
 			if(isinstance(value, bool)):
@@ -81,15 +89,15 @@ class Setting(Table):
 			Setting.cache[self.name] = self
 			self.save()
 	def parseAttributes(self):
-		'''
-		overrides the parseAttributes function of the Table class to exclude 'value' and 'get'
-		'''
+		""" overrides the parseAttributes function of the Table class to exclude 'value' and 'get'
+		"""
 		super(Setting,self).parseAttributes(['value', 'get'])
 	@staticmethod
 	def get(name, default = None):
-		'''
-		convenience function which retrieves a setting from cache, database or saves the default
-		'''
+		""" util - retrieves a setting from cache, database or saves the default
+		
+		@param default
+		"""
 		try:
 			Setting.cache
 		except:
@@ -109,9 +117,8 @@ class Setting(Table):
 				return s.value
 	@staticmethod
 	def set(name, value):
-		'''
-		sets the value of a setting in the cache, database or create it
-		'''
+		""" sets the value of a setting in the cache, database or create it
+		"""
 		try:
 			Setting.cache[name].value = value
 		except:
@@ -124,9 +131,8 @@ class Setting(Table):
 			Setting.cache[name].value = value
 		return value
 	def query(self, expr = '', order = '', keyindex = True):
-		'''
-		overrides the query function and adds any results to the cache
-		'''
+		""" overrides the query function and adds any results to the cache
+		"""
 		res = super(Setting,self).query(expr, order, keyindex)
 		for r in res:
 			Setting.cache[res[r].name] = res[r]

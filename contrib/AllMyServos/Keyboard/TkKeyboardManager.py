@@ -20,15 +20,30 @@ import Tkinter, Keyboard, Motion
 from Tkinter import *
 from TkBlock import *
 
+## UI for keyboard
 class TkKeyboardManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkKeyboardManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkKeyboardManager,self).__init__(parent, gui, **options)
+		self.scheduler = gui.scheduler
 		self.specification = gui.specification
 		self.asciimap = Keyboard.AsciiMap()
+		try:
+			self.gui.kbthread
+		except:
+			self.gui.kbthread = Keyboard.KeyboardThread(self.specification, self.gui.motionScheduler, self.gui.scheduler, not Setting.get('kb_use_tk_callback', True))
+		self.kbthread = self.gui.kbthread
 		self.stopped = not Setting.get('kb_autostart', False)
 		if(Setting.get('kb_autostart', False)):
 			self.OnStartClick()
 	def setup(self):
+		""" setup gui menu
+		"""
 		self.gui.menus['kb'] = Tkinter.Menu(self.gui.menubar, tearoff=0, bg=self.colours['menubg'], fg=self.colours['menufg'], activeforeground=self.colours['menuactivefg'], activebackground=self.colours['menuactivebg'])
 		self.gui.menus['kb'].add_command(label="New Map", command=self.OnAddMapClick)
 		self.gui.menus['kb'].add_separator()
@@ -36,8 +51,9 @@ class TkKeyboardManager(TkPage):
 		self.addMenu(label="Keyboard", menu=self.gui.menus['kb'])
 	
 	#=== VIEWS ===#
-	##== Services ==##
 	def serviceManager(self):
+		""" view - service manager
+		"""
 		self.widgets['servicelabel'] = Tkinter.Label(self.widgets['tframe'],text='Keyboard / Service', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['servicelabel'].grid(column=0,row=self.gridrow,sticky='EW')
 		
@@ -73,8 +89,9 @@ class TkKeyboardManager(TkPage):
 		self.widgets['autostartentry'] = Tkinter.Checkbutton(self.widgets['tframe'], text="Autostart", variable=self.variables['autostart'], command=self.OnToggleAutostartClick, bg=self.colours['inputbg'], fg=self.colours['inputfg'], activebackground=self.colours['activebg'], selectcolor=self.colours['inputbg'])
 		self.widgets['autostartentry'].grid(column=3,row=self.gridrow)
 	
-	##== Key Maps ==##
 	def listMaps(self):
+		""" view - list maps
+		"""
 		self.open()
 
 		self.serviceManager()
@@ -127,6 +144,8 @@ class TkKeyboardManager(TkPage):
 		self.gridrow += 1
 
 	def editMap(self):
+		""" view - edit maps
+		"""
 		self.open()
 		self.widgets['kblabel'] = Tkinter.Label(self.widgets['tframe'],text='Keyboard / Key Maps / Edit', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['kblabel'].grid(column=0,row=self.gridrow,sticky='EW')
@@ -162,6 +181,8 @@ class TkKeyboardManager(TkPage):
 			self.widgets['deletemap'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Delete Map", image=self.images['delete'], command=self.OnDeleteMapClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 			self.widgets['deletemap'].grid(column=2,row=self.gridrow)
 	def deleteMap(self):
+		""" view - delete map
+		"""
 		self.open()
 		
 		self.widgets['kblabel'] = Tkinter.Label(self.widgets['tframe'],text='Keyboard / Key Maps / Delete', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -208,9 +229,9 @@ class TkKeyboardManager(TkPage):
 		self.widgets['back'].grid(column=0,row=self.gridrow)
 		self.widgets['confirm'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Confirm", image=self.images['accept'], command=self.OnConfirmDeleteMapClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['confirm'].grid(column=1,row=self.gridrow)
-	
-	##== Key Mappings ==##
 	def listMappings(self):
+		""" view - list mappings
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['kblabel'] = Tkinter.Label(self.widgets['tframe'],text='Keyboard / Key Map / Edit / Key Mapping', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -266,6 +287,8 @@ class TkKeyboardManager(TkPage):
 		self.widgets['back'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Back", image=self.images['back'], command=self.OnListMapsClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['back'].grid(column=0,row=self.gridrow)
 	def editMapping(self):
+		""" view - edit mapping
+		"""
 		self.open()
 		
 		self.widgets['kblabel'] = Tkinter.Label(self.widgets['tframe'],text='Keyboard / Key Map / Edit / Key Mapping / Edit', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -331,6 +354,8 @@ class TkKeyboardManager(TkPage):
 			self.widgets['deletemap'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Delete Mapping", image=self.images['delete'], command=lambda x = self.mapping['hex']:self.OnDeleteMappingClick(x), bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 			self.widgets['deletemap'].grid(column=2,row=self.gridrow)
 	def deleteMapping(self):
+		""" view - delete mapping
+		"""
 		self.open()
 		
 		self.widgets['kblabel'] = Tkinter.Label(self.widgets['tframe'],text='Keyboard / Key Map / Edit / Key Mapping / Delete', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -389,8 +414,9 @@ class TkKeyboardManager(TkPage):
 		self.widgets['confirm'].grid(column=1,row=self.gridrow)
 	
 	#=== ACTIONS ===#
-	##== Services ==##
 	def OnStartClick(self):
+		""" action - start kb service
+		"""
 		self.stopped = False
 		try:
 			self.widgets['start'].configure(state='disabled')
@@ -398,20 +424,14 @@ class TkKeyboardManager(TkPage):
 			self.variables['status'].set('Running')
 		except:
 			pass
+		self.kbthread.start()
 		if(Setting.get('kb_use_tk_callback', True)):
-			try:
-					self.kbthread.removeCallback('motion')
-			except:
-				pass
 			self.widget.bind_all('<Key>',self.inputTkCapture)
 		else:
 			self.widget.unbind_all('<Key>')
-			try:
-				self.kbthread
-			except:
-				self.kbthread = KeyboardThread(self.gui.motionScheduler)
-			self.kbthread.start()
 	def OnStopClick(self):
+		""" action - stop kb service
+		"""
 		self.stopped = True
 		try:
 			self.widgets['start'].configure(state='normal')
@@ -421,16 +441,20 @@ class TkKeyboardManager(TkPage):
 			pass
 		if(Setting.get('kb_use_tk_callback', True)):
 			self.widget.unbind_all('<Key>')
-		else:
-			self.kbthread.stop()
+		self.kbthread.stop()
 	def OnToggleAutostartClick(self):
+		""" action - toggle kb autostart
+		"""
 		self.autostart = Setting.set('kb_autostart',self.variables['autostart'].get())
 	
-	##== Key Maps ==##
 	def OnListMapsClick(self):
+		""" action - displays the list of maps
+		"""
 		self.maps = self.specification.keyboard
 		self.listMaps()
 	def OnAddMapClick(self):
+		""" action - displays add map page
+		"""
 		self.map = {
 			'name': '',
 			'active': False,
@@ -438,9 +462,15 @@ class TkKeyboardManager(TkPage):
 		}
 		self.editMap()
 	def OnEditMapClick(self, index):
+		""" action - displays edit map page
+		
+		@param index
+		"""
 		self.map = self.specification.keyboard[index]
 		self.editMap()
 	def OnSaveMapClick(self):
+		""" action - saves map
+		"""
 		name = self.variables['name'].get()
 		if (name == ''):
 			self.notifier.addNotice('Please specify a name', 'warning')
@@ -457,18 +487,30 @@ class TkKeyboardManager(TkPage):
 		self.notifier.addNotice('Map "{0}" has been saved'.format(name))
 		self.listMaps()
 	def OnDeleteMapClick(self, index):
+		""" action - display delete map page
+		
+		@param index
+		"""
 		if (index in self.specification.keyboard.keys()):
 			self.map = self.specification.keyboard[index]
 			self.deleteMap()
 	def OnConfirmDeleteMapClick(self):
+		""" action - delete map
+		"""
 		if (hasattr(self, 'map')):
 			del(self.specification.keyboard[self.map['name']])
 			self.specification.save()
 			self.notifier.addNotice('Map deleted')
 			self.listMaps()
 	def OnMapBackClick(self):
+		""" action - back from map page
+		"""
 		self.listMaps()
 	def OnActivateMapClick(self, index):
+		""" action - activate key map
+		
+		@param index
+		"""
 		for k, v in self.specification.keyboard.items():	
 			if (v['active'] == True):
 				v['active'] = False
@@ -477,11 +519,16 @@ class TkKeyboardManager(TkPage):
 		self.specification.save()
 		self.listMaps()
 	
-	##== Key Mappings ==##
 	def OnListMappingsClick(self, index):
+		""" action - displays the mappings list page
+		
+		@param index
+		"""
 		self.map = self.specification.keyboard[index]
 		self.listMappings()
 	def OnAddMappingClick(self):
+		""" action - displays add mapping page
+		"""
 		self.mapping = {
 			'hex': '',
 			'ascii': '',
@@ -490,9 +537,15 @@ class TkKeyboardManager(TkPage):
 		}
 		self.editMapping()
 	def OnEditMappingClick(self, index):
+		""" action - displays edit mapping page
+		
+		@param index
+		"""
 		self.mapping = self.map['mappings'][index]
 		self.editMapping()
 	def OnSaveMappingClick(self):
+		""" action - saves mapping
+		"""
 		self.mapping['hex'] = self.variables['hex'].get()
 		self.mapping['ascii'] = self.variables['ascii'].get()
 		self.mapping['action'] = self.variables['action'].get()
@@ -502,17 +555,27 @@ class TkKeyboardManager(TkPage):
 		self.notifier.addNotice('Mapping for key "{0}" has been saved'.format(self.mapping['ascii']))
 		self.listMappings()
 	def OnDeleteMappingClick(self, index):
+		""" action - display delete mapping page
+		
+		@param index
+		"""
 		self.mapping = self.map['mappings'][index]
 		self.deleteMapping()
 	def OnConfirmDeleteMappingClick(self):
+		""" action - deletes mapping
+		"""
 		tmpascii = self.mapping['ascii']
 		del(self.map['mappings'][self.mapping['hex']])
 		self.specification.save()
 		self.notifier.addNotice('Mapping for key "{0}" has been deleted'.format(tmpascii))
 		self.listMappings()
 	def OnMappingBackClick(self):
+		""" action - back from mapping
+		"""
 		self.editMap()
 	def OnKeyCaptureClick(self):
+		""" action - triggers key capture
+		"""
 		self.widgets['captureButton'].configure(state='disabled')
 		self.widget.bind_all('<Key>',self.keyCapture)
 		self.keycaptured = False
@@ -520,28 +583,21 @@ class TkKeyboardManager(TkPage):
 	
 	#=== UTILS ===#
 	def inputTkCapture(self, event):
-		mappings = {}
-		for h, a in self.asciimap.keyindex.items():
-			if(a == event.char):
-				mappings = self.specification.getKeyMapping(h)
-				break
-		if(len(mappings) > 0):
-			for m in mappings:
-				if(m['action'] == 'motion' and m['command'] != None):
-					for k, v in self.specification.motions.items():
-						if (v.jsonData['name'] == m['command']):
-							self.gui.motionScheduler.triggerMotion(k)
-							break
-				elif(m['action'] == 'chain' and m['command'] != None):
-					for k, v in self.specification.chains.items():
-						if (v['name'] == m['command']):
-							self.gui.motionScheduler.triggerChain(k)
-							break
-				elif(m['action'] == 'relax'):
-					self.gui.motionScheduler.relax()
-				elif(m['action'] == 'default'):
-					self.gui.motionScheduler.default()
+		""" util - captures kb events from TkInter
+		
+		@param event
+		"""
+		ec = '0x{0}'.format('%02x' % ord(event.char)) if any(event.char) else None
+		if (ec != None):
+			for h, a in self.asciimap.keyindex.items():
+				if(h == ec):
+					self.kbthread.doCallback(h, a)
+					break
 	def keyCapture(self, event):
+		""" util - captures pressed key
+		
+		@param event
+		"""
 		if(not self.keycaptured):
 			for h, a in self.asciimap.keyindex.items():
 				if(a == event.char):

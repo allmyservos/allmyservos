@@ -23,8 +23,15 @@ from TkDependencyManager import *
 from SSLManager import *
 from Motion import *
 
+## UI for RPC server
 class TkRPCManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkRPCManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkRPCManager,self).__init__(parent, gui, **options)
 		self.scheduler = self.gui.scheduler
 		self.now = lambda: int(round(time.time() * 1000))
@@ -42,12 +49,16 @@ class TkRPCManager(TkPage):
 			except:
 				TkRPCManager.rpcserver = self.rpcserver = self.gui.getClass('SRPC.SRPCServer')(motionScheduler = self.gui.motionScheduler, specification = self.gui.specification, scheduler = self.gui.scheduler)
 	def setup(self):
+		""" setup gui menu
+		"""
 		self.gui.menus['rpc'] = Tkinter.Menu(self.gui.menubar, tearoff=0, bg=self.colours['menubg'], fg=self.colours['menufg'], activeforeground=self.colours['menuactivefg'], activebackground=self.colours['menuactivebg'])
 		self.gui.menus['rpc'].add_command(label="Manage Server", command=self.OnManageRPCClick)
 		self.addMenu(label="RPC", menu=self.gui.menus['rpc'])
 	
 	#=== VIEWS ===#
 	def serverManager(self):
+		""" view - RPC service manager
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='RPC Server', bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,sticky='EW')
@@ -263,28 +274,36 @@ class TkRPCManager(TkPage):
 		self.widgets['copy'].grid(column=3,row=self.gridrow)
 	
 	#=== ACTIONS ===#
-	##== Service ==##
 	def OnStartClick(self):
+		""" action - start the RPC service
+		"""
 		self.variables['status'].set('Running')
 		self.rpcserver.start()
 		self.widgets['startbutton'].configure(state='disabled')
 		self.widgets['stopbutton'].configure(state='normal')
 	def OnStopClick(self):
+		""" action - stop the RPC service
+		"""
 		self.variables['status'].set('Stopped')
 		self.rpcserver.stop()
 		self.widgets['startbutton'].configure(state='normal')
 		self.widgets['stopbutton'].configure(state='disabled')
 	def OnToggleAutostartClick(self):
+		""" action - toggle RPC service autostart
+		"""
 		self.autostart = Setting.set('rpc_autostart', self.variables['autostart'].get())
 	
-	##== Management ==##
 	def OnManageRPCClick(self):
+		""" action - display RPC service management page
+		"""
 		if(not self.dm.installRequired()):
 			self.serverManager()
 		else:
 			self.open()
 			self.dm.addManager()
 	def OnSaveServerClick(self):
+		""" action - save server config
+		"""
 		if(self.variables['hostname'].get() != '' and self.variables['port'].get() > 1000 and len(self.variables['username'].get()) > 4 and len(self.variables['password'].get()) > 4):
 			hostname = Setting.set('rpc_server_hostname', self.variables['hostname'].get())
 			port = Setting.set('rpc_server_port', self.variables['port'].get())
@@ -294,9 +313,13 @@ class TkRPCManager(TkPage):
 		else:
 			self.notifier.addNotice('Invalid RPC server settings.', 'warning')
 	def OnGeneratePasswordClick(self):
+		""" action - generates a new password
+		"""
 		self.variables['password'].set(str(uuid.uuid4()))
 		self.notifier.addNotice('New password generated. Click Save to apply it', 'warning')
 	def OnRegenSSLClick(self):
+		""" action - regenerates SSL certificate
+		"""
 		if(self.__validSSLDomain(self.variables['domain'].get())):
 			if(self.__validSSLCompany(self.variables['company'].get())):
 				if(self.__validSSLCountry(self.variables['country'].get())):
@@ -313,10 +336,14 @@ class TkRPCManager(TkPage):
 			self.notifier.addNotice('Invalid domain','error')
 		self.serverManager()
 	def OnShowUrlClick(self):
+		""" action - shows the url based on current configuration
+		"""
 		url = 'https://{0}:{1}@{2}:{3}'.format(Setting.get('rpc_server_username', 'remoteuser'), Setting.get('rpc_server_password', str(uuid.uuid4())), Setting.get('rpc_server_hostname', 'localhost'), Setting.get('rpc_server_port', 9000))
 		self.widgets['url'].configure(text=url)
 		self.urlshown = self.now()
 	def OnCopyUrlClick(self):
+		""" action - copies the url to clipboard
+		"""
 		url = 'https://{0}:{1}@{2}:{3}'.format(Setting.get('rpc_server_username', 'remoteuser'), Setting.get('rpc_server_password', str(uuid.uuid4())), Setting.get('rpc_server_hostname', 'localhost'), Setting.get('rpc_server_port', 9000))
 		self.gui.clipboard_clear()
 		self.gui.clipboard_append(url)
@@ -324,12 +351,18 @@ class TkRPCManager(TkPage):
 	
 	#=== UTILS ===#
 	def __hideUrl(self):
+		""" util - auto hides the url after 10 seconds
+		"""
 		if(self.urlshown != None):
 			if(self.urlshown <= self.now()-10000):
 				self.widgets['url'].configure(text='Click show or copy')
 				self.urlshown = None
 				self.notifier.addNotice('URL hidden for security purposes')
 	def __validSSLDomain(self, domain):
+		""" util - validate SSL domain
+		
+		@param domain str
+		"""
 		try:
 			assert len(domain) > 4
 			assert not r"/" in domain
@@ -338,6 +371,10 @@ class TkRPCManager(TkPage):
 			pass
 		return False
 	def __validSSLCompany(self, company):
+		""" util - validate SSL company
+		
+		@param company str
+		"""
 		try:
 			assert len(company) > 4
 			assert not r"/" in company
@@ -346,6 +383,10 @@ class TkRPCManager(TkPage):
 			pass
 		return False
 	def __validSSLCountry(self, country):
+		""" util - validate SSL company
+		
+		@param country str
+		"""
 		try:
 			assert country != ''
 			assert any(country in s for s in self.ssl.countryCodes())

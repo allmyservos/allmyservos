@@ -24,8 +24,15 @@ from Scheduler import *
 from Setting import *
 from Network import *
 
+## UI for network
 class TkNetworkManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkNetworkManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkNetworkManager,self).__init__(parent, gui, **options)
 		self.pm = TkDependencyManager(self.widget, {'package':'nmap', 'installer': 'apt-get'}, 'Network Manager', self.gui)
 		if(hasattr(self.gui, 'scheduler')):
@@ -33,12 +40,16 @@ class TkNetworkManager(TkPage):
 		else:
 			self.scheduler = Scheduler()
 	def setup(self):
+		""" setup gui menu
+		"""
 		self.gui.menus['network'] = Tkinter.Menu(self.gui.menubar, tearoff=0, bg=self.colours['menubg'], fg=self.colours['menufg'], activeforeground=self.colours['menuactivefg'], activebackground=self.colours['menuactivebg'])
 		self.gui.menus['network'].add_command(label="Neighbourhood", command=self.OnManageNetworkClick)
 		self.addMenu(label="Network", menu=self.gui.menus['network'])
 	
 	#=== VIEWS ===#
 	def listNodes(self):
+		""" view - list nodes
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Network / Neighbourhood', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,sticky='EW')
@@ -50,6 +61,8 @@ class TkNetworkManager(TkPage):
 		self.widgets['scanLabel'] = Tkinter.Label(self.widgets['nframe'],text='Scanning network... please wait.', bg=self.colours['bg'], fg=self.colours['fg'], font=self.fonts['heading2'])
 		self.widgets['scanLabel'].grid(column=0,row=0,sticky='EW')
 	def updateNodes(self):
+		""" util - update nodes ui
+		"""
 		try:
 			self.widgets['nodes']
 		except:
@@ -124,6 +137,8 @@ class TkNetworkManager(TkPage):
 	
 	#=== ACTIONS ===#
 	def OnManageNetworkClick(self):
+		""" action - display network page
+		"""
 		if(not self.pm.installRequired()):
 			try:
 				self.network

@@ -19,11 +19,15 @@
 import datetime
 from TkBlock import *
 
+## UI for the footer
 class Footer(TkBlock):
 	def __init__(self, parent, gui, **options):
-		'''
-		a simple frame containing footer information
-		'''
+		""" a simple frame containing footer information
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(Footer,self).__init__(parent, gui, **options)
 		self.open() #automatically added to layout
 		year = datetime.date.today().year

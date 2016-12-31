@@ -22,8 +22,16 @@ from TkBlock import *
 from Notifier import *
 from Scheduler import *
 from Setting import *
+
+## UI for notifier
 class TkNotifier(TkBlock):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkNotifier object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkNotifier,self).__init__(parent, gui, **options)
 		self.now = lambda: int(round(time.time() * 1000))
 		self.displayed = []
@@ -34,6 +42,8 @@ class TkNotifier(TkBlock):
 		self.notifier.addNotice('Welcome to AllMyServos')
 		self.gui.scheduler.addTask('notifier_cleanup', self.cleanup, 15)
 	def addNotifier(self):
+		""" view - notifier ui
+		"""
 		self.open()
 		self.widgets['main'] = Tkinter.Frame(self.widget, bg=self.colours['bg'], borderwidth=0, highlightthickness=0)
 		self.widgets['main'].grid(column=0,row=0,sticky='EW')
@@ -51,12 +61,16 @@ class TkNotifier(TkBlock):
 		self.widgets['notices'] = Tkinter.Frame(self.widgets['main'], bg=self.colours['bg'])
 		self.widgets['notices'].grid(column=0,row=self.gridrow,columnspan=2, sticky='EW')
 		self.widgets['notices'].grid_columnconfigure(0, weight = 1)
-		#self.widgets['notices'].grid_propagate(False)
+		
 	def update(self):
+		""" callback to push notifications
+		"""
 		if(len(self.displayed) <= 20):
 			n = self.notifier.getNotice()
 			self.displayed.append(TkNotice(self.widgets['notices'], self.gui, n['time'], n['text'], n['type'], self.width))
 	def cleanup(self):
+		""" remove notices after 10 seconds
+		"""
 		dlen = len(self.displayed)
 		if(dlen > 0 and self.firstrun == False):
 			removed = None
@@ -72,11 +86,25 @@ class TkNotifier(TkBlock):
 		if(self.firstrun == True):
 			self.firstrun = False
 	def close(self):
+		""" close the notifier
+		"""
 		self.widget.grid_forget()
 	def OnToggleArchiveClick(self):
+		""" action - toglle notification archive
+		"""
 		Setting.set('notifier_archive', self.variables['archive'].get())
+## UI for notices
 class TkNotice(object):
 	def __init__(self, parent, gui, time, text, type = 'notice', width=840):
+		""" Initializes TkNotice object
+		
+		@param parent
+		@param gui
+		@param time
+		@param text
+		@param type
+		@param width
+		"""
 		try:
 			TkNotice.displayed
 		except:
@@ -124,5 +152,7 @@ class TkNotice(object):
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['subframe2'],text=self.text, anchor=W, bg=self.colours['bg'], fg=self.colours['headingfg'])
 		self.widgets['frameLabel'].grid(column=1,row=0, padx=10, pady=5,sticky='W')
 	def remove(self):
+		""" removes this notice
+		"""
 		self.widget.grid_forget()
 		

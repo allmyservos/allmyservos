@@ -22,6 +22,9 @@
 					<widget name="TkIMUManager.TkIMUManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
 					<widget name="TkGravityManager.TkGravityManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="1" rowweight="0" menuindex="8"></widget>
 					<widget name="TkOrthoManager.TkOrthoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
+					<widget name="TkCameraManager.TkCameraManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="9"></widget>
+					<widget name="TkTimelapseManager.TkTimelapseManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="9"></widget>
+					<widget name="TkCamMediaManager.TkCamMediaManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="9"></widget>
 					<widget name="TkScheduleManager.TkScheduleManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
 					<widget name="TkThemeManager.TkThemeManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="12"></widget>
 					<widget name="TkSettingManager.TkSettingManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="12"></widget>
@@ -53,6 +56,9 @@
 					<widget name="TkIMUManager.TkIMUManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
 					<widget name="TkGravityManager.TkGravityManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
 					<widget name="TkOrthoManager.TkOrthoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
+					<widget name="TkCameraManager.TkCameraManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
+					<widget name="TkTimelapseManager.TkTimelapseManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
+					<widget name="TkCamMediaManager.TkCamMediaManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
 					<widget name="TkScheduleManager.TkScheduleManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="10"></widget>
 					<widget name="TkThemeManager.TkThemeManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
 					<widget name="TkSettingManager.TkSettingManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>

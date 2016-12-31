@@ -1,26 +1,13 @@
 #!/usr/bin/env python
 from __future__ import division
-import signal
-import socket
-import time
-import string
-import sys
-import getopt
-import time
-import math
+import signal, socket, time, string, sys, getopt, math, threading, smbus, select, os, struct, logging, subprocess
+from __bootstrap import AmsEnvironment
 from math import *
 from numpy import array, dot
-import threading
 from array import *
-import smbus
-import select
-import os
-import struct
-import logging
-import subprocess
 from datetime import datetime
 
-logpath = os.path.join(os.getcwd(), 'files', 'imu')
+logpath = os.path.join(AmsEnvironment.FilePath(), 'imu')
 if (not os.path.exists(logpath)):
 	os.makedirs(logpath)
 

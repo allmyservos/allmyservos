@@ -18,8 +18,12 @@
 #######################################################################
 import os, subprocess, re, datetime, Specification
 from Setting import *
+
+## Validate and generate SSL certificate
 class SSLManager(object):
 	def __init__(self):
+		""" Initializes the SSLManager object
+		"""
 		self.basepath = os.path.join(Specification.Specification.filebase, 'certificate')
 		self.certificate = os.path.join(self.basepath, 'certificate.pem')
 		self.request = os.path.join(self.basepath, 'request.pem')
@@ -29,6 +33,8 @@ class SSLManager(object):
 		if not self.validateCertificate():
 			self.generateCertificate()
 	def validateCertificate(self):
+		""" validate SSL certificate
+		"""
 		try:
 			assert self.keyExists()
 			assert self.certificateExists()
@@ -39,14 +45,20 @@ class SSLManager(object):
 			pass
 		return False
 	def certificateExists(self):
+		""" check SSL certificate exists
+		"""
 		if os.path.exists(self.certificate):
 			return True
 		return False
 	def keyExists(self):
+		""" check private key exists
+		"""
 		if os.path.exists(self.key):
 			return True
 		return False
 	def isValid(self):
+		""" check SSL validity
+		"""
 		try:
 			p = subprocess.Popen(['openssl', 'x509', '-noout', '-startdate', '-enddate', '-subject'],stdout=subprocess.PIPE,stdin=subprocess.PIPE)
 			f = open(self.certificate, 'r')
@@ -82,6 +94,8 @@ class SSLManager(object):
 			pass
 		return False
 	def generateCertificate(self):
+		""" generate SSL certificate
+		"""
 		try:
 			subprocess.check_call(['openssl', 'genrsa', '-out', self.key, '1024'])
 		except Exception as e:
@@ -102,6 +116,10 @@ class SSLManager(object):
 					return True
 		return False
 	def countryCodes(self):
+		""" gets the available country codes
+		
+		@return list
+		"""
 		return ['US',
 				'CA',
 				'AX',

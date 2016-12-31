@@ -24,8 +24,15 @@ from Metric import *
 import ttk
 import datetime
 
+## UI for metrics
 class TkMetricManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkMetricManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkMetricManager,self).__init__(parent, gui, **options)
 		self.m = Metric('placeholder', archive = False)
 		self.index = self.m.getIndex()
@@ -40,6 +47,8 @@ class TkMetricManager(TkPage):
 		self.shapes = {}
 		self.resolutions = { 'day': 86400.0, 'hour': 3600.0, 'minute': 60.0, 'second': 1.0, 'millisecond': 0.001}
 	def setup(self):
+		""" setup gui menu
+		"""
 		self.gui.menus['metrics'] = Tkinter.Menu(self.gui.menubar, tearoff=0, bg=self.colours['menubg'], fg=self.colours['menufg'], activeforeground=self.colours['menuactivefg'], activebackground=self.colours['menuactivebg'])
 		self.gui.menus['metrics'].add_command(label="Snapshot", command=self.OnSnapshotClick)
 		self.gui.menus['metrics'].add_command(label="History", command=self.OnListMetricsClick)
@@ -47,6 +56,8 @@ class TkMetricManager(TkPage):
 	
 	#=== VIEWS ===#
 	def listMetrics(self):
+		""" view - display a list of metrics
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Metrics / History', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,sticky='EW')
@@ -76,6 +87,8 @@ class TkMetricManager(TkPage):
 				self.widgets['{0}View'.format(k)].grid(column=2,row=self.gridrow)
 				self.gridrow += 1
 	def viewMetric(self):
+		""" view - browse metric archives
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Metrics / View Metric', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow, columnspan=2, sticky='EW')
@@ -127,6 +140,8 @@ class TkMetricManager(TkPage):
 		self.widgets['back'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Cancel", image=self.images['back'], command=self.OnListMetricsClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['back'].grid(column=0,row=self.gridrow)
 	def viewMetricSession(self):
+		""" view - browse metric sessions
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Metrics / View Metric', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow, columnspan=2, sticky='EW')
@@ -218,9 +233,8 @@ class TkMetricManager(TkPage):
 		self.widgets['back'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Cancel", image=self.images['back'], command=self.OnLowerResolutionClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['back'].grid(column=0,row=self.gridrow)
 	def updateMetricValues(self, time):
-		'''
-		self.updateMetricValues - adds / updates the value of a metric given the time and resolution of the view
-		'''
+		""" adds / updates the value of a metric given the time and resolution of the view
+		"""
 		time = int(time)
 		self.times['currentstart'] = self.times['rangestart'] + time * self.resolutions[self.resolution]
 		self.times['currentend'] = self.times['currentstart'] + self.resolutions[self.resolution]
@@ -249,11 +263,9 @@ class TkMetricManager(TkPage):
 			self.widgets['dataview'].grid(column=0,row=0,sticky='EW')
 		self.updateValueMapMarker()
 	def updateValueMap(self):
-		'''
-		adds shapes on the value map based on the time of each loaded MetricValue
-		
+		"""adds shapes on the value map based on the time of each loaded MetricValue
 		happens when the view is refreshed (change of resolution or first load
-		'''
+		"""
 		unit = self.scales[self.resolution][1] / self.scales[self.resolution][0]
 		for v in self.vals:
 			indent = (v.timestamp / 1000.0 - self.times['rangestart'])
@@ -269,6 +281,8 @@ class TkMetricManager(TkPage):
 				indent = units * unit
 			self.shapes['v{}'.format(indent)] = self.widgets['valuemap'].create_rectangle((indent,0,indent+10, 20), fill=self.colours['valuefg'], tags='value')
 	def updateValueMapMarker(self):
+		""" updates value map marker
+		"""
 		offset = float(self.variables['time'].get())
 		if(self.resolution != 'millisecond'):
 			unit = self.scales[self.resolution][1] / self.scales[self.resolution][0]
@@ -282,12 +296,16 @@ class TkMetricManager(TkPage):
 		self.widgets['valuemap'].tag_raise('marker')
 		self.widgets['valuemap'].tag_lower('value')
 	def wipeDataView(self):
+		""" clears dataview ui
+		"""
 		try:
 			self.widgets['dataview'].grid_forget()
 			del(self.widgets['dataview'])
 		except:
 			pass
 	def showSnapshot(self):
+		""" view - displays in memory values for all metrics
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Metrics / Snapshot', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,sticky='EW')
@@ -345,6 +363,8 @@ class TkMetricManager(TkPage):
 			self.widgets['noLabel'] = Tkinter.Label(self.widgets['tframe'],text='There are currently no metrics being monitored', anchor=NW, bg=self.colours['bg'], fg=self.colours['fg'])
 			self.widgets['noLabel'].grid(column=0,row=self.gridrow,sticky='EW')
 	def updateValues(self):
+		""" updates values ui
+		"""
 		for k,v in Metric.metrics.iteritems():
 			vals = v.hotValues()
 			if(len(vals) > 0):
@@ -364,11 +384,17 @@ class TkMetricManager(TkPage):
 	
 	#=== ACTIONS ===#
 	def OnListMetricsClick(self):
+		""" action - displays the list metrics page
+		"""
 		self.listMetrics()
 	def OnViewMetricClick(self, name):
+		""" action - displays the view metric page
+		"""
 		self.metric = Metric(name)
 		self.viewMetric()
 	def OnViewMetricSessionClick(self, datestring):
+		""" action - displays the metric session page
+		"""
 		self.session = [x for x in self.metrics[self.metric.name] if x[0] == datestring]
 		self.sessionstart = self.start = datetime.datetime.strptime(datestring,'%Y-%m-%d')
 		self.sessionend = self.end = self.start + datetime.timedelta(seconds=86399)
@@ -384,6 +410,8 @@ class TkMetricManager(TkPage):
 		self.vals = self.metric.hotValues()
 		self.viewMetricSession()
 	def OnRaiseResolutionClick(self):
+		""" action - changes to a higher res
+		"""
 		self.times[self.resolution] = {
 			'rangestart': self.times['rangestart'],
 			'rangeend': self.times['rangeend'],
@@ -407,6 +435,8 @@ class TkMetricManager(TkPage):
 		del(self.shapes['marker']) #prevents canvas shape confusion
 		self.viewMetricSession()
 	def OnLowerResolutionClick(self):
+		""" action - changes to a lower res
+		"""
 		if(self.resolution == 'millisecond'):
 			self.resolution = 'second'
 		elif(self.resolution == 'second'):
@@ -426,6 +456,8 @@ class TkMetricManager(TkPage):
 		self.variables['time'].set(self.times[self.resolution]['offset'])
 		self.updateMetricValues(self.times[self.resolution]['offset'])
 	def OnViewSessionClick(self, datestring):
+		""" action - displays a session
+		"""
 		self.start = datetime.datetime.strptime(datestring,'%Y-%m-%d')
 		self.end = self.start + datetime.timedelta(seconds=86399)
 		self.session = self.sessions[datestring]
@@ -434,6 +466,8 @@ class TkMetricManager(TkPage):
 			self.metrics[s[0]['name']] = Metric(s[0]['name'], -1, False)
 		self.viewSession()
 	def OnViewHourClick(self, data):
+		""" action - displays an hour
+		"""
 		self.hour = data[0]
 		self.metric = self.metrics[data[1]]
 		datestring = '{0}-{1}-{2} {3}'.format(self.session[0][0]['year'], self.session[0][0]['month'], self.session[0][0]['day'], self.__formatMinute(self.hour,0))
@@ -441,6 +475,8 @@ class TkMetricManager(TkPage):
 		self.end = self.start + datetime.timedelta(seconds=3600)
 		self.viewHour()
 	def OnViewMinuteClick(self, data):
+		""" action - displays a minute
+		"""
 		self.hour = data[0]
 		self.minute = data[1]
 		self.metric = data[2]
@@ -449,6 +485,8 @@ class TkMetricManager(TkPage):
 		self.end = self.start + datetime.timedelta(seconds=60)
 		self.viewMinute()
 	def OnViewSecondClick(self, data):
+		""" action - displays a second
+		"""
 		self.hour = data[0]
 		self.minute = data[1]
 		self.second = data[2]
@@ -458,12 +496,18 @@ class TkMetricManager(TkPage):
 		self.end = self.start + datetime.timedelta(seconds=1)
 		self.viewSecond()
 	def OnSnapshotClick(self):
+		""" action - displays snapshot page
+		"""
 		self.showSnapshot()
 	
 	#=== UTILS ===#
 	def __mktime(self, dt):
+		""" util - time from datetime
+		"""
 		return time.mktime(dt.timetuple())
 	def __formatHour(self, hour):
+		""" util - hour display format
+		"""
 		strtime = '{0}:00'
 		if hour < 10:
 			strtime = strtime.format('0{0}'.format(hour))
@@ -471,17 +515,23 @@ class TkMetricManager(TkPage):
 			strtime = strtime.format(hour)
 		return strtime
 	def __formatMinute(self, hour, minute):
+		""" util - minute display format
+		"""
 		strtime = '{0}:{1}'
 		strhour = str(hour) if hour >= 10 else '0{0}'.format(hour)
 		strmin = str(minute) if minute >= 10 else '0{0}'.format(minute)
 		return strtime.format(strhour, strmin)
 	def __formatSecond(self, hour, minute, second):
+		""" util - second display format
+		"""
 		strtime = '{0}:{1}:{2}'
 		strhour = str(hour) if hour >= 10 else '0{0}'.format(hour)
 		strmin = str(minute) if minute >= 10 else '0{0}'.format(minute)
 		strsec = str(second) if second >= 10 else '0{0}'.format(second)
 		return strtime.format(strhour, strmin, strsec)
 	def __formatMillisecond(self, hour, minute, second, ms):
+		""" util - millisecond display format
+		"""
 		strtime = '{0}:{1}:{2}.{3}'
 		strhour = str(hour) if hour >= 10 else '0{0}'.format(hour)
 		strmin = str(minute) if minute >= 10 else '0{0}'.format(minute)

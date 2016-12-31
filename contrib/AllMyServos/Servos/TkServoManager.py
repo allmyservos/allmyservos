@@ -25,8 +25,15 @@ from Motion import *
 from xml.dom import minidom
 from xml.dom.minidom import Document
 
+## UI for servos
 class TkServoManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkServoManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkServoManager,self).__init__(parent, gui, **options)
 		if(gui.specification != None):
 			self.specification = gui.specification
@@ -34,6 +41,8 @@ class TkServoManager(TkPage):
 			self.specification = Specification()
 		self.servos = gui.specification.servos
 	def setup(self):
+		""" setup gui menu
+		"""
 		self.gui.menus['servo'] = Tkinter.Menu(self.gui.menubar, tearoff=0, bg=self.colours['menubg'], fg=self.colours['menufg'], activeforeground=self.colours['menuactivefg'], activebackground=self.colours['menuactivebg'])
 		self.gui.menus['servo'].add_command(label="New", command=self.OnAddServoClick)
 		self.gui.menus['servo'].add_separator()
@@ -43,6 +52,8 @@ class TkServoManager(TkPage):
 	
 	#=== VIEWS ===#
 	def listServos(self):
+		""" view - list servos
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Servos / Configuration', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -104,6 +115,8 @@ class TkServoManager(TkPage):
 			self.widgets['emptylabel'].grid(column=0,row=self.gridrow,sticky='EW')
 			self.gridrow += 1
 	def editServo(self):
+		""" view - edit servo
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Servos / Servo / Edit', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -279,6 +292,8 @@ class TkServoManager(TkPage):
 			self.widgets['deleteservo'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Delete Servo", image=self.images['delete'], command=self.OnDeleteServoClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 			self.widgets['deleteservo'].grid(column=2,row=self.gridrow)
 	def deleteServo(self):
+		""" view - delete servo
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Delete Servo', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -321,6 +336,8 @@ class TkServoManager(TkPage):
 		self.widgets['confirmbutton'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Delete", image=self.images['accept'], command=self.OnDeleteServoConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['confirmbutton'].grid(column=1,row=self.gridrow)
 	def testServos(self):
+		""" view - test servos
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['testheading'] = Tkinter.Label(self.widgets['tframe'],text='Servos / Default Pose', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -397,62 +414,26 @@ class TkServoManager(TkPage):
 			
 			self.widgets['addbutton'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Add", image=self.images['add'], command=self.OnAddServoClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 			self.widgets['addbutton'].grid(column=0,row=self.gridrow)
-	def importConfig(self):
-		self.open()
-		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Import Configuration', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
-		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
-		self.gridrow += 1
-	def exportConfig(self):
-		self.open()
-		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Export Configuration', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
-		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
-		self.gridrow += 1
-		self.widgets['infoLabel1'] = Tkinter.Label(self.widgets['tframe'],text='An XML file will be created containing the current servo configuration.', anchor=NW, bg=self.colours['bg'], fg=self.colours['fg'])
-		self.widgets['infoLabel1'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
-		self.gridrow += 1
-		self.widgets['nameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Filename', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'])
-		self.widgets['nameLabel'].grid(column=0,row=self.gridrow,sticky='EW')
-		self.widgets['nameData'] = Tkinter.Label(self.widgets['tframe'],text='robot.config.xml', anchor=NW, bg=self.colours['bg'], fg=self.colours['valuefg'])
-		self.widgets['nameData'].grid(column=1,row=self.gridrow,sticky='EW')
-		self.gridrow += 1
-		self.widgets['infoLabel2'] = Tkinter.Label(self.widgets['tframe'],text='This file can be used by Blender to map armature bones to servos.', anchor=NW, bg=self.colours['bg'], fg=self.colours['fg'])
-		self.widgets['infoLabel2'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
-		self.gridrow += 1
-		self.widgets['infoLabel3'] = Tkinter.Label(self.widgets['tframe'],text='Blender can then send live commands via RPC or export keyframed animations.', anchor=NW, bg=self.colours['bg'], fg=self.colours['fg'])
-		self.widgets['infoLabel3'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
-		self.gridrow += 1
-		
-		self.variables['friendly'] = Tkinter.BooleanVar()
-		self.widgets['friendlyentry'] = Tkinter.Checkbutton(self.widgets['tframe'], text="User Friendly XML?", variable=self.variables['friendly'], bg=self.colours['inputbg'], fg=self.colours['inputfg'], activebackground=self.colours['activebg'], selectcolor=self.colours['inputbg'])
-		self.widgets['friendlyentry'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
-		self.variables['friendly'].set(True)
-		
-		self.gridrow += 1
-		
-		self.widgets['optionsFrame'] = Tkinter.Frame(self.widgets['tframe'], bg=self.colours['bg'])
-		self.widgets['optionsFrame'].grid(column=0,row=self.gridrow,columnspan=2, sticky='EW')
-		self.gridrow = 0
-		self.widgets['backlabel'] = Tkinter.Label(self.widgets['optionsFrame'],text="Back", bg=self.colours['bg'], fg=self.colours['fg'], height=2)
-		self.widgets['backlabel'].grid(column=0,row=self.gridrow,sticky='EW')
-		self.widgets['acceptlabel'] = Tkinter.Label(self.widgets['optionsFrame'],text="Save", bg=self.colours['bg'], fg=self.colours['fg'], height=2)
-		self.widgets['acceptlabel'].grid(column=1,row=self.gridrow,sticky='EW')
-		self.gridrow += 1
-		self.widgets['cancelbutton'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Cancel", image=self.images['back'], command=self.OnCancelExportClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
-		self.widgets['cancelbutton'].grid(column=0,row=self.gridrow)
-		self.widgets['confirmbutton'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Save", image=self.images['accept'], command=self.OnExportConfigConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
-		self.widgets['confirmbutton'].grid(column=1,row=self.gridrow)
 	
 	#=== ACTIONS ===#
 	def OnListServosClick(self):
+		""" action - display servo list page
+		"""
 		self.refreshServos()
 		self.listServos()
 	def OnAddServoClick(self):
+		""" action - display add servo page
+		"""
 		self.servo = Servo()
 		self.editServo()
 	def OnEditServoClick(self, index = None):
+		""" action - display edit servo page
+		"""
 		self.servo = self.servos[index]
 		self.editServo()
 	def OnSaveServoClick(self):
+		""" action - save servo
+		"""
 		channels = [ x.channel for x in self.servos.values() ]
 		if(not self.servo.blobExists() and self.variables['channel'].get() in channels):
 			self.notifier.addNotice('A servo is already configured for this channel. Please choose another.','warning')
@@ -494,10 +475,16 @@ class TkServoManager(TkPage):
 		self.gui.widgets['left']['TkServoGrid'].OnShowGridClick()
 		self.listServos()
 	def OnDeleteServoClick(self):
+		""" action - display delete servo page
+		"""
 		self.deleteServo()
 	def OnCancelDeleteClick(self):
+		""" action - cancel delete servo
+		"""
 		self.OnListServosClick()
 	def OnDeleteServoConfirmClick(self):
+		""" action - delete servo
+		"""
 		if hasattr(self, 'servo'):
 			del(self.specification.servos[self.servo.jbIndex])
 			self.specification.save()
@@ -506,23 +493,37 @@ class TkServoManager(TkPage):
 			self.refreshServos()
 			self.listServos()
 	def OnTestServosClick(self):
+		""" action - display servo test page
+		"""
 		self.refreshServos()
 		self.testServos()
 	def OnSaveServosClick(self):
+		""" action - display save servos page
+		"""
 		for s in self.servos:
 			self.servos[s].save()
 		self.listServos()
 	def OnResetServosClick(self):
+		""" action - reset servos
+		"""
 		for s in self.servos.values():
 			s.reload()
 			s.setServoAngle()
 		self.testServos()
 	def OnAngleChange(self, newangle):
+		""" action - angle change
+		
+		@param newangle
+		"""
 		self.servo.angle = int(newangle)
 		if(self.servo.blobExists()):
 			self.servo.setServoAngle()
 			self.variables['pulse'].set(self.servo.pulsetable[self.servo.angle])
 	def OnUpdateAngles(self, event):
+		""" action - update angles
+		
+		@param event
+		"""
 		for s in self.servos.values():
 			if ('angle'+str(s.jbIndex) in self.variables.keys()):
 				s.angle = self.variables['angle'+str(s.jbIndex)].get()
@@ -530,6 +531,8 @@ class TkServoManager(TkPage):
 	
 	#=== UTILS ===#
 	def refreshServos(self):
+		""" util - refresh servos
+		"""
 		if (any(self.servos)):
 			for s in self.servos.values():
 				s.reload()

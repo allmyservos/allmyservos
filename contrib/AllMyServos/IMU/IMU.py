@@ -25,10 +25,15 @@ from Scheduler import *
 from MPU6050 import MPU6050, I2C
 from subprocess import Popen, PIPE
 
+## Interfaces with the Accelerometer and Gyro
 class IMU(object):
 	available = None
 	@staticmethod
 	def isAvailable():
+		""" detects imu
+		
+		@return bool
+		"""
 		if (IMU.available == None):
 			p = Popen(['i2cdetect', '-y', str(I2C.getPiI2CBusNumber())], stdout=PIPE)
 			o = p.communicate()[0]
@@ -38,6 +43,12 @@ class IMU(object):
 					available = True
 		return available
 	def __init__(self, specification = None, scheduler = None, stopped = False):
+		""" Initializes INU object
+		
+		@param specification
+		@param scheduler
+		@param stopped
+		"""
 		if (specification != None):
 			self.specification = specification
 		else:
@@ -69,32 +80,57 @@ class IMU(object):
 			self.tottime=0
 			self.scheduler.addTask('imu_watcher', self.calculate, 0.02, stopped)
 	def calibrate(self):
+		""" updates IMU offsets
+		"""
 		self.device.updateOffsets(self.filebase)
 	def initRaw(self):
+		""" initializes the raw metrics
+		"""
 		self.metrics['gyro_raw'] = IMUMetric('gyro_raw',0, Setting.get('imu_archive_gyro_raw',False))
 		self.metrics['acc_raw'] = IMUMetric('acc_raw',0, Setting.get('imu_archive_acc_raw',False))
 	def initNorm(self):
+		""" initializes the normal metrics
+		"""
 		self.metrics['gyro_norm'] = IMUMetric('gyro_norm',0, Setting.get('imu_archive_gyro_norm',False))
 		self.metrics['acc_norm'] = IMUMetric('acc_norm',0, Setting.get('imu_archive_acc_norm',False))
 	def initAngles(self):
+		""" initializes the angle metrics
+		"""
 		self.metrics['gyro_ang'] = IMUMetric('gyro_ang',0, Setting.get('imu_archive_gyro_ang',False))
 		self.metrics['gyro_ang_inc'] = IMUMetric('gyro_ang_inc',0, Setting.get('imu_archive_gyro_ang_inc',False))
 		self.metrics['acc_ang'] = IMUMetric('acc_ang',0, Setting.get('imu_archive_acc_ang',False))
 	def initLowpass(self):
+		""" initializes the low pass metrics
+		"""
 		self.lpf=lowpassfilter(0.5)
 		self.metrics['lowpass'] = IMUMetric('lowpass',0, Setting.get('imu_archive_low',False))
 	def initHighpass(self):
+		""" initializes the high pass metrics
+		"""
 		self.metrics['highpass'] = IMUMetric('highpass',0, Setting.get('imu_archive_high',False))
 	def initComplement(self):
+		""" initializes the complementary metrics
+		"""
 		self.metrics['complement'] = IMUMetric('complement',0, Setting.get('imu_archive_com',False), 50)
 	def addCallback(self, name, callback):
+		""" adds a callback
+		
+		@param name str
+		@param callback function
+		"""
 		self.callbacks[name] = callback
 	def removeCallback(self, name):
+		""" removes a callback
+		
+		@param name str
+		"""
 		try:
 			del(self.callbacks[name])
 		except:
 			pass
 	def calculate(self):
+		""" calculates angles from imu data and runs callbacks
+		"""
 		if(Setting.get('imu_watch_raw',True)):
 			self.updateRaw()
 			if(Setting.get('imu_watch_norm',True)):
@@ -113,6 +149,8 @@ class IMU(object):
 		for v in self.callbacks.values():
 			v()
 	def updateRaw(self):
+		""" updates raw metrics
+		"""
 		try:
 			data = self.device.readSensorsRaw()
 			self.metrics['acc_raw'].value = { 'x':data[0], 'y':data[1], 'z':data[2] }
@@ -120,42 +158,52 @@ class IMU(object):
 		except:
 			pass
 	def updateNorm(self):
-		#data = self.device.readSensors()
-		# self.metrics['acc_norm'].value = { 'x':data[0], 'y':data[1], 'z':data[2] }
-		# self.metrics['gyro_norm'].value = { 'x':data[3], 'y':data[4], 'z':data[5] }
-		
+		""" updates normal metrics
+		"""
 		self.metrics['acc_norm'].value = self.__getAccNormal()
 		self.metrics['gyro_norm'].value = self.__getGyroNormal()
-
 	def updateAng(self):
+		""" updates angle metrics
+		"""
 		self.metrics['acc_ang'].value = self.__getAngleAcc()
 		self.metrics['gyro_ang_inc'].value = self.__getAngleGyroInc()
 		self.metrics['gyro_ang'].value = self.__getAngleGyro()
 	def updateCom(self):
+		""" updates complementary metrics
+		"""
 		self.metrics['complement'].value = self.__getAngleCom()
 	def updateLow(self):
+		""" updates lowpass metrics
+		"""
 		self.metrics['lowpass'].value = self.__getRawLow()
 	def updateHigh(self):
+		""" updates highpass metrics
+		"""
 		self.metrics['highpass'].value = self.__getRawHigh()
 	def start(self):
+		""" starts the imu service
+		"""
 		self.__initOrientations()
 		self.device.readOffsets(self.filebase)
 		self.config = self.device.getConfig()
 		self.scheduler.startTask('imu_watcher')
 	def stop(self):
+		""" stops the imu service
+		"""
 		self.scheduler.stopTask('imu_watcher')
 		self.__flushMetrics()
 	def __flushMetrics(self):
+		""" resets metric values
+		"""
 		self.metrics['gyro_raw'].value = { 'x':0,'y':0,'z':0 }
 		self.metrics['acc_raw'].value = { 'x':0,'y':0,'z':0 }
 		self.metrics['gyro_ang'].value = { 'r':0,'p':0,'y':0 }
 		self.metrics['acc_ang'].value = { 'r':0,'p':0,'y':0 }
 		self.metrics['complement'].value = { 'r':0,'p':0,'y':0 }
 		self.metrics['lowpass'].value = { 'x':0,'y':0,'z':0 }
-		# del(self.tmpaang)
-		# del(self.tmpgang)
-		# del(self.tmpcang)
 	def __getAccNormal(self):
+		""" normalizes accelerometer data
+		"""
 		res = { 'x':0,'y':0,'z':0 }
 		araw = self.metrics['acc_raw'].value
 		if(araw != None):
@@ -166,6 +214,8 @@ class IMU(object):
 			}
 		return res
 	def __getGyroNormal(self):
+		""" normalizes gyro data
+		"""
 		res = { 'x':0,'y':0,'z':0 }
 		graw = self.metrics['gyro_raw'].value
 		if(graw != None):
@@ -176,12 +226,16 @@ class IMU(object):
 			}
 		return res
 	def __getRawLow(self):
+		""" get low pass data
+		"""
 		x,y,z = 0,0,0
 		araw = self.metrics['acc_norm'].value
 		if(araw != None):
 			x,y,z = self.lpf.filter(araw['x'],araw['y'],araw['z'],self.steptime)
 		return { 'x' : x, 'y' : y, 'z' : z }
 	def __getRawHigh(self):
+		""" get high pass data
+		"""
 		try:
 			self.tmphigh
 		except:
@@ -194,6 +248,8 @@ class IMU(object):
 			self.tmphigh['z'] += araw['z'] - low['z']
 		return self.tmphigh
 	def __getAngleAcc(self):
+		""" get accelerometer angle
+		"""
 		try:
 			self.tmpaang
 		except:
@@ -226,6 +282,8 @@ class IMU(object):
 				self.tmpaang['p'] = 180 - aap if(arr + ary < arp + ary and aap > 90) else self.tmpaang['p']
 		return self.__cleanAngles(self.tmpaang)
 	def __getAngleGyroInc(self):
+		""" get incremental gyro angle
+		"""
 		res = {'r':0,'p':0,'y':0}
 		graw = self.metrics['gyro_norm'].value
 		if(graw != None):
@@ -233,6 +291,8 @@ class IMU(object):
 			res = {'r':graw[o['rollaxis']]*self.steptime,'p':graw[o['pitchaxis']]*self.steptime,'y':graw[o['yawaxis']]*self.steptime}
 		return res
 	def __getAngleGyro(self):
+		""" get gyro angle
+		"""
 		try:
 			self.tmpgang
 		except:
@@ -247,6 +307,8 @@ class IMU(object):
 
 		return self.__cleanAngles(self.__polarizeGyro(self.tmpgang))
 	def __getAngleCom(self):
+		""" get complementary filter angle
+		"""
 		aang = self.metrics['acc_ang'].value
 		ginc = self.__polarizeGyro(self.metrics['gyro_ang_inc'].value)
 		low = self.metrics['lowpass'].value
@@ -270,6 +332,8 @@ class IMU(object):
 			self.tmpcang['y'] += ginc['y'] #use the gyro yaw if the yaw axis is aligned with gravity
 		return self.__cleanAngles(self.tmpcang)
 	def shutdown(self):
+		""" stop imu tasks
+		"""
 		for name in self.scheduler.listTasks():
 			try:
 				if(name.find('imu_') > -1):
@@ -277,12 +341,20 @@ class IMU(object):
 			except:
 				pass
 	def __cleanAngles(self, rpy):
+		""" cleans a set of angles
+		
+		@param rpy dict
+		"""
 		return {
 			'r': self.__cleanAngle(rpy['r']),
 			'p': self.__cleanAngle(rpy['p']),
 			'y': self.__cleanAngle(rpy['y'])
 		}
 	def __cleanAngle(self, angle):
+		""" cleans a single angle
+		
+		@param angle int
+		"""
 		try:
 			self.cleaned
 		except:
@@ -300,6 +372,10 @@ class IMU(object):
 			self.cleaned[old] = angle
 		return angle
 	def __polarizeLow(self, xyz = { 'x':0,'y':0,'z':0 }):
+		""" polarize low pass data
+		
+		@param xyz dict
+		"""
 		o = self.orientation
 		return {
 			'x': -xyz['x'] if o['polarity']['acc']['x'] else xyz['x'],
@@ -307,6 +383,10 @@ class IMU(object):
 			'z': -xyz['z'] if o['polarity']['acc']['z'] else xyz['z']
 		}
 	def __polarizeGyro(self, rpy = {'r':0,'p':0,'y':0}):
+		""" polarize gyro data
+		
+		@param rpy dict
+		"""
 		o = self.orientation
 		return {
 			'r': -rpy['r'] if o['polarity']['gyro'][o['rollaxis']] else rpy['r'],
@@ -314,6 +394,8 @@ class IMU(object):
 			'y': -rpy['y'] if o['polarity']['gyro'][o['yawaxis']] else rpy['y']
 		}
 	def __initOrientations(self):
+		""" setup orientation data
+		"""
 		try:
 			self.orientations
 		except:
@@ -740,8 +822,16 @@ class IMU(object):
 				}
 			}
 		self.orientation = self.orientations[self.specification.imu['facing']][self.specification.imu['offset']]
+## Prefixes metric name for IMU
 class IMUMetric(Metric):
 	def __init__(self, name, history = 0, archive = True, batch = 100):
+		""" Initializes the IMUMetric object
+		
+		@param name
+		@param history
+		@param archive
+		@param batch
+		"""
 		fullname = '{0}_{1}'.format('imu',name)
 		super(IMUMetric,self).__init__(fullname, history, archive, batch)
 

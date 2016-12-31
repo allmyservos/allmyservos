@@ -17,10 +17,11 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import os, sys, uuid, json
+from __bootstrap import AmsEnvironment
 
+## Json File Abstraction
 class JsonBlob(object):
-	cwd = os.getcwd()
-	basepath = os.path.join(cwd,'files', 'jsonblob')
+	basepath = os.path.join(AmsEnvironment.FilePath(), 'jsonblob')
 	indexpath = os.path.join(basepath, 'index.json')
 	constructors = {}
 	indexexists = False
@@ -28,9 +29,10 @@ class JsonBlob(object):
 	index = {}
 	@staticmethod
 	def reindex(force = False):
-		'''
-		collects information about available blobs from the file system
-		'''
+		""" collects information about available blobs from the file system
+		
+		@param force
+		"""
 		if (not os.path.exists(JsonBlob.basepath)):
 			os.makedirs(JsonBlob.basepath)
 		if (os.path.exists(JsonBlob.indexpath)):
@@ -60,9 +62,14 @@ class JsonBlob(object):
 		JsonBlob.indexed = True
 	@staticmethod
 	def find(jbModule, jbType, jbIndex):
-		'''
-		returns the saved data or an empty dict
-		'''
+		""" returns the saved data or an empty dict
+		
+		@param jbModule
+		@param jbType
+		@param jbIndex
+		
+		@return dict
+		"""
 		typepath = os.path.join(JsonBlob.basepath, jbModule, jbType)
 		if (jbIndex != None and os.path.exists(typepath)):
 			rowpath = os.path.join(typepath,jbIndex + '.json')
@@ -74,9 +81,13 @@ class JsonBlob(object):
 		return {}
 	@staticmethod
 	def all(jbModule = None, jbType = None):
-		'''
-		returns a dict of saved objects (keyed by jbIndex) or empty dict
-		'''
+		""" returns a dict of saved objects (keyed by jbIndex) or empty dict
+		
+		@param jbModule
+		@param jbType
+		
+		@return dict
+		"""
 		JsonBlob.reindex(not JsonBlob.indexed)
 		if (jbModule != None and jbType != None):
 			if (jbModule in JsonBlob.index.keys() and jbType in JsonBlob.index[jbModule]['classes'].keys()):
@@ -84,9 +95,14 @@ class JsonBlob(object):
 		return {}
 	@staticmethod
 	def hydrate(jbModule = None, jbType = None, ids = []):
-		'''
-		builds a dict of instantiated objects
-		'''
+		""" builds a dict of instantiated objects
+		
+		@param jbModule
+		@param jbType
+		@param ids
+		
+		@return dict
+		"""
 		res = {}
 		if (jbModule in JsonBlob.index.keys()):
 			if (jbType in JsonBlob.index[jbModule]['classes']):
@@ -103,23 +119,23 @@ class JsonBlob(object):
 						res[id] = JsonBlob.constructors[jbModule]['classes'][jbType](id)
 		return res
 	def __init__(self, index = None, autoload = True):
-		'''
-		configures JsonBlob settings and loads any saved data for this jbIndex
-		'''
+		""" configures JsonBlob settings and loads any saved data for this jbIndex
+		
+		@param index
+		@param autoload
+		"""
 		self.jbModule = type(self).__module__
 		self.jbType = type(self).__name__
 		self.jbIndex = index if index != None else str(uuid.uuid4())
 		if (autoload):
 			self.jsonData = JsonBlob.find(self.jbModule, self.jbType, self.jbIndex)
 	def reload(self):
-		'''
-		reinitializes the jsonData
-		'''
+		""" reinitializes the jsonData
+		"""
 		self.jsonData = JsonBlob.find(self.jbModule, self.jbType, self.jbIndex)
 	def save(self):
-		'''
-		saves the current jsonData
-		'''
+		""" saves the current jsonData
+		"""
 		typepath = self.getTypePath()
 		if (not os.path.exists(typepath)):
 			os.makedirs(typepath)
@@ -128,33 +144,37 @@ class JsonBlob(object):
 		f.close()
 		JsonBlob.reindex(force=True)
 	def delete(self):
-		'''
-		deletes any saved data
-		'''
+		""" deletes any saved data
+		"""
 		os.remove(self.getRowPath())
 		JsonBlob.reindex(force=True)
 	def blobExists(self):
-		'''
-		checks whether saved data exists for this object
-		'''
+		""" checks whether saved data exists for this object
+		
+		@return bool
+		"""
 		return os.path.exists(self.getRowPath())
 	def getModulePath(self):
-		'''
-		returns the full file path for the module directory
-		'''
+		""" returns the full file path for the module directory
+		
+		@return str
+		"""
 		return os.path.join(JsonBlob.basepath, self.jbModule)
 	def getTypePath(self):
-		'''
-		returns the full file path for the type directory
-		'''
+		""" returns the full file path for the type directory
+		
+		@return str
+		"""
 		return os.path.join(JsonBlob.basepath, self.jbModule, self.jbType)
 	def getRowPath(self):
-		'''
-		returns the full file path for the object data
-		'''
+		""" returns the full file path for the object data
+		
+		@return str
+		"""
 		return os.path.join(JsonBlob.basepath, self.jbModule, self.jbType, self.jbIndex + '.json')
 	def getRowFileName(self):
-		'''
-		returns the file name for the object
-		'''
+		""" returns the file name for the object
+		
+		@return str
+		"""
 		return self.jbIndex + '.json'

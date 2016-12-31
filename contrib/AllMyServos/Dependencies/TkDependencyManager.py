@@ -17,6 +17,7 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import Tkinter, ttk, re, os, json
+from __bootstrap import AmsEnvironment
 from Tkinter import *
 from Setting import *
 from Notifier import *
@@ -24,16 +25,19 @@ from subprocess import Popen, PIPE
 from copy import copy
 from distutils.version import StrictVersion
 
+## UI for dependencies
 class TkDependencyManager(object):
 	def __init__(self, parent, dependencies, module, gui):
-		'''
-		parent: a tkinter frame
-		dependencies: required packages - examples:
+		""" Initializes the TkDependencyManager object
+		example values for dependencies:
 			single dependency: { 'package': 'nmap', 'installer': 'apt-get' }
 			multi dependency: [{ 'package': 'tk8.5-dev', 'installer': 'apt-get' }, { 'package': 'pillow', 'installer': 'pip', 'version': 'latest' }]
-		module: the name of the module which initialized the package manager
-		gui: reference to the main tkinter app
-		'''
+			
+		@param parent Frame
+		@param dependencies dict or list of dicts
+		@param module: the name of the module which initialized the package manager
+		@param gui reference to the GUI object
+		"""
 		self.widgets = {}
 		self.variables = {}
 		if(isinstance(dependencies, dict)):
@@ -55,17 +59,15 @@ class TkDependencyManager(object):
 		self.widget.grid(column=0,row=0,sticky='EW')
 	
 	def addManager(self):
-		'''
-		called by requesting module if install / upgrade is required
-		'''
+		""" called by requesting module if install / upgrade is required
+		"""
 		self.gridrow = 0
 		self.checkDependencies()
 	
 	#=== VIEWS ===#
 	def checkDependencies(self):
-		'''
-		view - displays the result of the dependency checks
-		'''
+		""" view - displays the result of the dependency checks
+		"""
 		self.open()
 		
 		self.widgets['tlabel'] = Tkinter.Label(self.widgets['tframe'],text='Dependencies / Installation', anchor=W, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -126,9 +128,8 @@ class TkDependencyManager(object):
 		self.widgets['install'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Install", image=self.images['accept'], command=self.OnInstallClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['install'].grid(column=0,row=self.gridrow)
 	def success(self):
-		'''
-		view - displays in the event of a successful installation
-		'''
+		""" view - displays in the event of a successful installation
+		"""
 		self.open()
 		self.widgets['tlabel'] = Tkinter.Label(self.widgets['tframe'],text='Dependencies / Installation / Success', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['tlabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -185,9 +186,8 @@ class TkDependencyManager(object):
 		self.widgets['info'] = Tkinter.Label(self.widgets['tframe'],text='Restart the interface and reopen the {0} module.'.format(self.module), bg=self.colours['bg'], fg=self.colours['headingfg'], height=3)
 		self.widgets['info'].grid(column=0,row=self.gridrow, columnspan = 2, sticky='EW')
 	def failure(self):
-		'''
-		view - displays in the event of an unsuccessful installation
-		'''
+		""" view - displays in the event of an unsuccessful installation
+		"""
 		self.open()
 		self.widgets['tlabel'] = Tkinter.Label(self.widgets['tframe'],text='Dependencies / Installation / Failure', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['tlabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -246,9 +246,8 @@ class TkDependencyManager(object):
 	
 	#=== ACTIONS ===#
 	def OnInstallClick(self):
-		'''
-		action - performs installation
-		'''
+		""" action - performs installation
+		"""
 		self.close()
 		fails = []
 		for k, v in enumerate(self.dependencies):
@@ -269,11 +268,10 @@ class TkDependencyManager(object):
 	
 	#=== UTILS ===#
 	def loadCache(self):
-		'''
-		initialises the dependency cache either with stored data or an empty dict 
-		'''
+		""" initialises the dependency cache either with stored data or an empty dict 
+		"""
 		self.cache = {}
-		self.cachepath = os.path.join(os.getcwd(), 'files', 'Dependencies')
+		self.cachepath = os.path.join(AmsEnvironment.FilePath(), 'Dependencies')
 		self.cachefile = os.path.join(self.cachepath, '{}-cache.json'.format(self.__safeName()))
 		if os.path.isfile(self.cachefile):
 			try:
@@ -285,9 +283,10 @@ class TkDependencyManager(object):
 				pass
 	
 	def installRequired(self):
-		'''
-		returns a bool indicating whether or not any dependencies require installation
-		'''
+		""" returns a bool indicating whether or not any dependencies require installation
+		
+		@return bool
+		"""
 		if('required' in self.cache.keys()):
 			if(not self.cache['required']):
 				return False #only use cached result if installation is not required
@@ -311,9 +310,12 @@ class TkDependencyManager(object):
 		f.close()
 		return required
 	def isInstalled(self, dependency):
-		'''
-		returns status: 0 = not installed, 1 = upgrade required, 2 = installed
-		'''
+		""" returns status: 0 = not installed, 1 = upgrade required, 2 = installed
+		
+		@param dependency
+		
+		@return int
+		"""
 		status = 0
 		if(dependency['installer'] == 'apt-get'):
 			if(len(dependency['package']) > 0):
@@ -365,11 +367,23 @@ class TkDependencyManager(object):
 						line += 1
 		return status
 	def __installDependency(self, dependency):
+		""" installs required package via apt-get or pip
+		
+		@param dependency
+		
+		@return bool
+		"""
 		if(dependency['installer'] == 'apt-get'):
 			return self.__installAptGetDependency(dependency)
 		elif(dependency['installer'] == 'pip'):
 			return self.__installPipDependency(dependency)
 	def __installAptGetDependency(self, dependency):
+		""" installs an apt-get dependency
+		
+		@param dependency
+		
+		@return bool
+		"""
 		installed = False
 		try:
 			if(len(dependency['package']) > 0):
@@ -383,6 +397,12 @@ class TkDependencyManager(object):
 			pass
 		return installed
 	def __installPipDependency(self, dependency):
+		""" installs a pip dependency
+		
+		@param dependency
+		
+		@return bool
+		"""
 		installed = False
 		try:
 			if(len(dependency['package']) > 0):
@@ -401,8 +421,14 @@ class TkDependencyManager(object):
 			pass
 		return installed
 	def __safeName(self):
+		""" removes spaces from the module name
+		
+		@return str
+		"""
 		return self.module.replace(' ', '')
 	def open(self):
+		""" displays the dependency manager
+		"""
 		for k, v in self.widgets.iteritems():
 			v.grid_forget()
 		self.widgets = {}
@@ -411,4 +437,6 @@ class TkDependencyManager(object):
 		self.widgets['tframe'] = Frame(self.widget,bg=self.colours['bg'])
 		self.widgets['tframe'].grid(column=0,row=0,sticky='EW')
 	def close(self):
+		""" removes the dependency manager
+		"""
 		self.widget.grid_forget()

@@ -20,8 +20,14 @@ import re, os, datetime, Specification
 from Scheduler import *
 from subprocess import Popen, PIPE
 from Notifier import *
+
+## Network Information
 class Network(object):
 	def __init__(self, scheduler = None):
+		""" Initializes a Network object
+		
+		@param scheduler
+		"""
 		if(scheduler != None):
 			self.scheduler = scheduler
 		else:
@@ -41,6 +47,8 @@ class Network(object):
 		self.notifier = Notifier()
 		self.scheduler.addTask('network_mapper', self.update, 30)
 	def __initPatterns(self):
+		""" initialize regex patterns
+		"""
 		self.patterns['ifconfig'] = {}
 		self.patterns['ifconfig']['nic'] = re.compile(r'(?P<name>[^\s]+).?')
 		self.patterns['ifconfig']['addr'] = re.compile(r'\s*inet\saddr:(?P<ip>[^\s]+).*')
@@ -50,6 +58,8 @@ class Network(object):
 		self.patterns['nmap']['service'] = re.compile(r'(?P<port>[^\/]+)\/(?P<protocol>\w+)\s+(?P<state>\w+)\s+(?P<service>.+)')
 		self.patterns['nmap']['mac'] = re.compile(r'MAC\sAddress:\s+(?P<mac>[^\s]+)\s+\((?P<brand>[^\)]+)\)')
 	def update(self):
+		""" collect network information
+		"""
 		if(self.ifconfigraw == None and self.mapping == False):
 			self.mapping = True
 			self.__ifconfig()
@@ -62,6 +72,10 @@ class Network(object):
 				self.__cacheNmap()
 				self.mapping = False
 	def __scanNetwork(self):
+		""" discover IP addresses on local network
+		
+		@return bool
+		"""
 		result = False
 		p = Popen(self.nmapcommand, stdout=PIPE)
 		o = p.communicate()[0]
@@ -73,6 +87,10 @@ class Network(object):
 				self.notifier.addNotice('Nmap command complete')
 		return result
 	def __parseNmap(self):
+		""" parse nmap result
+		
+		@return bool
+		"""
 		res = False
 		if(self.nmapraw != None):
 			tmp = []
@@ -92,6 +110,12 @@ class Network(object):
 			res = True
 		return res
 	def __parseDate(self, raw):
+		""" convert date string to datetime.datetime
+		
+		@param raw str
+		
+		@return datetime.datetime
+		"""
 		date = None
 		if(raw != None and raw != ''):
 			linecount = 0
@@ -109,11 +133,17 @@ class Network(object):
 					break
 		return date
 	def __cacheNmap(self):
+		""" save nmap cache
+		"""
 		filepath = os.path.join(self.nmapcachepath, self.nmapcachefile)
 		f = open(filepath, 'w')
 		f.write(self.nmapraw)
 		f.close()
 	def __loadNmapCache(self):
+		""" load nmap cache
+		
+		@return dict
+		"""
 		if not os.path.exists(self.nmapcachepath):
 			os.makedirs(self.nmapcachepath)
 			return False
@@ -133,6 +163,10 @@ class Network(object):
 			return parsed
 		return False
 	def __ifconfig(self):
+		""" perform ifconfig
+		
+		@return str
+		"""
 		result = False
 		p = Popen(self.ifconfigcommand, stdout=PIPE)
 		o = p.communicate()[0]
@@ -144,6 +178,10 @@ class Network(object):
 				self.notifier.addNotice('Ifconfig command complete')
 		return result
 	def __parseIfconfig(self):
+		""" parse ifconfig result
+		
+		@return bool
+		"""
 		if(self.ifconfigraw != None):
 			for l in self.ifconfigraw.split('\n'):
 				match = self.patterns['ifconfig']['nic'].match(l)
@@ -159,6 +197,10 @@ class Network(object):
 			return True
 		return False
 	def __getBroadcast(self):
+		""" get network specific broadcast address
+		
+		@return str
+		"""
 		ip = None
 		if(self.myip != None and self.myip != '127.0.0.1'):
 			parts = self.myip.split('.')

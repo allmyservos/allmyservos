@@ -26,14 +26,23 @@ from xml.dom import minidom
 from xml.dom.minidom import Document
 from StringIO import StringIO
 
+## UI for motions and chains
 class TkMotionManager(TkPage):
 	def __init__(self, parent, gui, **options):
+		""" Initializes TkMotionManager object
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		super(TkMotionManager,self).__init__(parent, gui, **options)
 		self.specification = gui.specification
 		self.servos = self.gui.specification.servos
 		self.channelindex = sorted(self.servos.values(), key=lambda x: x.jsonData['channel'])
 		self.refreshMotions()
 	def setup(self):
+		""" setup gui menu
+		"""
 		self.gui.menus['motion'] = Tkinter.Menu(self.gui.menubar, tearoff=0, bg=self.colours['menubg'], fg=self.colours['menufg'], activeforeground=self.colours['menuactivefg'], activebackground=self.colours['menuactivebg'])
 		self.gui.menus['motion'].add_command(label="New", command=self.OnAddMotionClick)
 		self.gui.menus['motion'].add_separator()
@@ -42,8 +51,9 @@ class TkMotionManager(TkPage):
 		self.addMenu(label="Motion", menu=self.gui.menus['motion'])
 	
 	#=== VIEWS ===#
-	##== Services ==##
 	def serviceManager(self):
+		""" view - service manager
+		"""
 		self.widgets['servicelabel'] = Tkinter.Label(self.widgets['tframe'],text='Motions / Scheduler Service', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['servicelabel'].grid(column=0,row=self.gridrow,sticky='EW')
 		
@@ -79,8 +89,9 @@ class TkMotionManager(TkPage):
 		self.widgets['autostartentry'] = Tkinter.Checkbutton(self.widgets['tframe'], text="Autostart", variable=self.variables['autostart'], command=self.OnToggleAutostartClick, bg=self.colours['inputbg'], fg=self.colours['inputfg'], activebackground=self.colours['activebg'], selectcolor=self.colours['inputbg'])
 		self.widgets['autostartentry'].grid(column=3,row=self.gridrow)
 	
-	##== Motions ==##
 	def listMotions(self):
+		""" view - list motions
+		"""
 		self.open()
 		
 		self.serviceManager()
@@ -156,6 +167,8 @@ class TkMotionManager(TkPage):
 		self.widgets['default'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Default", image=self.images['ram'], command=self.OnDefaultClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['default'].grid(column=1,row=self.gridrow)
 	def editMotion(self):
+		""" view - edit motion
+		"""
 		self.open()
 		self.gridrow = 0
 		self.variables = {}
@@ -214,6 +227,8 @@ class TkMotionManager(TkPage):
 			self.widgets['deletemotion'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Delete Motion", image=self.images['delete'], command=self.OnDeleteMotionClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 			self.widgets['deletemotion'].grid(column=3,row=self.gridrow)
 	def deleteMotion(self):
+		""" view - delete motion
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Motions / Motion / Delete', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -257,6 +272,8 @@ class TkMotionManager(TkPage):
 		self.widgets['confirmbutton'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Delete", image=self.images['accept'], command=self.OnDeleteMotionConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['confirmbutton'].grid(column=1,row=self.gridrow)
 	def editKeyFrames(self):
+		""" view - edit keyframes
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Motions / Motion / Edit Keyframes', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -350,11 +367,21 @@ class TkMotionManager(TkPage):
 		self.widgets['deletekeyframebutton'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Delete", image=self.images['delete'], command=self.OnDeleteKeyFrameClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['deletekeyframebutton'].grid(column=4,row=self.gridrow)
 	def getActiveKeyframe(self, time):
+		""" util - gets the current keyframe data
+		
+		@param time int
+		
+		@return dict
+		"""
 		for kf in self.keyframes:
 			if(self.keyframes[kf]['time'] == time):
 				return self.keyframes[kf]
 		return None
 	def activeKeyFrame(self, time):
+		""" util - updates keyframe ui
+		
+		@param time int
+		"""
 		kf = self.getActiveKeyframe(self.time.get())
 		if(kf != None):
 			self.widgets['framestatusdata'].configure(text="Saved")
@@ -376,6 +403,8 @@ class TkMotionManager(TkPage):
 			self.widgets['clonekeyframebutton'].configure(state='disabled')
 			self.widgets['deletekeyframebutton'].configure(state='disabled')
 	def moveKeyFrame(self):
+		""" view - move keyframe
+		"""
 		self.open()
 		self.gridrow = 0
 		
@@ -416,6 +445,8 @@ class TkMotionManager(TkPage):
 		self.widgets['move'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Move", image=self.images['process'], command=self.OnMoveKeyFrameConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['move'].grid(column=1,row=self.gridrow)
 	def cloneKeyFrame(self):
+		""" view - clone keyframe
+		"""
 		self.open()
 		self.gridrow = 0
 		
@@ -456,6 +487,8 @@ class TkMotionManager(TkPage):
 		self.widgets['clone'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Clone", image=self.images['process'], command=self.OnCloneKeyFrameConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['clone'].grid(column=1,row=self.gridrow)
 	def deleteKeyFrame(self):
+		""" view - delete keyframe
+		"""
 		self.open()
 		self.gridrow = 0
 		
@@ -491,8 +524,9 @@ class TkMotionManager(TkPage):
 		self.widgets['delete'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Delete", image=self.images['delete'], command=self.OnDeleteKeyFrameConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['delete'].grid(column=1,row=self.gridrow)
 	
-	##== Chains ==##
 	def listChains(self):
+		""" view - list chains
+		"""
 		self.open()
 		
 		self.serviceManager()
@@ -542,6 +576,8 @@ class TkMotionManager(TkPage):
 			self.widgets['nochainslabel'] = Tkinter.Label(self.widgets['tframe'],text="There are currently no chains", bg=self.colours['bg'], fg=self.colours['fg'])
 			self.widgets['nochainslabel'].grid(column=0,row=self.gridrow,sticky='EW')
 	def editChain(self):
+		""" view - edit chain
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Motions / Chain / Edit', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -583,6 +619,8 @@ class TkMotionManager(TkPage):
 			self.widgets['deletechain'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Delete Chain", image=self.images['delete'], command=self.OnDeleteChainClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 			self.widgets['deletechain'].grid(column=3,row=self.gridrow)
 	def deleteChain(self):
+		""" view - delete chain
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Motions / Chain / Delete', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -618,6 +656,8 @@ class TkMotionManager(TkPage):
 		self.widgets['confirmbutton'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Delete", image=self.images['accept'], command=self.OnDeleteChainConfirmClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['confirmbutton'].grid(column=1,row=self.gridrow)
 	def listChainMotions(self):
+		""" view - list chain motions
+		"""
 		self.open()
 		self.widgets['clabel'] = Tkinter.Label(self.widgets['tframe'],text='Motions / Chain / Chain Motions', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['clabel'].grid(column=0,row=self.gridrow, columnspan=4, sticky='EW')
@@ -678,6 +718,8 @@ class TkMotionManager(TkPage):
 		self.widgets['cancelbutton'] = Tkinter.Button(self.widgets['optionsFrame'],text=u"Cancel", image=self.images['back'], command=self.OnEditChainClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['cancelbutton'].grid(column=0,row=self.gridrow)
 	def editChainMotion(self):
+		""" view - edit chain motion
+		"""
 		self.open()
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Motions / Chain / Chain Motion / Edit', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
 		self.widgets['frameLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
@@ -729,6 +771,8 @@ class TkMotionManager(TkPage):
 			self.widgets['delete'].grid(column=2,row=self.gridrow)
 		
 	def deleteChainMotion(self):
+		""" view - delete chain motion
+		"""
 		self.open()
 		self.gridrow = 0
 		self.widgets['frameLabel'] = Tkinter.Label(self.widgets['tframe'],text='Motions / Chain / Chain Motion / Delete', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading'])
@@ -779,39 +823,63 @@ class TkMotionManager(TkPage):
 		self.widgets['confirmbutton'].grid(column=1,row=self.gridrow)
 	
 	#=== ACTIONS ===#
-	##== Service ==##
 	def OnStartClick(self):
+		""" action - start motion scheduler service
+		"""
 		self.widgets['start'].configure(state='disabled')
 		self.widgets['stop'].configure(state='normal')
 		self.gui.scheduler.tasks['motion_scheduler'].start()
 	def OnStopClick(self):
+		""" action - stop motion scheduler service
+		"""
 		self.widgets['start'].configure(state='normal')
 		self.widgets['stop'].configure(state='disabled')
 		self.gui.scheduler.tasks['motion_scheduler'].stop()
 	def OnToggleAutostartClick(self):
+		""" action - toggle motion scheduler service autostart
+		"""
 		self.autostart = Setting.set('motion_scheduler_autostart', self.variables['autostart'].get())
 	
-	##== Motions ==##
 	def OnRelaxClick(self):
+		""" action - relax all servos
+		"""
 		self.gui.motionScheduler.relax()
 		self.notifier.addNotice('Servos relaxed.')
 	def OnDefaultClick(self):
+		""" action - default all servos
+		"""
 		self.gui.motionScheduler.default()
 		self.notifier.addNotice('Default servo position activated.')
 	def OnListMotionsClick(self):
+		""" action - display motion list
+		"""
 		self.refreshMotions()
 		self.listMotions()
 	def OnAddMotionClick(self):
+		""" action - display add motion page
+		"""
 		self.motion = Motion()
 		self.editMotion()
 	def OnRefreshClick(self):
+		""" action - refresh motion list
+		"""
 		self.refreshMotions()
 		self.listMotions()
 	def OnPlayMotionClick(self, index = None):
+		""" action - play motion
+		
+		@param index
+		"""
 		self.gui.motionScheduler.triggerMotion(index)
 	def OnPlaySlowMotionClick(self, index = None):
+		""" action - play slow motion
+		
+		@param index
+		"""
 		self.gui.motionScheduler.triggerMotion(index, True)
 	def OnSaveMotionClick(self):
+		""" action - save motion
+		"""
 		name = self.variables['name'].get()
 		fps = self.variables['fps'].get()
 		if (len(name) < 3):
@@ -829,16 +897,28 @@ class TkMotionManager(TkPage):
 		self.refreshMotions()
 		self.listMotions()
 	def OnEditMotionClick(self, index):
+		""" action - display edit motion page
+		
+		@param index str
+		"""
 		self.motion = Motion(index)
 		self.editMotion()
 	def OnEditKeyFramesClick(self):
+		""" action - display edit keyframes page
+		"""
 		self.keyframes = { x['time']:x for x in self.motion.jsonData['keyframes'] }
 		self.editKeyFrames()
 	def OnDeleteMotionClick(self):
+		""" action - display delete motion page
+		"""
 		self.deleteMotion()
 	def OnCancelDeleteClick(self):
+		""" action - cancel delete motion
+		"""
 		self.listMotions()
 	def OnDeleteMotionConfirmClick(self):
+		""" action - delete motion
+		"""
 		if hasattr(self, 'motion'):
 			del(self.specification.motions[self.motion.jbIndex])
 			self.motion.delete()
@@ -848,19 +928,26 @@ class TkMotionManager(TkPage):
 			self.notifier.addNotice('Motion deleted')
 			self.listMotions()
 	def OnAddTimeClick(self):
+		""" action - adds a second to 
+		"""
 		self.duration += 1000
 		self.widgets['timeline'].configure(to=self.duration)
 		self.notifier.addNotice('1 Second added. Update to apply')
 	def OnTrimTimeClick(self):
+		""" action - removes time without keyframes
+		"""
 		self.duration = 1000
 		if(any(self.keyframes)):
 			self.duration = self.keyframes[sorted(self.keyframes)[-1]]['time']
-		#self.editKeyFrames()
 		self.notifier.addNotice('Motion time trimmed')
 	def OnMoveKeyFrameClick(self):
+		""" action - display move keyframe page
+		"""
 		self.currentTime = self.time.get()
 		self.moveKeyFrame()
 	def OnMoveKeyFrameConfirmClick(self):
+		""" action - move keyframe
+		"""
 		newtime = self.variables['newtime'].get()
 		if (self.currentTime == newtime):
 			self.notifier.addNotice('Frame already at ' + str(newtime), 'warning')
@@ -874,9 +961,13 @@ class TkMotionManager(TkPage):
 		self.notifier.addNotice('Keyframe moved. Update to apply.')
 		self.editKeyFrames()
 	def OnCloneKeyFrameClick(self):
+		""" action - display clone keyframe page
+		"""
 		self.currentTime = self.time.get()
 		self.cloneKeyFrame()
 	def OnCloneKeyFrameConfirmClick(self):
+		""" action - clone keyframe
+		"""
 		newtime = self.variables['newtime'].get()
 		if (self.currentTime == newtime):
 			self.notifier.addNotice('Cannot clone to same time', 'warning')
@@ -890,6 +981,8 @@ class TkMotionManager(TkPage):
 		self.editKeyFrames()
 		self.notifier.addNotice('Keyframe Cloned')
 	def OnUpdateKeyFrameClick(self):
+		""" action - update keyframe
+		"""
 		kf = {
 			'time': self.time.get(),
 			'instructions': []
@@ -907,36 +1000,55 @@ class TkMotionManager(TkPage):
 		self.editKeyFrames()
 		self.notifier.addNotice('Keyframe updated')
 	def OnDeleteKeyFrameClick(self):
+		""" action - display delete keyframe page
+		"""
 		self.currentTime = self.time.get()
 		self.deleteKeyFrame()
 	def OnDeleteKeyFrameConfirmClick(self):
+		""" action - delete keyframe
+		"""
 		del(self.keyframes[self.currentTime])
 		self.notifier.addNotice('Keyframe deleted. Update to apply')
 		self.editKeyFrames()
 	def OnCancelKeyFrameClick(self):
+		""" action - cancel keyframe action
+		"""
 		self.editKeyFrames()
 	def OnUpdateAngles(self, event):
+		""" action - sync servo angles
+		
+		@param event
+		"""
 		for s in self.channelindex:
 			s.angle = self.variables['servoangle'+s.jbIndex].get()
 			s.setServoAngle()
 
-	##== Chains ==##
 	def OnListChainsClick(self):
+		""" action - display chain list page
+		"""
 		self.chains = self.specification.chains
 		self.listChains()
 	def OnAddChainClick(self):
+		""" action - display add chain page
+		"""
 		self.chain = {
 			'name': '',
 			'motions': {}
 		}
 		self.editChain()
 	def OnEditChainClick(self, index = None):
+		""" action - display edit chain page
+		
+		@param index
+		"""
 		if (index != None):
 			self.chain = self.chains[index]
 			self.editChain()
 		elif (hasattr(self, 'chain')):
 			self.editChain()
 	def OnSaveChainClick(self):
+		""" action - save chain
+		"""
 		if (hasattr(self, 'chain')):
 			name = self.variables['name'].get()
 			if (name == ''):
@@ -951,28 +1063,44 @@ class TkMotionManager(TkPage):
 			self.notifier.addNotice('Chain saved')
 			self.listChains()
 	def OnDeleteChainClick(self, index = None):
+		""" action - display delete chain page
+		
+		@param index
+		"""
 		if (index != None):
 			self.chain = self.chains[index]
 			self.deleteChain()
 		elif hasattr(self, 'chain'):
 			self.deleteChain()
 	def OnDeleteChainConfirmClick(self):
+		""" action - delete chain
+		"""
 		if hasattr(self, 'chain'):
 			del(self.specification.chains[self.chain['name']])
 			self.specification.save()
 			self.chain = None
 		self.listChains()
 	def OnCancelDeleteChainClick(self):
+		""" action - cancel delete chain
+		"""
 		self.listChains()
 	def OnPlayChainClick(self, index):
+		""" action - trigger a chain
+		"""
 		self.gui.motionScheduler.triggerChain(index)
 	def OnListChainMotionsClick(self, index = None):
+		""" action - display list chain motion page
+		
+		@param index
+		"""
 		if (index != None):
 			self.chain = self.specification.chains[index]
 			self.listChainMotions()
 		elif(hasattr(self, 'chain')):
 			self.listChainMotions()
 	def OnAddChainMotionClick(self):
+		""" action - display add chain page
+		"""
 		self.chainmotion = {
 			'index': str(uuid.uuid4()),
 			'motion': '',
@@ -980,12 +1108,18 @@ class TkMotionManager(TkPage):
 		}
 		self.editChainMotion()
 	def OnEditChainMotionClick(self, index = None):
+		""" action - display edit chain motion page
+		
+		@param index
+		"""
 		if (index != None):
 			self.chainmotion = self.chain['motions'][index]
 			self.editChainMotion()
 		elif (hasattr(self, 'chainmotion')):
 			self.editChainMotion()
 	def OnSaveChainMotionClick(self):
+		""" action - save chain motion
+		"""
 		motion = self.variables['motion'].get()
 		chaintype = self.variables['type'].get()
 		if (not motion in [ x.jsonData['name'] for x in self.specification.motions.values() ]):
@@ -1001,12 +1135,18 @@ class TkMotionManager(TkPage):
 		self.notifier.addNotice('Chain motion saved')
 		self.OnListChainMotionsClick()
 	def OnDeleteChainMotionClick(self, index = None):
+		""" action - display delete chain motion
+		
+		@param index
+		"""
 		if (index != None):
 			self.chainmotion = self.chain['motions'][index]
 			self.deleteChainMotion()
 		elif (hasattr(self, 'chainmotion')):
 			self.deleteChainMotion()
 	def OnDeleteChainMotionConfirmClick(self):
+		""" action - delete chain motion
+		"""
 		if hasattr(self, 'chainmotion'):
 			del(self.chain['motions'][self.chainmotion['index']])
 			self.specification.save()
@@ -1014,27 +1154,47 @@ class TkMotionManager(TkPage):
 			self.notifier.addNotice('Chain motion deleted')
 			self.listChainMotions()
 	def OnCancelDeleteChainMotionClick(self):
+		""" action - cancel delete chain motion
+		"""
 		self.listChainMotions()
 			
 	#=== UTILS ===#
 	def getMotionNames(self):
+		""" util - gets a list of motion names
+		
+		@return tuple
+		"""
 		motions = []
 		for m in self.motions.values():
 			motions.append(m.jsonData['name'])
 		return tuple(motions)
 	def getMotionFromName(self, name):
+		""" util - gets a motion from the name
+		
+		@param name
+		
+		@return Motion
+		"""
 		motion = None
 		m = {k:v for k,v in self.motions.items() if v.jsonData['name'] == name }
 		if(len(m) == 1):
 			motion = m[m.keys()[0]]
 		return motion
 	def getMotionFromId(self, id):
+		""" util - gets a motion from id
+		
+		@param id
+		"""
 		return motion[id]
 	def refreshMotions(self):
+		""" util - update objects reference to the motion in the specification
+		"""
 		self.motions = self.specification.motions
 		
 	def __implantKeyframes(self):
+		""" util - update motion keyframes from this object
+		"""
 		self.motion.jsonData['keyframes'] = []
 		if (len(self.keyframes) > 0):
 			for key in sorted(self.keyframes):
-				self.motion.jsonData['keyframes'].append(self.keyframes[key])	
+				self.motion.jsonData['keyframes'].append(self.keyframes[key])

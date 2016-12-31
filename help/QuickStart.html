@@ -11,25 +11,37 @@
 		<p>You can check the current working directory using: File -> System -> Information</p>
 		<p>CLI.py can be run over SSH. This is one of the ways the robot can be controlled from a remote computer.</p>
 		<h2>Specifications</h2>
+		<p>Menu: File -> Specification</p>
 		<p>Any set of instructions for a configuration of servos only make sense in the context of that specific configuration.</p>
 		<p>For example, changing the channels into which the servos are wired would result in incorrect movements.</p>
 		<p>For this reason, AllMyServos keeps track of changes to the current servo configuration, motions, chains, key mappings and IMU orientation.</p>
 		<p>Specifications can also be packaged and exported to other copies of AllMyServos allowing a robot configuration to be cloned by exchanging a packaged file.</p>
 		<p>Specifications also include a preview image of the blender armature and the blend file its self.</p>
 		<p>View the current specification, list all specifications and install new ones using: File -> Specification</p>
+		<h2>System</h2>
+		<p>Menu: File -> System -> Information</p>
+		<p>Use this section to check various platform specific information.</p>
+		<p>Menu: File -> System -> Startup</p>
+		<p>Use this section to start All My Servos with the Pi automatically.</p>
+		<p>This is useful for a Pi which is dedicated to a particular robot and should make the services available as soon as it boots.</p>
+		<p>Auto starting All My Servos is also useful for headless operation (without a monitor).</p>
+		<p>One example is making the Pi automatically start capturing timelapse footage when powered on.</p>
 		<h2>Servos</h2>
-		<p>Servos can be configured by choosing: Servos -> Configure</p>
+		<p>Menu: Servos -> Configure</p>
 		<p>Add a servo for each channel of the servo driver and assign it a unique, human readable name.</p>
 		<p>Once you have defined all required servos, the default pose can be fine tuned using: Servos -> Test</p>
 		<p>Additionally you can supply bone information which can be used by a Blender armature</p>
 		<h2>Motions</h2>
+		<p>Menu: Motions -> List Motions</p>
 		<p>Motions are frames of instructions for the servos which will be executed at a specified rate (frames per second).</p>
 		<h2>Chains</h2>
+		<p>Menu: Motions -> List Chains</p>
 		<p>Chains allow you to define a series of motions which will be executed on this basis:</p>
 		<p>Start: Generally starts in the default position and begins a movement</p>
 		<p>Loop: Continues the start motion and ends in the same position, allowing it to be run repeatedly.</p>
 		<p>End: When the chain is stopped, this motion is scheduled. It continues the loop motion and returns the robot to the default pose.</p>
 		<h2>Keyboard</h2>
+		<p>Menu: Keyboard -> Manage</p>
 		<p>Use this to configure your keyboard to trigger motions or chains.</p>
 		<p>A map is a collection of key mappings</p>
 		<p>A key mapping is where you define what a key should do when pressed.</p>
@@ -37,20 +49,24 @@
 		<p>When the key is released, the chain initiates the end motion and stops.</p>
 		<p>The keyboard module is designed to work with TkInter and over SSH</p>
 		<h2>Metrics</h2>
+		<p>Menu: Metrics -> History</p>
 		<p>A crucial part of running experiments is being able to record your results. Metrics can be setup to collect any kind of information while the robot is running.</p>
 		<p>Results are archived for later use and multiple past values can be stored in memory for comparisons during runtime.</p>
 		<p>You can see a snapshot of the metrics your robot is currently monitoring by going to: Metrics -> Snapshot</p>
 		<p>You can browse the historic values by going to: Metrics -> History</p>
 		<p>The metric history displays archives in hour, minute, second and millisecond resolutions.</p>
 		<h2>RPC</h2>
+		<p>Menu: RPC -> Manage Server</p>
 		<p>The Remote Procedure Call protocol allows remote commands to be sent from any device.</p>
 		<p>This service is protected by 1024 bit encryption and requires a username and password.</p>
 		<p>In addition, it lists all of the valid country codes for the SSL certificate and the exposed functions.</p>
 		<p>Exposed functions are the methods within the 'Exposed' class which can be called by a remote computer.</p>
 		<p>Further information about the service and access to the settings are available through: RPC -> Manage Server</p>
 		<h2>Network</h2>
+		<p>Menu: Network -> Neigborhood</p>
 		<p>This allows your robot to collect information about computers connected to the local network.</p>
 		<h2>IMU</h2>
+		<p>Menu: IMU -> Orientation</p>
 		<p>This section is dedicated to the Gyro / Accelerometer.</p>
 		<p>An IMU or Inertial Measuring Unit is a device, normally a printed circuit, which supplies information to a computer about its orientation and motion.</p>
 		<p>All My Servos is based on the widely available MPU6050.</p>
@@ -59,11 +75,28 @@
 		<p>IMU -> Gravity - Visualizes the isolated effect of gravity according to the accelerometer.</p>
 		<p>IMU -> Orthographic - This section has an orthographic representation of the robot. It allows the data collected from the IMU to be remapped to match the real roll, pitch and yaw.</p>
 		<p>IMU -> Balance - This section allows rules to be configured for balancing. Starting the service will put the robot in the default position and attempt to maintain the angle based on the rules.</p>
+		<h2>Camera</h2>
+		<p>Menu: Camera -> Manage</p>
+		<p>This section allows you to manage the camera service and all of the settings for a camera connected the Raspberry Pi camera interface.</p>
+		<p>All of the camera settings are grouped into a 'Camera Profile'. Most settings can be changed while the service is running.</p>
+		<p>Tweak the settings and click save to add a new profile.</p>
+		<p>Existing profiles can be activated which will sync the current camera profile settings and use that profile as the default.</p>
+		<p>Profiles can be used later to initialise the camera, such as with the timelapse feature.</p>
+		<p>A viewfinder is provided in the GUI which will marshal part of the HDMI output to preview the camera.</p>
+		<p>Photos and videos can be captured while the camera service is running.</p>
+		<p>There is also an option to start / stop streaming.</p>
+		<p>Menu: Camera -> Timelapse</p>
+		<p>Configure time lapse tasks for the camera service to perform.</p>
+		<p>Menu: Camera -> Media</p>
+		<p>Find and view media created by the camera service.</p>
 		<h2>Schedule</h2>
+		<p>Menu: Schedule -> Scheduled Tasks</p>
 		<p>All scheduled tasks are created using a generic thread which allows them to be managed using this section of the application.</p>
 		<h2>Themes</h2>
+		<p>Menu: Settings -> Themes</p>
 		<p>Don't like the way the application looks? There's an interface for that! Go to: Settings -> Themes</p>
 		<h2>All Settings</h2>
+		<p>Menu: Settings -> All Settings</p>
 		<p>This section is for developers or advanced users only.</p>
 		<p>Settings allow values used in the application to be manipulated easily. An interface is normally provided with the feature but in case it isn't, find it here.</p>
 	</body>

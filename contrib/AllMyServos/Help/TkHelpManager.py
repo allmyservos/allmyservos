@@ -17,26 +17,27 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import ttk, os, Tkinter
+from __bootstrap import AmsEnvironment
 from Tkinter import *
 from TkBlock import *
 from TkHtml import *
 from Setting import *
 from subprocess import Popen, PIPE
 
+## UI for help
 class TkHelpManager(TkPage):
 	def __init__(self, parent, gui, **options):
-		'''
-		uses TkHtml, a simple HTML to Tkinter class which only parses the first level of the body element. only created for use here
-		'''
+		""" uses TkHtml, a simple HTML to Tkinter class which only parses the first level of the body element. only created for use here
+		"""
 		super(TkHelpManager,self).__init__(parent, gui, **options)
 		self.html = TkHtml(gui)
 	def setup(self):
-		'''
-		setup the menu
-		'''
+		""" setup the menu
+		"""
 		self.gui.menus['help'] = Tkinter.Menu(self.gui.menubar, tearoff=0, bg=self.colours['menubg'], fg=self.colours['menufg'], activeforeground=self.colours['menuactivefg'], activebackground=self.colours['menuactivebg'])
 		self.gui.menus['help'].add_command(label="Quick start guide", command=self.OnQuickStartGuideClick)
 		self.gui.menus['help'].add_command(label="Hardware", command=self.OnHardwareClick)
+		self.gui.menus['help'].add_command(label="Camera", command=self.OnCameraClick)
 		self.gui.menus['help'].add_command(label="Blender", command=self.OnBlenderClick)
 		self.gui.menus['help'].add_command(label="Development", command=self.OnDevelopmentClick)
 		self.gui.menus['help'].add_command(label="Subscribe", command=self.OnSubscribeClick)
@@ -45,49 +46,47 @@ class TkHelpManager(TkPage):
 	
 	#=== VIEWS ===#
 	def quickStartGuide(self):
-		'''
-		view displaying the content for the quick start page
-		'''
+		""" view - displaying the content for the quick start page
+		"""
 		self.open()
 		
 		self.widgets['frameText'] = self.html.getHtml(self.widgets['tframe'], 'QuickStart')
 		self.widgets['frameText'].grid(column=0,row=self.gridrow,sticky='EW')
 	def donate(self):
-		'''
-		view displaying the content for the donate page
-		'''
+		""" view - displaying the content for the donate page
+		"""
 		self.open()
 		
 		self.widgets['frameText'] = self.html.getHtml(self.widgets['tframe'], 'Donate')
 		self.widgets['frameText'].grid(column=0,row=self.gridrow,sticky='EW')
 	def subscribe(self):
-		'''
-		view displaying the content for the subscribe page
-		'''
+		""" view - displaying the content for the subscribe page
+		"""
 		self.open()
 		
 		self.widgets['frameText'] = self.html.getHtml(self.widgets['tframe'], 'Subscribe')
 		self.widgets['frameText'].grid(column=0,row=self.gridrow,sticky='EW')
 	def hardware(self):
-		'''
-		view displaying the content for the hardware page
-		'''
+		""" view - displaying the content for the hardware page
+		"""
 		self.open()
 		
 		self.widgets['frameText'] = self.html.getHtml(self.widgets['tframe'], 'Hardware')
 		self.widgets['frameText'].grid(column=0,row=self.gridrow,sticky='EW')
+	def camera(self):
+		""" view - displaying the content for the camera page
+		"""
+		self.open()
+		
+		self.widgets['frameText'] = self.html.getHtml(self.widgets['tframe'], 'Camera')
+		self.widgets['frameText'].grid(column=0,row=self.gridrow,sticky='EW')
 	def blender(self):
-		'''
-		view displaying the content for the blender page
-		'''
+		""" view - displaying the content for the blender page
+		"""
 		self.open()
 		
 		self.widgets['frameText'] = self.html.getHtml(self.widgets['tframe'], 'BlenderIntegration')
 		self.widgets['frameText'].grid(column=0,row=self.gridrow,sticky='EW')
-		
-		self.gridrow += 1
-		
-		
 		
 		self.gridrow += 1
 		
@@ -108,9 +107,8 @@ class TkHelpManager(TkPage):
 		self.widgets['viewAddon'] = Tkinter.Button(self.widgets['infoframe'],text=u"View Addon", image=self.images['find'], command=self.OnViewAddonClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['viewAddon'].grid(column=3,row=self.gridrow)
 	def development(self):
-		'''
-		view displaying the content for the development page
-		'''
+		""" view - displaying the content for the development page
+		"""
 		self.open()
 		
 		self.widgets['frameText'] = self.html.getHtml(self.widgets['tframe'], 'Development')
@@ -118,47 +116,48 @@ class TkHelpManager(TkPage):
 	
 	#=== ACTIONS ===#
 	def OnQuickStartGuideClick(self):
-		'''
-		action - open quick start guide
-		'''
+		""" action - open quick start guide
+		"""
 		self.quickStartGuide()
 	def OnDonateClick(self):
-		'''
-		action - open donate page
-		'''
+		""" action - open donate page
+		"""
 		self.donate()
 	def OnSubscribeClick(self):
-		'''
-		action - open subscribe page
-		'''
+		""" action - open subscribe page
+		"""
 		self.subscribe()
 	def OnHardwareClick(self):
-		'''
-		action - open hardware page
-		'''
+		""" action - open hardware page
+		"""
 		self.hardware()
+	def OnCameraClick(self):
+		""" action - open camera page
+		"""
+		self.camera()
 	def OnBlenderClick(self):
-		'''
-		action - open blender page
-		'''
+		""" action - open blender page
+		"""
 		self.blender()
 	def OnDevelopmentClick(self):
-		'''
-		action - open development page
-		'''
+		""" action - open development page
+		"""
 		self.development()
 	def OnViewAddonClick(self):
-		'''
-		action - open file manager to bundled blender addon location
-		'''
-		res = self.__openFileManager(os.path.join(os.getcwd(), 'help/blender-addon'))
+		""" action - open file manager to bundled blender addon location
+		"""
+		res = self.__openFileManager(os.path.join(AmsEnvironment.AppPath(), 'help/blender-addon'))
 		if(res):
 			self.notifier.addNotice('Now showing: Bundled Addon in file manager')
 		else:
-			self.notifier.addNotice('Unable to open: '+os.path.join(os.getcwd(), 'help/blender-addon'), 'error')
+			self.notifier.addNotice('Unable to open: '+os.path.join(AmsEnvironment.AppPath(), 'help/blender-addon'), 'error')
 	
 	#=== UTILS ===#
 	def __openFileManager(self, dir=''):
+		""" opens the pi file manager
+		
+		@param dir str
+		"""
 		try:
 			if(len(dir) > 0):
 				command = ['pcmanfm', dir]

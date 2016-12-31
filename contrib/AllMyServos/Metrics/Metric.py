@@ -17,19 +17,21 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import re, json, time, datetime, tarfile, os
+from __bootstrap import AmsEnvironment
 from copy import copy
 
+## Metrics are variables which can archive 
 class Metric(object):
 	def __init__(self, name, history = 0, archive = True, batch = 10):
-		'''
+		""" Initializes a Metric object
 		A metric is like a variable but it collects changes and saves them in batches to an archive in CSV format. Older archives are compressed and added to cold storage.
-		
 		This was designed to have as smaller footprint on CPU and RAM as possible while still recording every historic value
 		
-		name - should be unique to each instance of the Metric class - characters which cannot be used as directory names will be stripped or replaced
-		history - the amount of time in milliseconds used to retain values in memory. 0 = no previous values, -1 = all previous values, 1000 = the last seconds worth
-		archive - create an archive of historic values for later examination
-		'''
+		@param name - should be unique to each instance of the Metric class - characters which cannot be used as directory names will be stripped or replaced
+		@param history - the amount of time in milliseconds used to retain values in memory. 0 = no previous values, -1 = all previous values, 1000 = the last seconds worth
+		@param archive - create an archive of historic values for later examination
+		@param batch
+		"""
 		self.name = self.__cleanseName(name)
 		self.history = history
 		self.__archive = archive
@@ -46,7 +48,7 @@ class Metric(object):
 		except:
 			Metric.__session = {}
 			Metric.__session['date'] = datetime.date.today()
-			Metric.filebase = os.path.join(os.getcwd(), 'files')
+			Metric.filebase = AmsEnvironment.FilePath()
 			Metric.__session['archivepath'] = os.path.join(Metric.filebase, 'archive')
 			Metric.__session['archivepattern'] = re.compile(r'(?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+)-(?P<name>.+)\.csv')
 			Metric.__session['coldpattern'] = re.compile(r'(?P<year>\d+)-(?P<month>\d+)-(?P<day>\d+).tar.gz')
@@ -63,16 +65,18 @@ class Metric(object):
 		Metric.index()
 	@staticmethod
 	def getIndex():
-		'''
-		Metric.getIndex() - returns the complete metrics index
-		'''
+		""" gets the complete metrics index
+		
+		@return dict
+		"""
 		return Metric.__session['index']
 	@staticmethod
 	def index(force = False):
-		'''
-		internal use only
+		"""internal use only
 		indexes archive names and temperature (hot/cold) by date
-		'''
+		
+		@param force
+		"""
 		firstrun = False
 		try:
 			Metric.__session['index']
@@ -93,10 +97,11 @@ class Metric(object):
 					Metric.__session['index']['metrics'][a[0]['name']].append([k, a[0], a[1]])
 	@staticmethod
 	def __indexArchive(archive, cold = False):
-		'''
-		internal use only
-		creates index entry for an archive
-		'''
+		""" creates index entry for an archive
+		
+		@param archive
+		@param old
+		"""
 		datestring = '{0}-{1}-{2}'.format(archive['year'], archive['month'], archive['day'])
 		try:
 			Metric.__session['index']['sessions'][datestring]
@@ -105,10 +110,12 @@ class Metric(object):
 		Metric.__session['index']['sessions'][datestring].append([archive, cold])
 	@staticmethod
 	def __listArchives(name = None):
-		'''
-		internal use only
-		returns a list of segmented archive names, found in the archives folder
-		'''
+		""" returns a list of segmented archive names, found in the archives folder
+		
+		@param name
+		
+		@return list
+		"""
 		files = os.listdir(Metric.__session['archivepath'])
 		files = [ x for x in files if Metric.__session['archivepattern'].match(x) ]
 		if(name):
@@ -116,10 +123,12 @@ class Metric(object):
 		return map(Metric.__unpackArchiveName,files)
 	@staticmethod
 	def __listColdArchives(name = None):
-		'''
-		internal use only
-		returns a list of archives found in any date-named tar.gz files in the coldstorage folder
-		'''
+		""" returns a list of archives found in any date-named tar.gz files in the coldstorage folder
+		
+		@param name
+		
+		@return list
+		"""
 		coldarchives = []
 		files = os.listdir(Metric.__session['coldpath'])
 		for f in files:
@@ -127,10 +136,12 @@ class Metric(object):
 		return map(Metric.__unpackArchiveName,coldarchives)
 	@staticmethod
 	def __unpackArchiveName(name):
-		'''
-		internal use only
-		splits an archive name (e.g. 2014-01-01-[name].csv) into a dict
-		'''
+		""" splits an archive name (e.g. 2014-01-01-[name].csv) into a dict
+		
+		@param name
+		
+		@return dict or None
+		"""
 		groups = Metric.__session['archivepattern'].match(name)
 		try:
 			return { 'year': groups.group('year'), 'month': groups.group('month'), 'day': groups.group('day'), 'name': groups.group('name') }
@@ -138,10 +149,12 @@ class Metric(object):
 			return None
 	@staticmethod
 	def __unpackColdArchiveName(name):
-		'''
-		internal use only
-		splits a compressed archive name (e.g. 2014-01-01.tar.gz) into a dict
-		'''
+		""" splits a compressed archive name (e.g. 2014-01-01.tar.gz) into a dict
+		
+		@param name
+		
+		@return dict or None
+		"""
 		groups = Metric.__session['coldpattern'].match(name)
 		try:
 			return { 'year': groups.group('year'), 'month': groups.group('month'), 'day': groups.group('day') }
@@ -149,10 +162,13 @@ class Metric(object):
 			return None
 	@staticmethod
 	def __warmArchives(coldfile, name = None):
-		'''
-		internal use only
-		returns a complete list of archives within a given tar file
-		'''
+		""" returns a complete list of archives within a given tar file
+		
+		@param coldfile
+		@param name
+		
+		@return list
+		"""
 		tarpath = os.path.join(Metric.__session['coldpath'], coldfile)
 		try:
 			tar = tarfile.open(tarpath, "r:gz")
@@ -165,14 +181,26 @@ class Metric(object):
 		return names
 	
 	def getInfo(self):
+		""" get metric info
+		
+		@return dict
+		"""
 		return { 'name': self.name, 'history': self.history, 'archive': self.__archive, 'batch': self.__batch, 'type': self.__getType() }
 	def __cleanseName(self, name):
+		""" ensures metric name is suitable for directory use
+		
+		@return str
+		"""
 		badstring = r'\/:*?"<>|'
 		if(badstring.find(name[0]) > -1):
 			name = name[1:]
 		name = re.sub(badstring, '', name)
 		return name
 	def __getType(self):
+		""" gets the value type
+		
+		@return str
+		"""
 		mytype = 'TBD'
 		try:
 			mytype = self.__values[-1].datatype
@@ -181,9 +209,11 @@ class Metric(object):
 		return mytype
 	@property
 	def value(self):
-		'''
-		x = metric.value - returns the most up to date value of this metric
-		'''
+		""" gets the most up to date value of this metric
+		usage: x = metric.value
+		
+		@return value
+		"""
 		v = None
 		try:
 			v = self.__values[-1]
@@ -192,9 +222,9 @@ class Metric(object):
 		return v.datavalue
 	@value.setter
 	def value(self, value):
-		'''
-		metric.value = x - sets the most up to date value and performs maintenance
-		'''
+		""" sets the most up to date value and performs maintenance
+		metric.value = x
+		"""
 		if(isinstance(value, dict)):
 			datatype = 'dict'
 			strvalue = json.dumps(value)
@@ -226,21 +256,27 @@ class Metric(object):
 		self.__values.append(MetricValue(self.name, now, datatype, strvalue, value, self.__archive, self.__batch))
 		self.__maintain(now)
 	def hotValues(self):
-		'''
-		x = metric.hotValues() - returns all values in memory
-		'''
+		""" gets all values in memory
+		x = metric.hotValues()
+		
+		@return list
+		"""
 		return copy(self.__values)
 	def clearValues(self):
-		'''
-		metric.clearValues() - empties the list of values
-		'''
+		""" empties the list of values
+		metric.clearValues()
+		"""
 		self.__values = []
 	def loadValues(self, start = None, end = None, resolution = 'hour'):
-		'''
-		metric.loadValues(time.time(),time.time()) - load historic values for this metric between the given times
+		""" load historic values for this metric between the given times
+		metric.loadValues(time.time(),time.time())
 		start - time.time() float - seconds since unix epoc (subtract seconds for earlier values)
 		end - time.time() float - seconds since unix epoc (subtract seconds for earlier values)
-		'''
+		
+		@param start
+		@param end
+		@param resolution
+		"""
 		resolutions = ['hour','minute','second','millisecond']
 		if(resolution in resolutions):
 			ikeys = Metric.__session['index']['sessions'].keys()
@@ -260,8 +296,14 @@ class Metric(object):
 								self.__loadWarm(a[0], start, end, resolution)
 							else:
 								self.__loadCold(a[0], start, end, resolution)
-		return None
 	def hasValues(self, start, end):
+		""" check for valies in time range
+		
+		@param start
+		@param end
+		
+		@return bool
+		"""
 		ikeys = Metric.__session['index']['sessions'].keys()
 		ikeys.sort()
 		startdate = datetime.datetime.fromtimestamp(start).date()
@@ -284,10 +326,12 @@ class Metric(object):
 								break
 		return found
 	def __cast(self, val):
-		'''
-		internal use only
-		casts a MetricValue to the relevant python data type
-		'''
+		""" casts a MetricValue to the relevant python data type
+		
+		@param val
+		
+		@return value
+		"""
 		if(val.datatype == 'dict'):
 			return json.loads(val.strvalue)
 		elif(val.datatype == 'list'):
@@ -310,10 +354,13 @@ class Metric(object):
 		else:
 			return str(val.strvalue)
 	def __recast(self, strvalue, datatype):
-		'''
-		internal use only
-		casts a string to the supplied python data type
-		'''
+		""" casts a string to the supplied python data type
+		
+		@param strvalue
+		@param datatype
+		
+		@return value
+		"""
 		if(datatype == 'dict'):
 			return json.loads(strvalue)
 		elif(datatype == 'list'):
@@ -336,25 +383,35 @@ class Metric(object):
 		else:
 			return str(strvalue)
 	def __loadWarm(self, archive, start, end, resolution):
-		'''
-		internal use only
-		loads a warm archive from /archives
-		'''
+		""" loads a warm archive from /archives
+		
+		@param archive
+		@param start
+		@param end
+		@param resolution
+		"""
 		filename = '{0}/{1}-{2}-{3}-{4}.csv'.format(Metric.__session['archivepath'], archive['year'], archive['month'], archive['day'], archive['name'])
 		self.__parseArchive(filename, start, end, resolution)
 	def __loadCold(self, archive, start, end, resolution):
-		'''
-		internal use only
-		loads a cold archive from /archives/coldstorage/[date].tar.gz
-		'''
+		""" loads a cold archive from /archives/coldstorage/[date].tar.gz
+		
+		@param archive
+		@param start
+		@param end
+		@param resolution
+		"""
 		coldfile = '{0}/{1}-{2}-{3}.tar.gz'.format(Metric.__session['coldpath'], archive['year'], archive['month'], archive['day'])
 		filename = '{0}-{1}-{2}-{3}.csv'.format(archive['year'], archive['month'], archive['day'], archive['name'])
 		self.__warmArchive(coldfile, filename, start, end, resolution)
 	def __findWarm(self, archive, start, end):
-		'''
-		internal use only
-		determines whether warm values exist in timespan
-		'''
+		""" determines whether warm values exist in timespan
+		
+		@param archive
+		@param start
+		@param end
+		
+		@return bool
+		"""
 		filename = '{0}/{1}-{2}-{3}-{4}.csv'.format(Metric.__session['archivepath'], archive['year'], archive['month'], archive['day'], archive['name'])
 		f = open(filepath, 'r')
 		for l in f:
@@ -367,10 +424,14 @@ class Metric(object):
 		f.close()
 		return False
 	def __findCold(self, archive, start, end):
-		'''
-		internal use only
-		determines whether cold values exist in timespan
-		'''
+		""" determines whether cold values exist in timespan
+		
+		@param archive
+		@param start
+		@param end
+		
+		@return bool
+		"""
 		coldfile = '{0}/{1}-{2}-{3}.tar.gz'.format(Metric.__session['coldpath'], archive['year'], archive['month'], archive['day'])
 		filename = '{0}-{1}-{2}-{3}.csv'.format(archive['year'], archive['month'], archive['day'], archive['name'])
 		tar = tarfile.open(coldfile, "r:gz")
@@ -387,10 +448,13 @@ class Metric(object):
 					break
 		return found
 	def __parseArchive(self, filepath, start, end, resolution):
-		'''
-		internal use only
-		collects data from an uncompressed archive
-		'''
+		""" collects data from an uncompressed archive
+		
+		@param filepath
+		@param start
+		@param end
+		@param resolution
+		"""
 		increments = { 'hour': 3600.0, 'minute': 60.0, 'second': 1.0, 'millisecond': 0.001 }
 		nextts = 0
 		f = open(filepath, 'r')
@@ -403,10 +467,14 @@ class Metric(object):
 					self.__values.append(self.__parseValue(matches))
 		f.close()
 	def __warmArchive(self, coldfile, archive, start, end, resolution):
-		'''
-		internal use only
-		collects data from a compressed archive
-		'''
+		""" collects data from a compressed archive
+		
+		@param coldfile
+		@param archive
+		@param start
+		@param end
+		@param resolution
+		"""
 		increments = { 'hour': 3600.0, 'minute': 60.0, 'second': 1.0, 'millisecond': 0.001 }
 		nextts = 0
 		tar = tarfile.open(coldfile, "r:gz")
@@ -420,16 +488,16 @@ class Metric(object):
 					self.__values.append(self.__parseValue(matches))
 		tar.close()
 	def __parseValue(self, value):
-		'''
-		internal use only
-		generic function for converting pattern matches into MetricValue objects
-		'''
+		""" generic function for converting pattern matches into MetricValue objects
+		
+		@param value
+		"""
 		return MetricValue(self.name, long(value.group('t')), str(value.group('dt')), str(value.group('v')), self.__recast(str(value.group('v')), str(value.group('dt'))))
 	def __maintain(self, now):
-		'''
-		internal use only
-		archives values from memory and triggers cold storage (at the beginning of each session)
-		'''
+		""" archives values from memory and triggers cold storage (at the beginning of each session)
+		
+		@param now
+		"""
 		v = self.__values
 		if(self.__archive and not hasattr(v[-1], 'saved')):
 			v[-1].saved = True
@@ -438,30 +506,30 @@ class Metric(object):
 			del(self.__values[0])
 		self.__coldstore()
 	def __coldstore(self):
-		'''
-		internal use only
-		finds older archives for compression
-		'''
+		""" finds older archives for compression
+		"""
 		if(not Metric.__session['coldstored']):
 			Metric.__session['coldstored'] = True
 			tochill = [ x for x in Metric.__listArchives(self.name) if self.__isChillable(x) ]
 			self.__chillArchives(tochill)
 	def __isChillable(self, archive):
-		'''
-		internal use only
-		determines which archives are chillable (yesterday or older)
-		'''
+		""" determines which archives are chillable (yesterday or older)
+		
+		@param archive
+		
+		@return bool
+		"""
 		if(archive != None):
 			datestring = '{0}-{1}-{2}'.format(archive['year'], archive['month'], archive['day'])
 			archivedate = datetime.datetime.strptime(datestring,'%Y-%m-%d').date()
 			return True if archivedate < Metric.__session['date'] else False
 		return False
 	def __chillArchives(self, archives = []):
-		'''
-		internal use only
-		indexes chillable archives by date so they can be compressed in a single transaction per date
+		""" indexes chillable archives by date so they can be compressed in a single transaction per date
 		then performs compression
-		'''
+		
+		@param archives list
+		"""
 		if(len(archives) > 0):
 			dates = {}
 			for a in archives:
@@ -485,12 +553,13 @@ class Metric(object):
 							pass
 					Metric.index(True)
 				tar.close()
+## Metric values are self archiving with a timestamp
 class MetricValue(object):
 	def __init__(self, name = '', timestamp = 0, datatype = '', strvalue = '', datavalue = None, archive = True, batch = 10):
-		'''
-		in-memory objects which hold historic values of a metric
+		""" Initializes MetricValue object
+		In-memory objects which hold historic values of a metric
 		they are also responsible for archiving themselves
-		'''
+		"""
 		self.name = name
 		self.timestamp = timestamp
 		self.datatype = datatype
@@ -507,7 +576,7 @@ class MetricValue(object):
 			MetricValue.__session
 		except:
 			MetricValue.__session = {}
-			MetricValue.filebase = os.path.join(os.getcwd(), 'files')
+			MetricValue.filebase = AmsEnvironment.FilePath()
 			MetricValue.__session['date'] = datetime.date.today()
 			MetricValue.__session['path'] = os.path.join(MetricValue.filebase, 'archive')
 			MetricValue.__session['header'] = 't,dt,v\r\n'
@@ -527,10 +596,9 @@ class MetricValue(object):
 				f.write(MetricValue.__session['header'])
 				f.close()
 	def archive(self):
-		'''
+		""" a metric triggers this function but it only writes to the file once 10 values have been collected
 		metricvalue.archive()
-		a metric triggers this function but it only writes to the file once 10 values have been collected
-		'''
+		"""
 		MetricValue.queue[self.name].append(MetricValue.__session['template'].format(self.timestamp,self.datatype,self.strvalue))
 		MetricValue.counters[self.name] += 1
 		if(self.__archive and MetricValue.counters[self.name] >= self.__batch and not MetricValue.__session['writing']):

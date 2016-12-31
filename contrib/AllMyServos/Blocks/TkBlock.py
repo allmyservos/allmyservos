@@ -16,20 +16,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
-
 import Tkinter
 from Tkinter import *
 from Setting import *
 from Notifier import *
+
+## Base class for objects that use part of the TkInter window
 class TkBlock(object):
 	def __init__(self, parent, gui, **options):
-		'''
-		TkBlock is a base class. Any class containing Tkinter objects should extend it.
+		"""TkBlock is a base class. Any class containing Tkinter objects should extend it.
 		- initializes common attributes
 		- creates a wrapped widget which applies the settings from the theme profile
 		- provides generic views for data
 		- provides open and close functions
-		'''
+		
+		@param parent
+		@param gui
+		@param options
+		"""
 		self.gui = gui
 		self.parent = parent
 		self.column, self.row, self.columnspan, self.rowspan, self.padx, self.pady, self.sticky, self.scrollable, self.rowweight, self.columnweight, self.menuindex, self.width, self.height = options['column'], options['row'], options['columnspan'], options['rowspan'], options['padx'], options['pady'], options['sticky'], options['scrollable'], options['rowweight'], options['columnweight'], options['menuindex'], options['width'], options['height']
@@ -42,14 +46,12 @@ class TkBlock(object):
 		self.initWidget()
 		self.setup()
 	def setup(self):
-		'''
-		override this for menu setup
-		'''
+		""" override this for menu setup
+		"""
 		pass
 	def initWidget(self):
-		'''
-		initializes the common Tkinter objects required to be displayed
-		'''
+		"""Initializes the common Tkinter objects required to be displayed
+		"""
 		self.wrap = Tkinter.Frame(self.parent, bg=self.colours['bg'], borderwidth=0, highlightthickness=0)
 		self.wrap.grid(row=self.row, column=self.column, padx=self.padx, pady=self.pady, columnspan=self.columnspan, rowspan=self.rowspan, sticky=self.sticky)
 		self.wrap.columnconfigure(0, weight=1)
@@ -80,18 +82,16 @@ class TkBlock(object):
 			self.canvas.create_window((0,0),window=self.widget, anchor=NW)
 			self.widget.bind("<Configure>", self.gui.scroll)
 	def addMenu(self, menu, label="-"):
-		'''
-		convenience function to make use of a menu index if one is supplied by the profile
-		'''
+		""" Convenience function to make use of a menu index if one is supplied by the profile
+		"""
 		if(isinstance(self.menuindex, int)):
 			self.gui.menubar.insert_cascade(index=self.menuindex, label=label, menu=menu)
 		else:
 			self.gui.menubar.add_cascade(label=label, menu=menu)
 	def open(self):
-		'''
-		calling open causes this block to be displayed within Tkinter
+		""" Calling open causes this block to be displayed within Tkinter
 		normally called at the top of a view method 
-		'''
+		"""
 		try:
 			self.widgets
 		except:
@@ -113,16 +113,18 @@ class TkBlock(object):
 		self.widgets['tframe'].grid(column=0,row=0,sticky='NW')
 		self.widgets['tframe'].grid_columnconfigure(0, weight=1)
 	def close(self):
-		'''
-		calling close causes this block to be hidden within Tkinter
-		'''
+		""" Calling close causes this block to be hidden within Tkinter
+		"""
 		self.wrap.grid_forget()
 	def genericView(self, parent, value):
-		'''
-		within a view method, this can be used to display any variable
+		""" Within a view method, this can be used to display any variable
+			supports: int, float, long, str, unicode, dict and list
 		
-		supports: int, float, long, str, unicode, dict and list
-		'''
+		@param parent
+		@param value
+		
+		@return Tkinter.Frame
+		"""
 		w = Tkinter.Frame(parent, borderwidth=0, highlightthickness=0, bg=self.colours['rowaltbg'])
 		if(isinstance(value, (int, float, long))):
 			view = self.numberView(w, value)
@@ -137,21 +139,33 @@ class TkBlock(object):
 		view.grid(column=0,row=0, sticky='EW')
 		return w
 	def numberView(self, parent, value):
-		'''
-		formats a number for display within Tkinter
-		'''
+		""" Formats a number for display within Tkinter
+		
+		@param parent
+		@param value
+		
+		@return Tkinter.Label
+		"""
 		w = Tkinter.Label(parent,text=str(value), bg=self.colours['rowaltbg'], fg=self.colours['valuefg'], anchor='nw', height=2)
 		return w
 	def stringView(self, parent, value):
-		'''
-		formats a string for display within Tkinter
-		'''
+		""" Formats a string for display within Tkinter
+		
+		@param parent
+		@param value
+		
+		@return Tkinter.Label
+		"""
 		w = Tkinter.Label(parent,text=str(value), bg=self.colours['rowaltbg'], fg=self.colours['valuefg'], anchor='nw')
 		return w
 	def dictView(self, parent, value):
-		'''
-		formats a dict for display within Tkinter
-		'''
+		""" Formats a dict for display within Tkinter
+		
+		@param parent
+		@param value
+		
+		@return Tkinter.Frame
+		"""
 		w = Tkinter.Frame(parent, borderwidth=0, highlightthickness=0, bg=self.colours['rowaltbg'])
 		if(len(value) > 0):
 			row = 0
@@ -169,7 +183,6 @@ class TkBlock(object):
 				elif(v == None):
 					view = self.stringView(w, 'None')
 				else:
-					print(type(v))
 					view = self.stringView(w, 'TBD')
 				view.grid(column=1,row=row, sticky='EW')
 				row += 1
@@ -178,9 +191,13 @@ class TkBlock(object):
 			view.grid(column=0,row=0, sticky='EW')
 		return w
 	def iterView(self, parent, value):
-		'''
-		formats a list for display within Tkinter
-		'''
+		""" Formats a list for display within Tkinter
+		
+		@param parent
+		@param value
+		
+		@return Tkinter.Frame
+		"""
 		w = Tkinter.Frame(parent, borderwidth=0, highlightthickness=0, bg=self.colours['rowaltbg'])
 		if(len(value) > 0):
 			row = 0
@@ -203,13 +220,21 @@ class TkBlock(object):
 			view = Tkinter.Label(w,text='TBD', bg=self.colours['rowaltbg'], fg=self.colours['valuefg'], height=2)
 			view.grid(column=0,row=0, sticky='EW')
 		return w
+## Page objects are like block but they clear the parent frame before opening
 class TkPage(TkBlock):
+	""" TkPage class extends TkBlock
+	"""
 	def __init__(self, parent, gui, **options):
-		'''
-		TkPage - extends TkBlock
-		Before opening, TkPage will clear the main frame, so this object replaces any previous page
-		'''
+		""" Initializes TkPage - extends TkBlock
+			Before opening, TkPage will clear the main frame, so this object replaces any previous page
+			
+		@param parent
+		@param gui
+		@param **options Pointer to additional arguments
+		"""
 		super(TkPage,self).__init__(parent, gui, **options)
 	def open(self):
+		""" Clears the main frame and opens the TkBlock
+		"""
 		self.gui.clearMain()
 		super(TkPage,self).open()
