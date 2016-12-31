@@ -1,0 +1,35 @@
+<html>
+	<head>
+		<title>Camera</title>
+	</head>
+	<body>
+		<h1>Camera</h1>
+		<p>The All My Servos camera module makes working with the camera easy as Pi.</p>
+		<h2>Manage</h2>
+		<p>This section allows the camera service to be started and stopped.</p>
+		<p>The camera service, starts and stops the camera hardware and triggers capture and streaming events.</p>
+		<p>The viewfinder section shows the area of the screen which will be marshalled for previewing.</p>
+		<p>Below the viewfinder there are capture and stream buttons which. </p>
+		<p>The capture button will either take a photo or begin shooting video.</p>
+		<p>The stream button enabled streaming.</p>
+		<p>Camera profiles are a collection of settings related to the camera.</p>
+		<p>These can be used to initialize the camera. The current camera profile is shown on the right.</p>
+		<p>Settings can be changed while the camera is previewing and they will be applied instantly.</p>
+		<h2>Shortcuts</h2>
+		<p>As long as the keyboard service is running the following keyboard shortcuts are available:</p>
+		<p>C (Shift + c) - Start / stop the camera service</p>
+		<p>S (Shift + s) - Toggle streaming</p>
+		<p>Space - Start / stop video capture or capture image (depending on the record mode of the active profile)</p>
+		<h2>Timelapse</h2>
+		<p>This section allows one or more timelapse tasks to be setup.</p>
+		<p>The camera can either record a still image every N seconds or N seconds of video every N seconds.</p>
+		<p>If a timelapse task is active and the camera service is running then the camera will be recording.</p>
+		<p>As the task runs, it takes a note of all the media it creates.</p>
+		<p>Use the 'media' button to view a list of media recorded by the task.</p>
+		<h2>Media</h2>
+		<p>This section provides basic file manager functionality to make finding the files the camera has created easier.</p>
+		<p>The camera saves files in '/files/camera/still' and '/files/camera/video'</p>
+		<p>Files are named using this format:</p>
+		<p>[Image|Clip]-[timestamp].[extension]</p>
+	</body>
+</html>
