@@ -68,3 +68,12 @@ v0.30
 2016-12-26	Documentation enhanced for doxygen,
 			Added LXDE startup support and ui for
 			startup settings management
+v0.31
+2017-01-20	Added motor module (DC motor support)
+2017-01-23	Added stepper motor support
+2017-01-25	Added stepper output order switch
+v0.32
+2017-01-31	Added Joystick module
+2017-02-01	Added DC motor joystick support
+2017-02-04	Added Stepper motor joystick support
+2017-02-26	Enabled mouse scrolling

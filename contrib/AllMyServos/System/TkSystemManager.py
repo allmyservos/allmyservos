@@ -629,6 +629,8 @@ class TkSystemManager(TkPage):
 		self.showInformation()
 	def OnExitClick(self):
 		self.__stoptasks()
+		if (hasattr(self.gui, 'specification')):
+			self.gui.specification.stopMotors()
 		self.gui.quit()
 	def OnToggleAutostartClick(self):
 		Setting.set('startup_autostart', self.variables['autostart'].get())
@@ -637,7 +639,7 @@ class TkSystemManager(TkPage):
 	def OnChangeStartWith(self):
 		Setting.set('startup_start_with', self.variables['startwith'].get())
 		if (Setting.get('startup_start_with') == 'linux'):
-			#ensure start_mode is cli and us
+			#ensure start_mode is cli
 			Setting.set('startup_start_mode', 'cli')
 		self.startupInfo = self.__getStartupInfo(useCache=False)
 		self.updateStartupConfig()

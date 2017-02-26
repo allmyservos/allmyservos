@@ -41,8 +41,8 @@ class GUI(Tkinter.Tk):
 		self.parent = parent
 		self.setting = Setting()
 		if(PreFlight.status()):
-			self.specification = self.getClass('Specification.Specification')() #avoids importing before preflight checks
-			self.scheduler = Scheduler()
+			self.specification = self.getClass('Specification.Specification').GetInstance() #avoids importing before preflight checks
+			self.scheduler = Scheduler.GetInstance()
 			self.motionScheduler = self.getClass('Motion.MotionScheduler')(self.specification, self.scheduler)
 			self.initTheme()
 			self.initFrames()
@@ -191,8 +191,8 @@ class GUI(Tkinter.Tk):
 					self.frames['{0}{1}'.format(f['name'], 'Canvas')].configure(yscrollcommand=self.frames['{0}{1}'.format(f['name'], 'yScroller')].set, xscrollcommand=self.frames['{0}{1}'.format(f['name'], 'xScroller')].set)
 					self.frames['{0}{1}'.format(f['name'], 'Canvas')].create_window((0,0),window=self.frames[f['name']], anchor=NW)
 					self.frames[f['name']].bind("<Configure>", self.scroll)
-					self.frames['{0}{1}'.format(f['name'], 'Canvas')].bind("<Button-4>", self.mouseScroll)
-					self.frames['{0}{1}'.format(f['name'], 'Canvas')].bind("<Button-5>", self.mouseScroll)
+					self.frames['{0}{1}'.format(f['name'], 'Canvas')].bind_all("<Button-4>", self.mouseScroll)
+					self.frames['{0}{1}'.format(f['name'], 'Canvas')].bind_all("<Button-5>", self.mouseScroll)
 		else:
 			# fallback layout
 			self.frames['header'] = Tkinter.Frame(self, borderwidth=0, bg = self.colours['bg'])
@@ -240,8 +240,16 @@ class GUI(Tkinter.Tk):
 		event.widget.master.configure(scrollregion=event.widget.master.bbox(ALL))
 	def mouseScroll(self, event):
 		""" Generic function to handle scroll wheel events
+		
+		@param event TkInter event object
 		"""
-		event.widget.yview('scroll', -1 if event.num == 4 else 1,'units')
+		elem = event.widget
+		if (not isinstance(elem, Scrollbar)):
+			#skip Scrollbar events
+			for x in range(0,len(str(elem).split('.'))-2):
+				if (isinstance(elem, Canvas) and any(elem.config('yscrollcommand')[4])):
+					elem.yview('scroll', -1 if event.num == 4 else 1,'units') # set yview if yscrollcommand has been set
+				elem = elem._nametowidget(elem.winfo_parent()) # change element
 	def reset(self):
 		""" Resets the scrollbar to the top when changing widget in the main frame
 		"""

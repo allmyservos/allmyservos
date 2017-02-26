@@ -31,7 +31,7 @@ class Resources(object):
 		if(scheduler != None):
 			self.scheduler = scheduler
 		else:
-			self.scheduler = Scheduler()
+			self.scheduler = Scheduler.GetInstance()
 		self.s = Setting()
 		self.metrics = {}
 		self.initCpu()

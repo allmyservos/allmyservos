@@ -6,7 +6,8 @@ AllMyServos is a robotics app for Raspberry Pi, written in Python, to help it in
 
 	- Pi Camera
 	- Adafruit PCA9685 16 Channel Servo Driver
-	- Invensense MPU6050 Accelerometer and Gyro
+	- Invensense MPU6050 or MPU9050 Accelerometer and Gyro
+	- Motor Drivers: L298N, TB6612FNG and BTS7960
 
 The app provides a user friendly interface for configuration, a command line version for running over SSH and now supports headless operation.
 
@@ -16,6 +17,10 @@ For more information visit:
 
 http://allmyservos.co.uk
 https://www.youtube.com/user/allmyservos
+
+Technical documentation is available here:
+
+http://allmyservos.github.io
 
 ## Supported Models and Operating Systems
 
@@ -35,6 +40,7 @@ OS Versions:
 	- 2016-05-10
 	- 2016-09-23
 	- 2016-11-25
+	- 2017-01-11
 
 ## Functionality
 
@@ -48,6 +54,8 @@ The specification contains all of the information required to recreate:
 - Servos
 - Motions
 - Chains
+- DC Motors
+- Stepper Motors
 - Keymaps
 - IMU orientation
 
@@ -78,9 +86,30 @@ When the servo configuration is complete, motions can be created which orchestra
 
 A chain is a series of motions that can be triggered, loop until trigger is released and then end in a controlled fashion.
 
+#### DC Motors
+
+DC motors can be connected to the Raspberry Pi using motor driver boards. These boards interpret signals sent to it as a direction and speed, outputting the relevant current, with the relevant polarity.
+Motor driver boards also allow a separate power supply to send more current to the motor(s) than a single board computer or microcontroller could provide.
+The motor section enables motors with several different drive types to be configured. Each drive type reserves a set of pins on the Pi's GPIO connector to send signals to the motor driver.
+Once a motor has been saved, controllers can be setup which control the speed and direction of the motor. USB and Bluetooth joysticks and gamepads are supported.
+
+#### Stepper Motors
+
+Stepper motors can also be connected to the Raspberry Pi using Dual H Bridge motor driver boards. These boards allow 4 input wires (from the Pi GPIO) and 4  output wires from a stepper motor to be connected.
+Sending a HIGH signal from a GPIO pin will cause the motor driver to energize a coil in the stepper motor with a particulary polarity. This turns the stepper motor to align with that coil.
+AllMyServos allows stepper motors to be configured by providing the steps per revolution and maximum revolutions per minute (normally available on the stepper motor datasheet).
+As with DC motors, AllMyServos allows the speed and direction of the motor to be changed by setting the drive state (-1 to 1). When editing a stepper motor, this can be done using a slider.
+The angle of the stepper motor is tracked by AllMyServos allowing the motor to turn to a given angle.
+Once a stepper motor has been saved, it is possible to configure joystick / gamepad actions to control the stepper motor.
+
 #### Keyboard
 
 Motions and chains can be triggered using keys on the keyboard. This section of the application allows mappings to be setup between a keypress and a motion.
+
+#### Joystick
+
+AllMyServos now includes a joystick module which enables joysticks and gamepads to be connected to the Raspberry Pi via USB or Bluetooth. The module provides an interface for testing any connected joysticks.
+This module has been integrated with the motor module to allow motors to be controlled using any axis or button on a connected joystick.
 
 #### Metrics
 

@@ -14,21 +14,23 @@
 					<widget name="TkSpecificationManager.TkSpecificationManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="1"></widget>
 					<widget name="TkSystemManager.TkSystemManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="1"></widget>
 					<widget name="TkServoManager.TkServoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="2"></widget>
-					<widget name="TkMotionManager.TkMotionManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="3"></widget>
-					<widget name="TkKeyboardManager.TkKeyboardManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="4"></widget>
-					<widget name="TkMetricManager.TkMetricManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="5"></widget>
-					<widget name="TkRPCManager.TkRPCManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="6"></widget>
-					<widget name="TkNetworkManager.TkNetworkManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
-					<widget name="TkIMUManager.TkIMUManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
-					<widget name="TkGravityManager.TkGravityManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="1" rowweight="0" menuindex="8"></widget>
-					<widget name="TkOrthoManager.TkOrthoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
-					<widget name="TkCameraManager.TkCameraManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="9"></widget>
-					<widget name="TkTimelapseManager.TkTimelapseManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="9"></widget>
-					<widget name="TkCamMediaManager.TkCamMediaManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="9"></widget>
-					<widget name="TkScheduleManager.TkScheduleManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
-					<widget name="TkThemeManager.TkThemeManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="12"></widget>
-					<widget name="TkSettingManager.TkSettingManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="12"></widget>
-					<widget name="TkHelpManager.TkHelpManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="13"></widget>
+					<widget name="TkMotorManager.TkMotorManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="3"></widget>
+					<widget name="TkMotionManager.TkMotionManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="4"></widget>
+					<widget name="TkKeyboardManager.TkKeyboardManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="5"></widget>
+					<widget name="TkJoystickManager.TkJoystickManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="6"></widget>
+					<widget name="TkMetricManager.TkMetricManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
+					<widget name="TkRPCManager.TkRPCManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
+					<widget name="TkNetworkManager.TkNetworkManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="9"></widget>
+					<widget name="TkIMUManager.TkIMUManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="10"></widget>
+					<widget name="TkGravityManager.TkGravityManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="1" rowweight="0" menuindex="10"></widget>
+					<widget name="TkOrthoManager.TkOrthoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="10"></widget>
+					<widget name="TkCameraManager.TkCameraManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
+					<widget name="TkTimelapseManager.TkTimelapseManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
+					<widget name="TkCamMediaManager.TkCamMediaManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
+					<widget name="TkScheduleManager.TkScheduleManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="12"></widget>
+					<widget name="TkThemeManager.TkThemeManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="13"></widget>
+					<widget name="TkSettingManager.TkSettingManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="13"></widget>
+					<widget name="TkHelpManager.TkHelpManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="14"></widget>
 				</frame>
 				<frame name="right" row="1" column="2" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="1">
 					<widget name="TkResourceManager.TkResourceManager" row="0" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0"></widget>
@@ -48,21 +50,23 @@
 					<widget name="TkSystemManager.TkSystemManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="0"></widget>
 					<widget name="TkSpecificationManager.TkSpecificationManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="0"></widget>
 					<widget name="TkServoManager.TkServoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="1"></widget>
-					<widget name="TkMotionManager.TkMotionManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="2"></widget>
-					<widget name="TkKeyboardManager.TkKeyboardManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="3"></widget>
-					<widget name="TkMetricManager.TkMetricManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="4"></widget>
-					<widget name="TkRPCManager.TkRPCManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="5"></widget>
-					<widget name="TkNetworkManager.TkNetworkManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="6"></widget>
-					<widget name="TkIMUManager.TkIMUManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
-					<widget name="TkGravityManager.TkGravityManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
-					<widget name="TkOrthoManager.TkOrthoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
-					<widget name="TkCameraManager.TkCameraManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
-					<widget name="TkTimelapseManager.TkTimelapseManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
-					<widget name="TkCamMediaManager.TkCamMediaManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
-					<widget name="TkScheduleManager.TkScheduleManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="10"></widget>
-					<widget name="TkThemeManager.TkThemeManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
-					<widget name="TkSettingManager.TkSettingManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
-					<widget name="TkHelpManager.TkHelpManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="12"></widget>
+					<widget name="TkMotorManager.TkMotorManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="2"></widget>
+					<widget name="TkMotionManager.TkMotionManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="3"></widget>
+					<widget name="TkKeyboardManager.TkKeyboardManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="4"></widget>
+					<widget name="TkJoystickManager.TkJoystickManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="5"></widget>
+					<widget name="TkMetricManager.TkMetricManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="6"></widget>
+					<widget name="TkRPCManager.TkRPCManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="7"></widget>
+					<widget name="TkNetworkManager.TkNetworkManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="8"></widget>
+					<widget name="TkIMUManager.TkIMUManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="9"></widget>
+					<widget name="TkGravityManager.TkGravityManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="9"></widget>
+					<widget name="TkOrthoManager.TkOrthoManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="9"></widget>
+					<widget name="TkCameraManager.TkCameraManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="10"></widget>
+					<widget name="TkTimelapseManager.TkTimelapseManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="10"></widget>
+					<widget name="TkCamMediaManager.TkCamMediaManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="10"></widget>
+					<widget name="TkScheduleManager.TkScheduleManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="11"></widget>
+					<widget name="TkThemeManager.TkThemeManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="12"></widget>
+					<widget name="TkSettingManager.TkSettingManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="12"></widget>
+					<widget name="TkHelpManager.TkHelpManager" row="0" column="0" rowspan="1" columnspan="1" padx="10" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0" menuindex="13"></widget>
 				</frame>
 				<frame name="right" row="3" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0">
 					<widget name="TkServoGrid.TkServoGrid" row="0" column="0" rowspan="1" columnspan="1" padx="0" pady="0" sticky="WENS" scrollable="0" columnweight="0" rowweight="0"></widget>
@@ -102,6 +106,7 @@
 			<image name="bone">images/bone.gif</image>
 			<image name="delete">images/delete.gif</image>
 			<image name="blender">images/blender.gif</image>
+			<image name="joystick">images/joystick.gif</image>
 		</images>
 		<colours>
 			<colour name="rowbg">131d21</colour>
@@ -137,6 +142,18 @@
 			<colour name="imux">e8070a</colour>
 			<colour name="imuy">13d30c</colour>
 			<colour name="imuz">0c3eff</colour>
+			<colour name="pcb">006600</colour>
+			<colour name="gpioavail">005d7f</colour>
+			<colour name="gpiounavail">222222</colour>
+			<colour name="gpioused">c9d17d</colour>
+			<colour name="gpiobg">333333</colour>
+			<colour name="gpiopin">66ff66</colour>
+			<colour name="gpioi2c">000066</colour>
+			<colour name="gpiouart">059894</colour>
+			<colour name="gpiospi">999900</colour>
+			<colour name="gpio3v3">9b5d0a</colour>
+			<colour name="gpio5v">993333</colour>
+			<colour name="gpiognd">ffffff</colour>
 		</colours>
 		<fonts>
 			<font name="text" size="12">Droid Sans</font>

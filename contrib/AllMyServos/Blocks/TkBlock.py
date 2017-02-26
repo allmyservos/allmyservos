@@ -107,6 +107,7 @@ class TkBlock(object):
 				except:
 					pass
 			self.widgets = {}
+			self.variables = {}
 		self.wrap.grid(row=self.row, column=self.column, padx=self.padx, pady=self.pady, columnspan=self.columnspan, rowspan=self.rowspan, sticky=self.sticky)
 		self.gridrow = 0
 		self.widgets['tframe'] = Frame(self.widget,bg=self.colours['bg'], borderwidth=5)

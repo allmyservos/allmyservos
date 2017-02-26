@@ -52,11 +52,11 @@ class IMU(object):
 		if (specification != None):
 			self.specification = specification
 		else:
-			self.specification = Specification.Specification()
+			self.specification = Specification.Specification.GetInstance()
 		if(scheduler != None):
 			self.scheduler = scheduler
 		else:
-			self.scheduler = Scheduler()
+			self.scheduler = Scheduler.GetInstance()
 		ipath = os.path.join(Specification.Specification.filebase, 'imu')
 		if not os.path.exists(ipath):
 			os.makedirs(ipath)

@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
-import sys, termios, contextlib, Specification, Motion
+import sys, termios, contextlib
+from __bootstrap import AmsEnvironment
 from Scheduler import *
 from Setting import *
-from __bootstrap import AmsEnvironment
 
 @contextlib.contextmanager
 def raw_mode(file):
@@ -34,7 +34,15 @@ def raw_mode(file):
 		
 ## Keyboard service
 class KeyboardThread(object):
-	def __init__(self, specification=None, motionScheduler=None, scheduler=None, useTask = True):
+	@staticmethod
+	def GetInstance():
+		try:
+			
+			KeyboardThread.__sharedInstance
+		except:
+			KeyboardThread.__sharedInstance = KeyboardThread()
+		return KeyboardThread.__sharedInstance
+	def __init__(self):
 		""" Initializes KeyboardThread object
 		
 		@param specification
@@ -42,19 +50,9 @@ class KeyboardThread(object):
 		@param scheduler
 		@param useTask
 		"""
-		if(scheduler != None):
-			self.scheduler = scheduler
-		else:
-			self.scheduler = Scheduler()
-		if (specification != None):
-			self.specification = specification
-		else:
-			self.specification = Specification.Specification()
-		if(motionScheduler == None):
-			self.motionScheduler = Motion.MotionScheduler()
-		else:
-			self.motionScheduler = motionScheduler
-		self.useTask = useTask
+		self.scheduler = Scheduler.GetInstance()
+		appInfo = AmsEnvironment.AppInfo()
+		self.useTask = False if appInfo['command_script'] == 'GUI.py' and Setting.get('kb_use_tk_callback', True) else True
 		self.terminalStatus = True
 		try:
 			termios.tcgetattr(sys.stdin.fileno())
@@ -62,8 +60,8 @@ class KeyboardThread(object):
 			self.terminalStatus = False #not running in terminal
 		self.callbacks = {}
 		self.asciimap = AsciiMap()
-		self.addCallback('motion', self.standardCallback)
-		self.scheduler.addTask('kb_watcher', self.check, interval = 0.05, stopped=(not Setting.get('kb_autostart', False)))
+		if (self.useTask):
+			self.scheduler.addTask('kb_watcher', self.check, interval = 0.01, stopped=(not Setting.get('kb_autostart', False)))
 	def check(self):
 		""" checks for keyboard input
 		"""
@@ -81,6 +79,7 @@ class KeyboardThread(object):
 						self.doCallback(hex=hex, ascii=self.asciimap.keyindex[hex])
 					except:
 						self.doCallback(hex=hex)
+			pass
 	def start(self):
 		""" starts the keyboard service
 		"""
@@ -89,30 +88,8 @@ class KeyboardThread(object):
 		""" stops the keyboard service
 		"""
 		self.scheduler.stopTask('kb_watcher')
-	def standardCallback(self, hex, ascii):
-		""" provides standard motion / chain functionality
-		"""
-		mappings = []
-		for h, a in self.asciimap.keyindex.items():
-			if(h == hex):
-				mappings = self.specification.getKeyMapping(h)
-				break
-		if(len(mappings) > 0):
-			for m in mappings:
-				if(m['action'] == 'motion' and m['command'] != None):
-					for k, v in self.specification.motions.items():
-						if (v['name'] == m['command']):
-							self.motionScheduler.triggerMotion(k)
-							break
-				elif(m['action'] == 'chain' and m['command'] != None):
-					for k, v in self.specification.chains.items():
-						if (v['name'] == m['command']):
-							self.motionScheduler.triggerChain(k)
-							break
-				elif(m['action'] == 'relax'):
-					self.motionScheduler.relax()
-				elif(m['action'] == 'default'):
-					self.motionScheduler.default()
+	def isRunning(self):
+		return self.scheduler.isRunning('kb_watcher')
 	def printCallback(self, hex, ascii):
 		""" prints hex and ascii to console
 		"""
@@ -125,7 +102,12 @@ class KeyboardThread(object):
 	def removeCallback(self, index):
 		""" removes a callback
 		"""
-		del(self.callbacks[index])
+		if (index in self.callbacks.keys()):
+			del(self.callbacks[index])
+	def hasCallback(self, index):
+		""" checks if a callback has already been added
+		"""
+		return index in self.callbacks.keys()
 	def doCallback(self, hex = None, ascii = None):
 		""" perform callbacks
 		"""

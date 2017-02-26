@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
-import sys, traceback, logging, os, re
+import sys, traceback, logging, os, re, time
 from subprocess import Popen, PIPE
 from StringIO import StringIO
 
@@ -26,7 +26,9 @@ class AmsEnvironment:
 		'pid': re.compile(r'(?P<pid>\d+)')
 	}
 	info = {}
-	now = lambda: int(round(time.time() * 1000))
+	@staticmethod
+	def Now():
+		return int(round(time.time() * 1000))
 	@staticmethod
 	def AppInfo():
 		""" Returns environment info

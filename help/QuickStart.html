@@ -40,6 +40,30 @@
 		<p>Start: Generally starts in the default position and begins a movement</p>
 		<p>Loop: Continues the start motion and ends in the same position, allowing it to be run repeatedly.</p>
 		<p>End: When the chain is stopped, this motion is scheduled. It continues the loop motion and returns the robot to the default pose.</p>
+		<h2>Motors</h2>
+		<p>Menu: Motors -> DC Motors</p>
+		<p>DC Motors can be connected to motor driver boards which in turn are connected to the GPIO pins on the Raspberry Pi</p>
+		<p>There are a variety of motor driver boards available which expect different pin configurations.</p>
+		<p>When you add a DC Motor, you can choose a 'drive type' which matches your board.</p>
+		<p>AllMyServos has been tested with:</p>
+		<p>- L289N</p>
+		<p>- TB6612FNG</p>
+		<p>- BTS7960</p>
+		<p>Each drive type has a set of pins, the number for each pin can be customised.</p>
+		<p>The GPIO configuration is shown on the right to help with pin selection.</p>
+		<p>The enabled option allow the motor to be enabled automatically when the application starts.</p>
+		<p>The drive state controls the speed and can be manipulated by a slider. 0 is stopped, 1 is full speed clockwise and -1 is full speed anti-clockwise.</p>
+		<p>Menu: Motors -> Stepper Motors</p>
+		<p>Stepper motors are different to DC motors in that they move one step at a time. This allows for more precise movement.</p>
+		<p>They can be speed controlled like DC motors but they can also turn to a specified angle.</p>
+		<p>The Max. RPM (revolutions per minute) can be set to limit the speed of the stepper motor</p>
+		<p>The number of steps per revolution can also be set (check the steppper's datasheet)</p>
+		<p>The output order allows stepper motors to be wired to the motor driver in two ways:</p>
+		<p>1234: A wire from each coil is connected to the same side of the board</p>
+		<p>1324: Each coil pair is connected to the same side of the board</p>
+		<p>The sequence option allows the stepper to move a whole or half step each update.</p>
+		<p>AllMyServos has been tested with:</p>
+		<p>- NEMA 17</p>
 		<h2>Keyboard</h2>
 		<p>Menu: Keyboard -> Manage</p>
 		<p>Use this to configure your keyboard to trigger motions or chains.</p>

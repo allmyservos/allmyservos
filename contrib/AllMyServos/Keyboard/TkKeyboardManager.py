@@ -17,6 +17,7 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 import Tkinter, Keyboard, Motion
+from __bootstrap import AmsEnvironment
 from Tkinter import *
 from TkBlock import *
 
@@ -36,7 +37,7 @@ class TkKeyboardManager(TkPage):
 		try:
 			self.gui.kbthread
 		except:
-			self.gui.kbthread = Keyboard.KeyboardThread(self.specification, self.gui.motionScheduler, self.gui.scheduler, not Setting.get('kb_use_tk_callback', True))
+			self.gui.kbthread = Keyboard.KeyboardThread.GetInstance()
 		self.kbthread = self.gui.kbthread
 		self.stopped = not Setting.get('kb_autostart', False)
 		if(Setting.get('kb_autostart', False)):
@@ -583,7 +584,7 @@ class TkKeyboardManager(TkPage):
 	
 	#=== UTILS ===#
 	def inputTkCapture(self, event):
-		""" util - captures kb events from TkInter
+		""" util - captures kb events from TkInter instead of terminal
 		
 		@param event
 		"""

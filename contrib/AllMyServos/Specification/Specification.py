@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
-import sys, os, shutil, distutils.core, traceback, uuid, tarfile, time, copy, errno, JsonBlob, Motion, Keyboard
+import sys, os, shutil, distutils.core, uuid, tarfile, time, copy, errno, JsonBlob, Motion, Motors
 from __bootstrap import AmsEnvironment
 from xml.dom import minidom
 from xml.dom.minidom import Document
@@ -30,15 +30,30 @@ class Specification(JsonBlob.JsonBlob):
 	packagepath = os.path.join(basepath, 'packages')
 	filebase = AmsEnvironment.FilePath()
 	@staticmethod
+	def GetInstance(index = None):
+		try:
+			Specification.__sharedInstance
+		except:
+			Specification.__sharedInstance = Specification(index)
+		return Specification.__sharedInstance
+	@staticmethod
 	def currentIdent(new = False):
 		""" gets the current specification id
 		if a valid id is not found, a new one is created
 		
 		@param new bool
 		"""
-		specs = JsonBlob.JsonBlob.all('Specification','Specification')
-		currentident = specs.keys()[0] if not new and any(specs) else Specification.newIdent() #first in index or new
-		savedident = Setting.get('spec_active_ident', currentident) #get the active ident setting or default to first or new
+		JsonBlob.JsonBlob.reindex()
+		if (not new and 
+		'Specification' in JsonBlob.JsonBlob.index.keys() and 
+		'Specification' in JsonBlob.JsonBlob.index['Specification']['classes'] and 
+		any(JsonBlob.JsonBlob.index['Specification']['classes']['Specification']['rows'])):
+			#take the first available id
+			currentident = JsonBlob.JsonBlob.index['Specification']['classes']['Specification']['rows'][0]
+		else:
+			#generate a new id
+			currentident = Specification.newIdent()
+		savedident = Setting.get('spec_active_ident', currentident) #get the active ident setting
 		if not new and os.path.exists(os.path.join(Specification.installpath, savedident)):
 			currentident = savedident #the saved ident refers to an existing specification so use it 
 		elif not new:
@@ -108,6 +123,16 @@ class Specification(JsonBlob.JsonBlob):
 			m.jsonData = copy.copy(v.jsonData)
 			m.save()
 			newspec.motions[m.jbIndex] = m
+		for k,v in oldspec.motors.items():
+			m = Motors.DcMotor()
+			m.jsonData = copy.copy(v.jsonData)
+			m.save()
+			newspec.motors[m.jbIndex] = m
+		for k,v in oldspec.steppers.items():
+			s = Motors.StepperMotor()
+			s.jsonData = copy.copy(v.jsonData)
+			s.save()
+			newspec.steppers[s.jbIndex] = s
 		newspec.save()
 		return newspec
 	@staticmethod
@@ -149,6 +174,20 @@ class Specification(JsonBlob.JsonBlob):
 					motion = Motion.Motion(mid)
 					motion.jsonData = json.loads(tar.extractfile(t.name).read())
 					super(Motion.Motion, motion).save() #save motion blob
+			elif ('motors/' in parts[0] and parts[1] == '.json'):
+				#motors
+				mid = parts[0].replace('motors/', '')
+				if (mid in pinfo['motors'].keys()):
+					motor = Motors.DcMotor(mid)
+					motor.jsonData = json.loads(tar.extractfile(t.name).read())
+					super(Motors.DcMotor, motor).save() #save motor blob
+			elif ('steppers/' in parts[0] and parts[1] == '.json'):
+				#steppers
+				mid = parts[0].replace('steppers/', '')
+				if (mid in pinfo['steppers'].keys()):
+					stepper = Motors.StepperMotor(mid)
+					stepper.jsonData = json.loads(tar.extractfile(t.name).read())
+					super(Motors.StepperMotor, stepper).save() #save motor blob
 			elif ((pinfo['blendfile'] != '' and t.name == pinfo['blendfile']) or (pinfo['thumbfile'] != '' and t.name == pinfo['thumbfile'])):
 				#supporting file
 				ipath = os.path.join(Specification.installpath, pinfo['ident'])
@@ -175,6 +214,8 @@ class Specification(JsonBlob.JsonBlob):
 				'servos': {},
 				'motions': {},
 				'chains': {},
+				'motors': {},
+				'steppers': {},
 				'keyboard': {},
 				'locked': False
 			}
@@ -188,14 +229,18 @@ class Specification(JsonBlob.JsonBlob):
 		self.servos = JsonBlob.JsonBlob.hydrate('Motion', 'Servo', self.jsonData['servos'].keys())
 		self.motions = JsonBlob.JsonBlob.hydrate('Motion', 'Motion', self.jsonData['motions'].keys())
 		self.chains = self.jsonData['chains']
+		self.motors = JsonBlob.JsonBlob.hydrate('Motors', 'DcMotor', self.jsonData['motors'].keys()) if 'motors' in self.jsonData.keys() else {}
+		self.steppers = JsonBlob.JsonBlob.hydrate('Motors', 'StepperMotor', self.jsonData['steppers'].keys()) if 'steppers' in self.jsonData.keys() else {}
 		self.keyboard = self.jsonData['keyboard']
 		self.imu = self.jsonData['imu']
 	def save(self):
 		""" override of JsonBlob.save
-		serializes servos and motion before saving
+		serializes servos, motions amd motors before saving
 		"""
 		self.jsonData['servos'] = { k : v.jsonData for k, v in self.servos.items() }
 		self.jsonData['motions'] = { k : v.jsonData for k, v in self.motions.items() }
+		self.jsonData['motors'] = { k : v.jsonData for k, v in self.motors.items() }
+		self.jsonData['steppers'] = { k : v.jsonData for k, v in self.steppers.items() }
 		super(Specification,self).save()
 		if (not self.isInstalled()):
 			os.makedirs(self.getInstallPath())
@@ -208,6 +253,10 @@ class Specification(JsonBlob.JsonBlob):
 			s.delete()
 		for m in self.motions.values():
 			m.delete()
+		for m in self.motors.values():
+			m.delete()
+		for s in self.steppers.values():
+			s.delete()
 		super(Specification,self).delete()
 	def change(self, newident):
 		""" activates a specification
@@ -249,6 +298,27 @@ class Specification(JsonBlob.JsonBlob):
 		if (any(self.servos)):
 			for k, v in self.servos.items():
 				v.reload()
+	def refreshMotors(self):
+		if (any(self.motors)):
+			for k, v in self.motors.items():
+				v.reload()
+		if (any(self.steppers)):
+			for k, v in self.steppers.items():
+				v.reload()
+	def stopMotors(self):
+		running = False
+		if (any(self.motors)):
+			for k, v in self.motors.items():
+				if (v.running):
+					running = True
+					v.stop()
+		if (any(self.steppers)):
+			for k, v in self.steppers.items():
+				if (v.running):
+					running = True
+					v.stop()
+		if (running):
+			Motors.DcMotor.CleanupGpio() #only cleanup if one or more motors were running
 	def getMotionId(self, name):
 		""" gets a motion id from name
 		
@@ -290,5 +360,9 @@ class Specification(JsonBlob.JsonBlob):
 			tar.add(s.getRowPath(), os.path.join('servos', s.getRowFileName())) #add servo blob
 		for m in self.motions.values():
 			tar.add(m.getRowPath(), os.path.join('motions', m.getRowFileName())) #add motion blob
+		for m in self.motors.values():
+			tar.add(m.getRowPath(), os.path.join('motors', m.getRowFileName())) #add motor blob
+		for s in self.steppers.values():
+			tar.add(s.getRowPath(), os.path.join('steppers', s.getRowFileName())) #add stepper blob
 		tar.add(self.getRowPath(), self.getRowFileName()) #spec blob
 		tar.close()

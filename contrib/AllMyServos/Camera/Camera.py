@@ -37,11 +37,8 @@ class Camera(object):
 		if(scheduler != None):
 			self.scheduler = scheduler
 		else:
-			self.scheduler = Scheduler()
-		if(kbthread != None):
-			self.kbthread = kbthread
-		else:
-			self.kbthread = Keyboard.KeyboardThread()
+			self.scheduler = Scheduler.GetInstance()
+		self.kbthread = Keyboard.KeyboardThread.GetInstance()
 		if(notifier != None):
 			self.notifier = notifier
 		else:

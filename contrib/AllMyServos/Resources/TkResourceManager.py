@@ -40,7 +40,7 @@ class TkResourceManager(TkBlock):
 			if(self.gui.scheduler != None):
 				self.scheduler = self.gui.scheduler
 			else:
-				self.scheduler = Scheduler()
+				self.scheduler = Scheduler.GetInstance()
 			self.resources = self.gui.getClass('Resource.Resources')(self.scheduler)
 			self.tasksheight = 200 # sets the height of the tasks notebook
 			self.last = { 'memory':0, 'disks':0, 'threads':0, 'processes':0, 'network':0 }

@@ -39,15 +39,15 @@ class SRPCServer(object):
 		@param scheduler
 		"""
 		if(motionScheduler == None):
-			self.motionScheduler = MotionScheduler()
+			self.motionScheduler = MotionScheduler.GetInstance()
 		else:
 			self.motionScheduler = motionScheduler
 		if(specification == None):
-			self.specification = Specification()
+			self.specification = Specification.GetInstance()
 		else:
 			self.specification = specification
 		if(scheduler == None):
-			self.scheduler = Scheduler()
+			self.scheduler = Scheduler.GetInstance()
 		else:
 			self.scheduler = scheduler
 		self.notifier = Notifier()

@@ -39,7 +39,7 @@ class TkOrthoManager(TkPage):
 		if(hasattr(self.gui, 'scheduler')):
 			self.scheduler = self.gui.scheduler
 		else:
-			self.scheduler = Scheduler()
+			self.scheduler = Scheduler.GetInstance()
 		if(not self.dm.installRequired()):
 			self.pimg = self.gui.getModule('PIL.Image')
 			self.tkimg = self.gui.getModule('PIL.ImageTk')

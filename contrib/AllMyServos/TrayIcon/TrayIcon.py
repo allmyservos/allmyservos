@@ -27,7 +27,7 @@ class TrayIcon:
 		if (scheduler != None):
 			self.scheduler = scheduler
 		else:
-			self.scheduler = Scheduler.Scheduler()
+			self.scheduler = Scheduler.Scheduler.GetInstance()
 		self.enabled = True
 		try:
 			icon = gtk.StatusIcon()

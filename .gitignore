@@ -60,3 +60,6 @@ target/
 
 #Ignore files directory
 /files
+
+#Ingore Thumbs.db
+Thumbs.db

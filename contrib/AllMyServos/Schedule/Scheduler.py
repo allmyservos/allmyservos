@@ -21,6 +21,15 @@ from Notifier import *
 
 ## Schedules threaded tasks
 class Scheduler(object):
+	@staticmethod
+	def GetInstance():
+		""" returns a shared instance of the Scheduler object
+		"""
+		try:
+			Scheduler.__sharedInstance
+		except:
+			Scheduler.__sharedInstance = Scheduler()
+		return Scheduler.__sharedInstance
 	def __init__(self):
 		""" Initializes the Scheduler object
 		"""

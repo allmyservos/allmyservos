@@ -31,7 +31,7 @@ class Network(object):
 		if(scheduler != None):
 			self.scheduler = scheduler
 		else:
-			self.scheduler = Scheduler()
+			self.scheduler = Scheduler.GetInstance()
 		self.patterns = {}
 		self.nodes = {}
 		self.__initPatterns()

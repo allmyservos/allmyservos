@@ -17,7 +17,7 @@
 # along with this program.  If not, see http://www.gnu.org/licenses/.
 #######################################################################
 
-import time, json, os, copy, Specification
+import time, json, os, copy, Specification, Keyboard
 from Adafruit_PWM_Servo_Driver import PWM
 from DB import *
 from Setting import *
@@ -147,6 +147,13 @@ class Servo(JsonBlob):
 		super(Servo,self).save()
 ## Motion scheduler maintains a list of motions and chains and runs them when triggered
 class MotionScheduler(object):
+	@staticmethod
+	def GetInstance(specification = None, scheduler = None):
+		try:
+			MotionScheduler.__sharedInstance
+		except:
+			MotionScheduler.__sharedInstance = MotionScheduler(specification, scheduler)
+		return MotionScheduler.__sharedInstance
 	def __init__(self, specification = None, scheduler = None):
 		""" Initializes the MotionScheduler object
 		
@@ -157,13 +164,15 @@ class MotionScheduler(object):
 		self.queuedmotions = 0
 		self.currentpos = 0
 		
+		self.kbthread = Keyboard.KeyboardThread.GetInstance()
+		
 		if(specification == None):
-			self.specification = Specification.Specification()
+			self.specification = Specification.Specification.GetInstance()
 		else:
 			self.specification = specification
 		self.channelindex = { v.channel : v for k, v in self.specification.servos.items()}
 		if(scheduler == None):
-			self.scheduler = Scheduler()
+			self.scheduler = Scheduler.GetInstance()
 		else:
 			self.scheduler = scheduler
 		self.cache = {}
@@ -173,6 +182,7 @@ class MotionScheduler(object):
 		self.queue = []
 		self.queuecount = 0
 		self.chaincount = 0
+		self.kbthread.addCallback('motion', self.keyboardCallback)
 		self.scheduler.addTask('motion_scheduler', self.checkQueue, interval = 0.005, stopped=(not Setting.get('motion_scheduler_autostart', True)))
 	def triggerMotion(self, id, slow = False):
 		""" queue up a motion
@@ -296,3 +306,27 @@ class MotionScheduler(object):
 		for s in self.channelindex.values():
 			s.reload()
 			s.setServoAngle()
+	def keyboardCallback(self, hex, ascii):
+		""" triggers motions based on pressed keys
+		"""
+		mappings = []
+		for h, a in self.kbthread.asciimap.keyindex.items():
+			if(h == hex):
+				mappings = self.specification.getKeyMapping(h) # get key mapping for valid hex
+				break
+		if(any(mappings)):
+			for m in mappings:
+				if(m['action'] == 'motion' and m['command'] != None):
+					for k, v in self.specification.motions.items():
+						if (v['name'] == m['command']):
+							self.triggerMotion(k)
+							break
+				elif(m['action'] == 'chain' and m['command'] != None):
+					for k, v in self.specification.chains.items():
+						if (v['name'] == m['command']):
+							self.triggerChain(k)
+							break
+				elif(m['action'] == 'relax'):
+					self.relax()
+				elif(m['action'] == 'default'):
+					self.default()

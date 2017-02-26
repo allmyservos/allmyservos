@@ -38,7 +38,7 @@ class TkServoManager(TkPage):
 		if(gui.specification != None):
 			self.specification = gui.specification
 		else:
-			self.specification = Specification()
+			self.specification = Specification.GetInstance()
 		self.servos = gui.specification.servos
 	def setup(self):
 		""" setup gui menu

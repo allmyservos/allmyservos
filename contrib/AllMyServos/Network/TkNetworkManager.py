@@ -38,7 +38,7 @@ class TkNetworkManager(TkPage):
 		if(hasattr(self.gui, 'scheduler')):
 			self.scheduler = self.gui.scheduler
 		else:
-			self.scheduler = Scheduler()
+			self.scheduler = Scheduler.GetInstance()
 	def setup(self):
 		""" setup gui menu
 		"""

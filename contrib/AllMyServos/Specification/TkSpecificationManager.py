@@ -38,7 +38,7 @@ class TkSpecificationManager(TkPage):
 		if(hasattr(self.gui, 'specification')):
 			self.current = self.gui.specification
 		else:
-			self.current = Specification()
+			self.current = Specification.GetInstance()
 	def setup(self):
 		""" setup gui menu
 		"""
@@ -120,6 +120,7 @@ class TkSpecificationManager(TkPage):
 		self.widgets['infoframe'].grid(column=0,row=self.gridrow, pady=20, sticky='EW')
 		self.widgets['infoframe'].rowconfigure(3, weight=1)
 		
+		#codename
 		self.widgets['codenameLabel'] = Tkinter.Label(self.widgets['infoframe'],text='Codename:', anchor=W, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'], height=3)
 		self.widgets['codenameLabel'].grid(column=0,row=0,padx=20,sticky='NW')
 		self.widgets['codenameData'] = Tkinter.Label(self.widgets['infoframe'],text=self.spec.jsonData['codename'], anchor=W, bg=self.colours['bg'], fg=self.colours['valuefg'], font=self.fonts['heading2'], height=3)
@@ -128,11 +129,13 @@ class TkSpecificationManager(TkPage):
 			self.widgets['codenameChange'] = Tkinter.Button(self.widgets['infoframe'],text=u"Change", image=self.images['process'], bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'], command=self.OnChangeCodenameClick)
 			self.widgets['codenameChange'].grid(column=2,row=0, sticky='SE')
 		
+		#ident
 		self.widgets['identLabel'] = Tkinter.Label(self.widgets['infoframe'],text='Ident:', anchor=W, bg=self.colours['bg'], fg=self.colours['headingfg'], height=2)
 		self.widgets['identLabel'].grid(column=0,row=1,padx=20,sticky='NW')
 		self.widgets['identData'] = Tkinter.Label(self.widgets['infoframe'],text=self.spec.jbIndex, anchor=W, bg=self.colours['bg'], fg=self.colours['valuefg'], height=2)
 		self.widgets['identData'].grid(column=1,row=1,padx=10,columnspan=3, sticky='NW')
 		
+		#blendfile
 		self.widgets['blendfileLabel'] = Tkinter.Label(self.widgets['infoframe'],text='Blendfile:', anchor=W, bg=self.colours['bg'], fg=self.colours['headingfg'], height=2)
 		self.widgets['blendfileLabel'].grid(column=0,row=2,padx=20,sticky='NW')
 		self.widgets['blendfileData'] = Tkinter.Label(self.widgets['infoframe'],text='Not Available', anchor=W, bg=self.colours['bg'], fg=self.colours['fg'], height=2)
@@ -145,6 +148,7 @@ class TkSpecificationManager(TkPage):
 			self.widgets['blendfileChange'] = Tkinter.Button(self.widgets['infoframe'],text=u"Change", image=self.images['blender'], bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'], command=self.OnChangeBlendClick)
 			self.widgets['blendfileChange'].grid(column=3,row=2, sticky='SE')
 		
+		#status
 		self.widgets['statusLabel'] = Tkinter.Label(self.widgets['infoframe'],text='Status:', anchor=W, bg=self.colours['bg'], fg=self.colours['headingfg'], height=2)
 		self.widgets['statusLabel'].grid(column=0,row=3,padx=20,sticky='NW')
 		self.widgets['statusData'] = Tkinter.Label(self.widgets['infoframe'],text='Inactive', anchor=W, bg=self.colours['bg'], fg=self.colours['fg'], height=2)
@@ -152,6 +156,7 @@ class TkSpecificationManager(TkPage):
 		if(self.spec.jbIndex == self.current.jbIndex):
 			self.widgets['statusData'].configure(text='Active', fg=self.colours['valuefg'])
 			
+		#package
 		self.widgets['packageLabel'] = Tkinter.Label(self.widgets['infoframe'],text='Package Created', anchor=W, bg=self.colours['bg'], fg=self.colours['headingfg'], height=2)
 		self.widgets['packageLabel'].grid(column=0,row=4,padx=20,sticky='NW')
 		self.widgets['packageData'] = Tkinter.Label(self.widgets['infoframe'],text='TBD', anchor=W, bg=self.colours['bg'], fg=self.colours['fg'], height=2)
@@ -163,6 +168,7 @@ class TkSpecificationManager(TkPage):
 		self.widgets['package'] = Tkinter.Button(self.widgets['infoframe'],text=u"Package", image=self.images['process'], command=self.OnPackageClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
 		self.widgets['package'].grid(column=3,row=4)
 		
+		#thumbnail
 		self.widgets['thumbframe'] = Tkinter.Frame(self.widgets['infoframe'], bg=self.colours['bg'], borderwidth=0, highlightthickness=0)
 		self.widgets['thumbframe'].grid(column=4,row=0,rowspan=5, padx=20,sticky='EW')
 		self.widgets['thumbLabel'] = Tkinter.Label(self.widgets['thumbframe'],text='Thumbnail', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'])
@@ -179,6 +185,7 @@ class TkSpecificationManager(TkPage):
 		
 		self.gridrow += 1
 		
+		#servos
 		self.widgets['servosLabel'] = Tkinter.Label(self.widgets['tframe'],text='Servos', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'])
 		self.widgets['servosLabel'].grid(column=0,row=self.gridrow,sticky='EW')
 		if(not self.spec.jsonData['locked'] and self.current.jbIndex == self.spec.jbIndex):
@@ -249,6 +256,7 @@ class TkSpecificationManager(TkPage):
 			self.widgets['noServosLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
 			self.gridrow += 1
 		
+		#motions
 		self.widgets['motionsLabel'] = Tkinter.Label(self.widgets['tframe'],text='Motions', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'])
 		self.widgets['motionsLabel'].grid(column=0,row=self.gridrow,sticky='EW')
 		if(not self.spec.jsonData['locked'] and self.current.jbIndex == self.spec.jbIndex):
@@ -283,6 +291,7 @@ class TkSpecificationManager(TkPage):
 			self.widgets['noLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
 		self.gridrow += 1
 		
+		#chains
 		self.widgets['chainsLabel'] = Tkinter.Label(self.widgets['tframe'],text='Chains', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'])
 		self.widgets['chainsLabel'].grid(column=0,row=self.gridrow,sticky='EW')
 		if(not self.spec.jsonData['locked'] and self.current.jbIndex == self.spec.jbIndex):
@@ -313,6 +322,110 @@ class TkSpecificationManager(TkPage):
 			self.widgets['noLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
 		self.gridrow += 1
 		
+		#motors
+		self.widgets['motorsLabel'] = Tkinter.Label(self.widgets['tframe'],text='DC Motors', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'])
+		self.widgets['motorsLabel'].grid(column=0,row=self.gridrow,sticky='EW')
+		if(not self.spec.jsonData['locked'] and self.current.jbIndex == self.spec.jbIndex):
+			self.widgets['addmotor'] = Tkinter.Button(self.widgets['tframe'],text=u"Add Motor", image=self.images['add'], command=self.OnAddDCMotorClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
+			self.widgets['addmotor'].grid(column=2,row=self.gridrow)
+		
+		self.gridrow += 1
+		
+		self.widgets['moframe'] = Tkinter.Frame(self.widgets['tframe'], bg=self.colours['bg'], borderwidth=0, highlightthickness=0)
+		self.widgets['moframe'].grid(column=0,row=self.gridrow,pady=15,columnspan=3, sticky='EW')
+		
+		if(hasattr(self.spec, 'motors') and any(self.spec.motors)):
+			self.widgets['cLabel'] = Tkinter.Label(self.widgets['moframe'],text='Controllers', bg=self.colours['bg'], fg=self.colours['fg'])
+			self.widgets['cLabel'].grid(column=3,columnspan=2,row=self.gridrow,sticky='EW')
+			self.gridrow += 1
+			self.widgets['nameLabel'] = Tkinter.Label(self.widgets['moframe'],text='Name', bg=self.colours['bg'], fg=self.colours['headingfg'])
+			self.widgets['nameLabel'].grid(column=0,row=self.gridrow,sticky='EW')
+			self.widgets['dtLabel'] = Tkinter.Label(self.widgets['moframe'],text='Drive Type', bg=self.colours['bg'], fg=self.colours['headingfg'])
+			self.widgets['dtLabel'].grid(column=1,row=self.gridrow,sticky='EW')
+			self.widgets['pinsLabel'] = Tkinter.Label(self.widgets['moframe'],text='Pins', bg=self.colours['bg'], fg=self.colours['headingfg'])
+			self.widgets['pinsLabel'].grid(column=2,row=self.gridrow,sticky='EW')
+			self.widgets['jsLabel'] = Tkinter.Label(self.widgets['moframe'],text='Joystick', bg=self.colours['bg'], fg=self.colours['headingfg'])
+			self.widgets['jsLabel'].grid(column=3,row=self.gridrow,sticky='EW')
+			self.widgets['kbLabel'] = Tkinter.Label(self.widgets['moframe'],text='Keyboard', bg=self.colours['bg'], fg=self.colours['headingfg'])
+			self.widgets['kbLabel'].grid(column=4,row=self.gridrow,sticky='EW')
+			self.gridrow += 1
+			rowcount = 1
+			for k,v in self.spec.motors.items():
+				rowcolour = self.colours['rowbg']
+				if(rowcount % 2 == 0):
+					rowcolour = self.colours['rowaltbg']
+				rowcount += 1
+				
+				self.widgets['name'+str(self.gridrow)] = Tkinter.Label(self.widgets['moframe'],text=v.jsonData['name'], bg=rowcolour, fg=self.colours['fg'], height=2)
+				self.widgets['name'+str(self.gridrow)].grid(column=0,row=self.gridrow,sticky='EW')
+				self.widgets['dt'+str(self.gridrow)] = Tkinter.Label(self.widgets['moframe'],text=v.jsonData['drive_type'], bg=rowcolour, fg=self.colours['fg'], height=2)
+				self.widgets['dt'+str(self.gridrow)].grid(column=1,row=self.gridrow,sticky='EW')
+				self.widgets['pins'+str(self.gridrow)] = Tkinter.Label(self.widgets['moframe'],text=len(v.pins), bg=rowcolour, fg=self.colours['fg'], height=2)
+				self.widgets['pins'+str(self.gridrow)].grid(column=2,row=self.gridrow,sticky='EW')
+				self.widgets['js'+str(self.gridrow)] = Tkinter.Label(self.widgets['moframe'],text=len(v.controllers['joystick']), bg=rowcolour, fg=self.colours['fg'], height=2)
+				self.widgets['js'+str(self.gridrow)].grid(column=3,row=self.gridrow,sticky='EW')
+				self.widgets['kb'+str(self.gridrow)] = Tkinter.Label(self.widgets['moframe'],text=len(v.controllers['keyboard']), bg=rowcolour, fg=self.colours['fg'], height=2)
+				self.widgets['kb'+str(self.gridrow)].grid(column=4,row=self.gridrow,sticky='EW')
+				self.gridrow += 1
+				
+		else:
+			self.widgets['noLabel'] = Tkinter.Label(self.widgets['moframe'],text='There are currently no DC motors in this specification.', anchor=NW, bg=self.colours['bg'], fg=self.colours['fg'])
+			self.widgets['noLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
+		
+		self.gridrow += 1
+		
+		#steppers
+		self.widgets['stepperLabel'] = Tkinter.Label(self.widgets['tframe'],text='Stepper Motors', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'])
+		self.widgets['stepperLabel'].grid(column=0,row=self.gridrow,sticky='EW')
+		if(not self.spec.jsonData['locked'] and self.current.jbIndex == self.spec.jbIndex):
+			self.widgets['addmotor'] = Tkinter.Button(self.widgets['tframe'],text=u"Add Motor", image=self.images['add'], command=self.OnAddStepperMotorClick, bg=self.colours['buttonbg'], activebackground=self.colours['buttonhighlightbg'], highlightbackground=self.colours['buttonborder'])
+			self.widgets['addmotor'].grid(column=2,row=self.gridrow)
+		
+		self.gridrow += 1
+		
+		self.widgets['stepframe'] = Tkinter.Frame(self.widgets['tframe'], bg=self.colours['bg'], borderwidth=0, highlightthickness=0)
+		self.widgets['stepframe'].grid(column=0,row=self.gridrow,pady=15,columnspan=3, sticky='EW')
+		
+		if(hasattr(self.spec, 'steppers') and any(self.spec.steppers)):
+			self.widgets['cLabel'] = Tkinter.Label(self.widgets['stepframe'],text='Controllers', bg=self.colours['bg'], fg=self.colours['fg'])
+			self.widgets['cLabel'].grid(column=3,columnspan=2,row=self.gridrow,sticky='EW')
+			self.gridrow += 1
+			self.widgets['nameLabel'] = Tkinter.Label(self.widgets['stepframe'],text='Name', bg=self.colours['bg'], fg=self.colours['headingfg'])
+			self.widgets['nameLabel'].grid(column=0,row=self.gridrow,padx=10,sticky='EW')
+			self.widgets['rpmLabel'] = Tkinter.Label(self.widgets['stepframe'],text='RPM', bg=self.colours['bg'], fg=self.colours['headingfg'])
+			self.widgets['rpmLabel'].grid(column=1,row=self.gridrow,padx=10,sticky='EW')
+			self.widgets['pinsLabel'] = Tkinter.Label(self.widgets['stepframe'],text='Pins', bg=self.colours['bg'], fg=self.colours['headingfg'])
+			self.widgets['pinsLabel'].grid(column=2,row=self.gridrow,padx=10,sticky='EW')
+			self.widgets['jsLabel'] = Tkinter.Label(self.widgets['stepframe'],text='Joystick', bg=self.colours['bg'], fg=self.colours['headingfg'])
+			self.widgets['jsLabel'].grid(column=3,row=self.gridrow,padx=10,sticky='EW')
+			self.widgets['kbLabel'] = Tkinter.Label(self.widgets['stepframe'],text='Keyboard', bg=self.colours['bg'], fg=self.colours['headingfg'])
+			self.widgets['kbLabel'].grid(column=4,row=self.gridrow,padx=10,sticky='EW')
+			self.gridrow += 1
+			rowcount = 1
+			for k,v in self.spec.steppers.items():
+				rowcolour = self.colours['rowbg']
+				if(rowcount % 2 == 0):
+					rowcolour = self.colours['rowaltbg']
+				rowcount += 1
+				
+				self.widgets['name'+str(self.gridrow)] = Tkinter.Label(self.widgets['stepframe'],text=v.jsonData['name'], bg=rowcolour, fg=self.colours['fg'], height=2)
+				self.widgets['name'+str(self.gridrow)].grid(column=0,row=self.gridrow,sticky='EW')
+				self.widgets['rpm'+str(self.gridrow)] = Tkinter.Label(self.widgets['stepframe'],text=v.jsonData['rpm'], bg=rowcolour, fg=self.colours['fg'], height=2)
+				self.widgets['rpm'+str(self.gridrow)].grid(column=1,row=self.gridrow,sticky='EW')
+				self.widgets['pins'+str(self.gridrow)] = Tkinter.Label(self.widgets['stepframe'],text=len(v.pins), bg=rowcolour, fg=self.colours['fg'], height=2)
+				self.widgets['pins'+str(self.gridrow)].grid(column=2,row=self.gridrow,sticky='EW')
+				self.widgets['js'+str(self.gridrow)] = Tkinter.Label(self.widgets['stepframe'],text=len(v.controllers['joystick']), bg=rowcolour, fg=self.colours['fg'], height=2)
+				self.widgets['js'+str(self.gridrow)].grid(column=3,row=self.gridrow,sticky='EW')
+				self.widgets['kb'+str(self.gridrow)] = Tkinter.Label(self.widgets['stepframe'],text=len(v.controllers['keyboard']), bg=rowcolour, fg=self.colours['fg'], height=2)
+				self.widgets['kb'+str(self.gridrow)].grid(column=4,row=self.gridrow,sticky='EW')
+				self.gridrow += 1
+		else:
+			self.widgets['noLabel'] = Tkinter.Label(self.widgets['stepframe'],text='There are currently no stepper motors in this specification.', anchor=NW, bg=self.colours['bg'], fg=self.colours['fg'])
+			self.widgets['noLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
+		
+		self.gridrow += 1
+		
+		#keyboard
 		self.widgets['keyboardLabel'] = Tkinter.Label(self.widgets['tframe'],text='Keyboard', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'])
 		self.widgets['keyboardLabel'].grid(column=0,row=self.gridrow,sticky='EW')
 		if(not self.spec.jsonData['locked'] and self.current.jbIndex == self.spec.jbIndex):
@@ -347,6 +460,7 @@ class TkSpecificationManager(TkPage):
 			self.widgets['noLabel'].grid(column=0,row=self.gridrow,columnspan=2,sticky='EW')
 		self.gridrow += 1
 		
+		#imu
 		self.widgets['imuLabel'] = Tkinter.Label(self.widgets['tframe'],text='IMU Orientation', anchor=NW, bg=self.colours['bg'], fg=self.colours['headingfg'], font=self.fonts['heading2'])
 		self.widgets['imuLabel'].grid(column=0,row=self.gridrow,sticky='EW')
 		
@@ -983,6 +1097,14 @@ class TkSpecificationManager(TkPage):
 		""" action - display add chain page
 		"""
 		self.gui.widgets['main']['TkMotionManager'].OnAddChainClick()
+	def OnAddDCMotorClick(self):
+		""" action - display add dc motor page
+		"""
+		self.gui.widgets['main']['TkMotorManager'].OnAddDCMotorClick()
+	def OnAddStepperMotorClick(self):
+		""" action - display add stepper page
+		"""
+		self.gui.widgets['main']['TkMotorManager'].OnAddStepperMotorClick()
 	def OnAddMapClick(self):
 		""" action - display add key map page
 		"""

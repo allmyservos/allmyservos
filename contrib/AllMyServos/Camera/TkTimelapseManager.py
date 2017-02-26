@@ -34,7 +34,7 @@ class TkTimelapseManager(TkPage):
 		try:
 			self.gui.kbthread
 		except:
-			self.gui.kbthread = Keyboard.KeyboardThread(self.gui.specification, self.gui.motionScheduler, self.gui.scheduler, not Setting.get('kb_use_tk_callback', True))
+			self.gui.kbthread = Keyboard.KeyboardThread.GetInstance()
 		self.kbthread = self.gui.kbthread
 		try:
 			self.gui.camera

@@ -169,13 +169,16 @@ class TkBarGraph():
 		"""
 		self.widgets = {}
 		self.shapes = {}
+		self.neg = 0 if float(self.grange['min']) >= 0 else abs(self.grange['min'])
 		self.widgets['canvas'] = Tkinter.Canvas(self.widget, width=self.width, height=self.height-2, bg=self.colours['bg'], highlightthickness=2, highlightbackground=self.colours['greyborder'])
 		self.widgets['canvas'].grid(column=0,row=0, sticky='EW', pady=2)
+		urange = float(self.grange['max'])-float(self.grange['min'])
+		
 		if(self.horizontal):
-			self.barunit = float(self.width)/(float(self.grange['max'])-float(self.grange['min']))
+			self.barunit = float(self.width)/urange
 			self.shapes['bar'] = self.widgets['canvas'].create_rectangle((0,0,self.width, self.height), fill=self.colours['graphbar'])
 		else:
-			self.barunit = float(self.height)/(float(self.grange['max'])-float(self.grange['min']))
+			self.barunit = float(self.height)/urange
 			self.shapes['bar'] = self.widgets['canvas'].create_rectangle((0,0, self.width, self.height), fill=self.colours['graphbar'])
 	def update(self, value):
 		""" updates the width or height of the bar in the graph
@@ -183,9 +186,9 @@ class TkBarGraph():
 		@param value
 		"""
 		if(self.horizontal):
-			self.widgets['canvas'].coords(self.shapes['bar'], 0,0,int(self.barunit*value), self.height)
+			self.widgets['canvas'].coords(self.shapes['bar'], 0,0,int(self.barunit*(value+self.neg)), self.height)
 		else:
-			self.widgets['canvas'].coords(self.shapes['bar'], 0,self.barunit*value,self.width,self.height)
+			self.widgets['canvas'].coords(self.shapes['bar'], 0,self.barunit*(value+self.neg),self.width,self.height)
 ## UI for ii charts
 class TkPiChart():
 	def __init__(self, parent, data, colours={}, width=100, height=100, total = 100, label=None, rcolour=None):

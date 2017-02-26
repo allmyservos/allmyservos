@@ -52,15 +52,15 @@ class CLI:
 	def initSpec(self):
 		""" Initializes the specification
 		"""
-		self.spec = Specification()
+		self.spec = Specification.GetInstance()
 	def initScheduler(self):
 		""" Initializes the scheduler
 		"""
-		self.scheduler = Scheduler()
+		self.scheduler = Scheduler.GetInstance()
 	def initMotionScheduler(self):
 		""" Initializes the motion scheduler
 		"""
-		self.motionScheduler = MotionScheduler()
+		self.motionScheduler = MotionScheduler.GetInstance()
 		if(self.s.get('motion_scheduler_autostart', True)):
 			print('Motion scheduler service - started')
 		else:
@@ -69,7 +69,7 @@ class CLI:
 		""" Initializes the keyboard service
 		"""
 		if(self.s.get('kb_autostart',True)):
-			self.kbthread = KeyboardThread(self.spec, self.motionScheduler, self.scheduler)
+			self.kbthread = KeyboardThread.GetInstance()
 			print('Keyboard service - started')
 		else:
 			print('Keyboard service - stopped')

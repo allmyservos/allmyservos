@@ -38,7 +38,7 @@ class TkGravityManager(TkPage):
 		if(hasattr(self.gui, 'scheduler')):
 			self.scheduler = self.gui.scheduler
 		else:
-			self.scheduler = Scheduler()
+			self.scheduler = Scheduler.GetInstance()
 		if(not self.pm.installRequired()):
 			if(hasattr(self.gui, 'imu')):
 				self.imu = self.gui.imu
