@@ -13,7 +13,7 @@ The app provides a user friendly interface for configuration, a command line ver
 
 To get started, make sure the directory which contains this file is copied to the SD card of your Raspberry Pi, open a terminal, change to this directory and run `sudo python GUI.py`
 
-To install straight from the terminal on an Pi (with internet connection):
+To install straight from the terminal on a Pi (with internet connection):
 
 ```
 git clone https://github.com/allmyservos/allmyservos.git
