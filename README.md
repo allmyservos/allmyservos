@@ -11,7 +11,19 @@ AllMyServos is a robotics app for Raspberry Pi, written in Python, to help it in
 
 The app provides a user friendly interface for configuration, a command line version for running over SSH and now supports headless operation.
 
-To get started, make sure the directory which contains this file is copied to the SD card of your Raspberry Pi, open a terminal, change to this directory and run 'sudo python GUI.py'
+To get started, make sure the directory which contains this file is copied to the SD card of your Raspberry Pi, open a terminal, change to this directory and run `sudo python GUI.py`
+
+To install straight from the terminal on an Pi (with internet connection):
+
+```
+git clone https://github.com/allmyservos/allmyservos.git
+```
+```
+cd allmyservos
+```
+```
+sudo python GUI.py
+```
 
 For more information visit:
 
